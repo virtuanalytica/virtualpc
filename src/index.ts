@@ -112,6 +112,7 @@ import { registerQueryRoutes } from './query-builder';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
 import { registerRequirementRoutes } from './requirements';
+import { MicroPostStore, DaoParamStore, MicroPostGossip, registerMicroPostRoutes } from './integrations/lightrag/micro-post';
 import { resolveModel } from './gpu/availability';
 import * as mcp from './integrations/mcp/registry';
 import * as autoresearch from './integrations/autoresearch';
@@ -2464,6 +2465,15 @@ async function initialize() {
     gossip.registerExpressRoutes(app);
     gossip.start();
     logger.info(`✓ P2PGossip configured (${gossipPeers.length} peers, swarm-managed)`);
+
+    // 1f-micro. Micro-post P2P network — 2-line content, TTL chain anchors, DAO governance.
+    const microPostStore = new MicroPostStore();
+    const microPostDao = new DaoParamStore(microPostStore);
+    const microPostGossip = new MicroPostGossip(microPostStore, gossipPeers);
+    microPostStore.startGc();
+    microPostGossip.start();
+    registerMicroPostRoutes(app, microPostStore, microPostDao, microPostGossip);
+    logger.info('✓ MicroPost P2P network active');
 
     // 1g. Agent Bridge — wires task completions/failures into the knowledge graph.
     const agentBridge = new AgentBridge(agentAPI, factValidator);
