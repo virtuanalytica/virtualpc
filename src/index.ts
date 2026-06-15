@@ -73,6 +73,7 @@ import { registerDataQualityRoutes } from './data-quality';
 import { registerFinanceRoutes } from './finance';
 import { registerGpuRoutes, getGpuAvailable } from './gpu';
 import { registerQueryRoutes } from './query-builder';
+import { registerVirtuAnalyticaRoutes } from './virtuanalytica';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
 import { registerTournamentRoutes } from './org/tournament-routes';
@@ -87,6 +88,7 @@ import { analyzeCsv } from './timeseries';
 import * as credentials from './credentials';
 import * as commercialization from './commercialization';
 import * as commitAudit from './commit-audit';
+import { TerminalAuthError, terminalCoordination } from './terminal-coordination';
 
 // Load environment
 config();
@@ -176,6 +178,8 @@ registerFinanceRoutes(app);
 registerGpuRoutes(app);
 // Query builder — saved, parameterised, versioned queries over the knowledge surfaces.
 registerQueryRoutes(app);
+// VirtuAnalytica — P4 data-roles command centre (metadata → databases → tools).
+registerVirtuAnalyticaRoutes(app);
 // Spectroscopy — ingest + peak detection for real spectra (Engel QChem payload).
 registerSpectroscopyRoutes(app);
 // Asset mirror coverage — Roblox→Web cross-platform remediation plan for designers.
@@ -739,6 +743,105 @@ app.post('/api/mcp/call', async (req, res) => {
 });
 
 // ============================================================================
+// Terminal coordination — key exchange + active-action mutual exclusion for
+// open Codex/Kimi/Claude/Alexander sessions. This is intentionally separate
+// from OpenClaw command execution: it arbitrates who currently owns a terminal
+// action before work is performed.
+// ============================================================================
+function terminalCoordinationError(res: express.Response, error: any): void {
+  if (error instanceof TerminalAuthError) {
+    res.status(403).json({ success: false, error: error.message });
+    return;
+  }
+  res.status(500).json({ success: false, error: error.message || String(error) });
+}
+
+app.get('/api/terminal-coordination', (_req, res) => {
+  res.json({ success: true, ...terminalCoordination.snapshot() });
+});
+
+app.post('/api/terminal-coordination/sessions/exchange', (req, res) => {
+  try {
+    const { label, agent, publicKey, pid, capabilities, ttlMs } = req.body || {};
+    if (!label) {
+      res.status(400).json({ success: false, error: 'label required' });
+      return;
+    }
+    res.json({
+      success: true,
+      exchange: terminalCoordination.exchange({ label, agent, publicKey, pid, capabilities, ttlMs }),
+    });
+  } catch (error: any) {
+    terminalCoordinationError(res, error);
+  }
+});
+
+app.post('/api/terminal-coordination/sessions/heartbeat', (req, res) => {
+  try {
+    const { sessionId, sessionKey } = req.body || {};
+    if (!sessionId || !sessionKey) {
+      res.status(400).json({ success: false, error: 'sessionId and sessionKey required' });
+      return;
+    }
+    res.json({ success: true, session: terminalCoordination.heartbeat(String(sessionId), String(sessionKey)) });
+  } catch (error: any) {
+    terminalCoordinationError(res, error);
+  }
+});
+
+app.post('/api/terminal-coordination/actions/acquire', (req, res) => {
+  try {
+    const { sessionId, sessionKey, title, kind, target, notes, ttlMs } = req.body || {};
+    if (!sessionId || !sessionKey || !title) {
+      res.status(400).json({ success: false, error: 'sessionId, sessionKey, and title required' });
+      return;
+    }
+    const result = terminalCoordination.acquireAction(String(sessionId), String(sessionKey), {
+      title: String(title),
+      kind,
+      target,
+      notes,
+      ttlMs,
+    });
+    if (!result.ok) {
+      res.status(409).json({ success: false, ...result });
+      return;
+    }
+    res.json({ success: true, ...result });
+  } catch (error: any) {
+    terminalCoordinationError(res, error);
+  }
+});
+
+app.post('/api/terminal-coordination/actions/release', (req, res) => {
+  try {
+    const { sessionId, sessionKey, actionId } = req.body || {};
+    if (!sessionId || !sessionKey) {
+      res.status(400).json({ success: false, error: 'sessionId and sessionKey required' });
+      return;
+    }
+    res.json({
+      success: true,
+      released: terminalCoordination.releaseAction(String(sessionId), String(sessionKey), actionId ? String(actionId) : undefined),
+    });
+  } catch (error: any) {
+    terminalCoordinationError(res, error);
+  }
+});
+
+app.post('/api/terminal-coordination/actions/force-release', (req, res) => {
+  try {
+    const { actor, reason } = req.body || {};
+    res.json({
+      success: true,
+      released: terminalCoordination.forceRelease(actor ? String(actor) : 'VirtualPC GUI', reason ? String(reason) : 'manual override'),
+    });
+  } catch (error: any) {
+    terminalCoordinationError(res, error);
+  }
+});
+
+// ============================================================================
 // Docs regeneration — kicks scripts/regenerate-docs.js which uses Kimi
 // (taskType:'docs') to refresh README, architecture, and wiki entries.
 // Long-running; returns the run id so the caller can poll if needed.
@@ -1155,12 +1258,15 @@ app.get('/api/agents/overview', (_req, res) => {
   const prompts = readAgentPrompts();
   const tail = (s: string, n: number) => s.length > n ? s.slice(0, n) + '…' : s;
   const throughput = lmstudio.getLastThroughput();
+  const scorecards = (taskEngine as any).getAllAgentScorecards?.() || [];
+  const scoreByAgent = new Map<string, any>(scorecards.map((s: any) => [s.agent, s]));
   const agents = AGENT_META.map(meta => {
     const prog = (taskEngine as any).getAgentProgress?.(meta.name) || { completed: 0, inProgress: 0, currentTask: null };
     const cli = taskEngine.getAgentCliLog(meta.name, 1);
     const lastLine = cli[0];
     const persona = prompts[meta.name];
     const tp = throughput[meta.name];
+    const scorecard: any = scoreByAgent.get(meta.name) || null;
     return {
       name: meta.name,
       role: meta.role,
@@ -1174,6 +1280,10 @@ app.get('/api/agents/overview', (_req, res) => {
       currentTask: prog.currentTask || null,
       tasksCompleted: prog.completed || 0,
       tasksInProgress: prog.inProgress || 0,
+      score: scorecard?.score ?? null,
+      scoreGrade: scorecard?.grade ?? null,
+      scoreStatus: scorecard?.status ?? null,
+      scorecard,
       lastAction: lastLine ? { ts: lastLine.ts, line: tail(lastLine.line, 140), level: lastLine.level } : null,
       promptPreview: persona ? tail(persona.prompt, 220) : null,
       promptModel: persona?.model || null,
@@ -1186,6 +1296,14 @@ app.get('/api/agents/overview', (_req, res) => {
     success: true,
     count: agents.length,
     agents,
+    scoreSummary: {
+      avgScore: scorecards.length
+        ? Math.round(scorecards.reduce((sum: number, s: any) => sum + (s.score || 0), 0) / scorecards.length)
+        : null,
+      lowestScore: scorecards.length ? Math.min(...scorecards.map((s: any) => s.score || 0)) : null,
+      needsAttention: scorecards.filter((s: any) => s.status === 'needs_attention').map((s: any) => s.agent),
+      blockedAgents: scorecards.filter((s: any) => (s.blockerCount || 0) > 0).map((s: any) => s.agent),
+    },
     promptsAvailable: Object.keys(prompts).length,
     generatedAt: new Date().toISOString(),
   });
@@ -2168,6 +2286,26 @@ async function initialize() {
       else if (!ch.offline) logger.info(`✓ family-graph: chemie — ${ch.entities} entiteiten, ${ch.edges} randen`);
     } catch (e: any) {
       logger.warn(`family-graph init failed: ${e.message}`);
+    }
+
+    // 1d. Ingest the VirtuAnalytica role graph — the five data-team roles
+    //     (engineer/steward/scientist/manager/analyst) + their responsibilities,
+    //     tools, skills, deliverables, KPIs, lifecycle stages and the catalog
+    //     concepts they care about. Same graceful-offline behaviour. If a
+    //     normalized catalog has been imported (data/virtuanalytica-catalog.json),
+    //     its delta is re-applied so connected metadata survives a restart.
+    try {
+      const rg = await import('./virtuanalytica/role-graph');
+      const path = await import('path');
+      const r = await rg.ingestRoleGraph(lightrag);
+      if (r.offline) logger.warn('role-graph: LightRAG offline — skip ingest');
+      else logger.info(`✓ role-graph: ${r.roles} roles, ${r.nodes} nodes, ${r.categories} categories, ${r.roleEdges} role-edges + ${r.explicitEdges} explicit`);
+      // Re-apply the imported catalog delta (idempotent, tagged source='collibra').
+      const catFile = path.join(__dirname, '..', 'data', 'virtuanalytica-catalog.json');
+      const cd = await rg.ingestCatalogDelta(lightrag, catFile, 'collibra');
+      if (!cd.offline && cd.assets) logger.info(`✓ role-graph: catalog delta — ${cd.assets} assets, ${cd.terms} terms, ${cd.lineage} lineage, ${cd.edges} edges`);
+    } catch (e: any) {
+      logger.warn(`role-graph init failed: ${e.message}`);
     }
 
     // Familie-graaf endpoints. GET /graph → 3D node-link JSON (respecteert de

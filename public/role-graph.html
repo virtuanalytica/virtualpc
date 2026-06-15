@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VirtuAnalytica — Role Knowledge Graph (3D)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(18, 24, 38, 0.92);
+      --ink: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #60a5fa;
+      --border: rgba(148, 163, 184, 0.2);
+      --ok: #41d18f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+    #graph { position: fixed; inset: 0; }
+    #hud {
+      position: fixed; top: 16px; left: 16px; z-index: 10; width: 340px; max-width: calc(100vw - 32px);
+      background: var(--panel); backdrop-filter: blur(8px); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    }
+    #hud h1 { margin: 0 0 2px; font-size: 18px; letter-spacing: 0.2px; }
+    #hud .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
+    .stat { color: var(--muted); font-size: 12px; }
+    .stat b { color: var(--ink); font-weight: 600; }
+    label.pick { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.6px; margin: 4px 0 4px; }
+    select {
+      width: 100%; cursor: pointer; border: 1px solid var(--border); border-radius: 10px;
+      padding: 9px 12px; font-size: 13px; font-weight: 600; color: var(--ink);
+      background: rgba(15, 23, 42, 0.9); appearance: none;
+    }
+    select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .mission { margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.5;
+      min-height: 0; transition: opacity .2s ease; }
+    #legend { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+    .leg { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    .leg-line { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+    .line-sample { width: 22px; height: 0; flex: 0 0 auto; }
+    .line-solid { border-top: 2px solid rgba(120,150,220,0.85); }
+    .line-dashed { border-top: 2px dashed rgba(255,209,102,0.7); }
+    #linksLegend { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;
+      display: flex; flex-direction: column; gap: 6px; }
+    #note { margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+    #note a.api { color: var(--accent); text-decoration: none; }
+    #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
+      background: var(--panel); border: 1px solid var(--border); padding: 10px 16px; border-radius: 10px;
+      font-size: 13px; opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+    #toast.show { opacity: 1; }
+    a.back { position: fixed; top: 18px; right: 18px; z-index: 10; color: var(--accent);
+      text-decoration: none; font-size: 13px; background: var(--panel); border: 1px solid var(--border);
+      padding: 8px 12px; border-radius: 10px; }
+    a.back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <div id="graph"></div>
+
+  <a class="back" href="virtuanalytica.html">← Home</a>
+
+  <div id="hud">
+    <h1 id="title">VirtuAnalytica <span style="opacity:.5;font-weight:400">— graph</span></h1>
+    <div class="sub">3D knowledge graph of a data role's landscape</div>
+
+    <label class="pick" for="rolePick">View</label>
+    <select id="rolePick" aria-label="Choose a role to view its knowledge graph"></select>
+    <p class="mission" id="mission"></p>
+
+    <div class="row"><span class="stat">Nodes</span><span class="stat"><b id="nodeCount">–</b></span></div>
+    <div class="row"><span class="stat">Relations</span><span class="stat"><b id="linkCount">–</b></span></div>
+
+    <div id="legend"></div>
+    <div id="linksLegend">
+      <div class="leg-line"><span class="line-sample line-solid"></span>Verified / stated relation</div>
+      <div class="leg-line"><span class="line-sample line-dashed"></span>Inferred relation</div>
+    </div>
+    <div id="note">
+      Drag to rotate · scroll to zoom · click a node to focus.<br/>
+      Source: <a class="api" id="sourceLink" href="/api/virtuanalytica/roles/graph" target="_blank" rel="noopener">/api/virtuanalytica/roles/graph</a>
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/3d-force-graph@1.73.4/dist/3d-force-graph.min.js"></script>
+  <script>
+    // ── Group → color map (VirtuAnalytica categories, groups 30–39) ──
+    const GROUP_COLORS = {
+      30: '#5b8cff', // Role
+      31: '#ff9f5b', // Responsibility
+      32: '#7ee787', // Tool
+      33: '#b07cff', // Skill
+      34: '#ffd166', // Deliverable
+      35: '#41d18f', // KPI
+      36: '#4dd2ff', // DataAsset
+      37: '#36c5f0', // MetadataConcept
+      38: '#c0e34d', // Stage
+      39: '#e06c9f', // Policy
+      0:  '#cfd8e3', // root / other
+    };
+    const GROUP_LABELS = {
+      30: 'Role', 31: 'Responsibility', 32: 'Tool', 33: 'Skill', 34: 'Deliverable',
+      35: 'KPI', 36: 'DataAsset', 37: 'MetadataConcept', 38: 'Stage', 39: 'Policy',
+    };
+
+    const VALID_ROLES = ['engineer', 'steward', 'scientist', 'manager', 'analyst'];
+    let roleMeta = {}; // key -> { name, mission }
+
+    const elGraph = document.getElementById('graph');
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const Graph = ForceGraph3D()(elGraph)
+      .backgroundColor('#0f172a')
+      // Node tooltip: name, type, note
+      .nodeLabel(n => `<div style="padding:4px 8px;background:#11182b;border:1px solid #2a3550;border-radius:6px;font-size:12px;max-width:280px">
+          <b>${esc(n.name)}</b><br/><span style="color:#94a3b8">${esc(n.type)}${n.note ? ' · ' + esc(n.note) : ''}</span></div>`)
+      .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
+      .nodeVal(n => n.val || 2)
+      .nodeOpacity(0.95)
+      // Inferred = lighter; verified/stated = stronger
+      .linkColor(l => l.inferred ? 'rgba(255,209,102,0.40)' : 'rgba(120,150,220,0.65)')
+      .linkWidth(l => l.inferred ? 0.6 : 1.2)
+      // 3d-force-graph draws a dashed line when linkLineDash returns an array
+      .linkLineDash(l => l.inferred ? [2, 2] : null)
+      .linkDirectionalArrowLength(3.2)
+      .linkDirectionalArrowRelPos(1)
+      // Link label: relation type + evidence/confidence when present
+      .linkLabel(l => {
+        const verState = l.verified ? 'verified' : (l.inferred ? 'inferred' : '');
+        const conf = l.confidence ? esc(l.confidence) : '';
+        const tag = [verState, conf].filter(Boolean).join(' · ');
+        return `<div style="padding:4px 8px;background:#11182b;border:1px solid #2a3550;border-radius:6px;font-size:12px;max-width:300px">
+            <b>${esc(l.type)}</b>${tag ? ' · <span style="color:#94a3b8">' + tag + '</span>' : ''}
+            ${l.evidence ? '<br/><span style="color:#94a3b8;font-style:italic">"' + esc(l.evidence) + '"</span>' : ''}</div>`;
+      })
+      .onNodeClick(node => {
+        // Focus camera on the clicked node
+        const dist = 80;
+        const ratio = 1 + dist / Math.hypot(node.x || 1, node.y || 1, node.z || 1);
+        Graph.cameraPosition(
+          { x: (node.x || 0) * ratio, y: (node.y || 0) * ratio, z: (node.z || 0) * ratio },
+          node, 900,
+        );
+      });
+
+    function buildLegend(groupsPresent) {
+      const box = document.getElementById('legend');
+      box.innerHTML = '';
+      Object.keys(GROUP_LABELS).forEach(g => {
+        if (!groupsPresent.has(Number(g))) return;
+        const d = document.createElement('div');
+        d.className = 'leg';
+        d.innerHTML = `<span class="dot" style="background:${GROUP_COLORS[g]}"></span>${GROUP_LABELS[g]}`;
+        box.appendChild(d);
+      });
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    function getRoleParam() {
+      const p = new URLSearchParams(location.search).get('role');
+      return (p && VALID_ROLES.includes(p)) ? p : '';
+    }
+
+    function graphUrl(role) {
+      return role ? `/api/virtuanalytica/roles/${role}/graph` : '/api/virtuanalytica/roles/graph';
+    }
+
+    function setTitle(role) {
+      const name = role ? (roleMeta[role] && roleMeta[role].name) || role : 'Combined';
+      document.getElementById('title').innerHTML =
+        `VirtuAnalytica <span style="opacity:.5;font-weight:400">— ${esc(name)}</span>`;
+      document.title = `VirtuAnalytica — ${name}`;
+      const mission = role && roleMeta[role] ? roleMeta[role].mission : 'All five data roles in one combined landscape.';
+      document.getElementById('mission').textContent = mission || '';
+      const link = document.getElementById('sourceLink');
+      link.textContent = graphUrl(role);
+      link.href = graphUrl(role);
+    }
+
+    async function loadRoles() {
+      const pick = document.getElementById('rolePick');
+      try {
+        const res = await fetch('/api/virtuanalytica/roles');
+        const data = await res.json();
+        (data.roles || []).forEach(r => { roleMeta[r.key] = { name: r.name, mission: r.mission }; });
+      } catch (_) { /* starting up — fall back to plain keys below */ }
+      // Build the picker: Combined + one option per role
+      pick.innerHTML = '';
+      const combined = document.createElement('option');
+      combined.value = ''; combined.textContent = 'Combined (all roles)';
+      pick.appendChild(combined);
+      const keys = Object.keys(roleMeta).length ? Object.keys(roleMeta) : VALID_ROLES;
+      keys.forEach(k => {
+        const o = document.createElement('option');
+        o.value = k; o.textContent = (roleMeta[k] && roleMeta[k].name) || k;
+        pick.appendChild(o);
+      });
+      pick.value = getRoleParam();
+      pick.addEventListener('change', () => {
+        const role = pick.value;
+        const url = new URL(location.href);
+        if (role) url.searchParams.set('role', role); else url.searchParams.delete('role');
+        history.replaceState(null, '', url);
+        loadGraph(role);
+      });
+    }
+
+    async function loadGraph(role) {
+      setTitle(role);
+      try {
+        const res = await fetch(graphUrl(role));
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const nodes = data.nodes || [];
+        const links = data.links || [];
+        document.getElementById('nodeCount').textContent = nodes.length;
+        document.getElementById('linkCount').textContent = links.length;
+        buildLegend(new Set(nodes.map(n => n.group)));
+        Graph.graphData({ nodes, links });
+        if (!nodes.length) toast('No graph data yet — import a catalog to populate it.');
+      } catch (e) {
+        document.getElementById('nodeCount').textContent = '–';
+        document.getElementById('linkCount').textContent = '–';
+        Graph.graphData({ nodes: [], links: [] });
+        toast('Starting up — graph not available yet.');
+      }
+    }
+
+    (async function init() {
+      await loadRoles();
+      await loadGraph(getRoleParam());
+    })();
+
+    window.addEventListener('resize', () => Graph.width(window.innerWidth).height(window.innerHeight));
+  </script>
+</body>
+</html>

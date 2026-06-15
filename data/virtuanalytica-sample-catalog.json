@@ -1,0 +1,44 @@
+{
+  "_comment": "VirtuAnalytica DEMO sample catalog — a small, clearly-labeled example metadata export used to demonstrate the Tier-1 import end-to-end without a live Collibra. Normalized to the CatalogModel shape (see src/virtuanalytica/role-graph.ts). Not training data.",
+  "model": {
+    "importedAt": "2026-06-15T00:00:00Z",
+    "source": "generic",
+    "assets": [
+      { "id": "a_raw_orders", "name": "raw.orders", "type": "table", "system": "Snowflake", "schema": "raw", "description": "Raw order events from the e-commerce platform.", "ownerIds": ["o_steward"], "termIds": ["t_order"], "classificationIds": ["c_financial"], "tags": ["raw", "orders"] },
+      { "id": "a_raw_customers", "name": "raw.customers", "type": "table", "system": "Snowflake", "schema": "raw", "description": "Raw customer master records.", "ownerIds": ["o_steward"], "termIds": ["t_customer"], "classificationIds": ["c_pii"], "tags": ["raw", "customers"] },
+      { "id": "a_mart_orders", "name": "mart.orders", "type": "table", "system": "Snowflake", "schema": "mart", "description": "Curated, analytics-ready orders mart.", "ownerIds": ["o_steward"], "termIds": ["t_order", "t_revenue"], "classificationIds": ["c_financial"], "tags": ["mart", "certified"] },
+      { "id": "a_mart_customer_360", "name": "mart.customer_360", "type": "view", "system": "Snowflake", "schema": "mart", "description": "Unified customer view used for analytics and churn modeling.", "ownerIds": ["o_steward"], "termIds": ["t_customer", "t_churn"], "classificationIds": ["c_pii"], "tags": ["mart", "certified", "customer"] },
+      { "id": "a_dash_revenue", "name": "Revenue Overview (Tableau)", "type": "report", "system": "Tableau", "description": "Executive revenue dashboard.", "ownerIds": ["o_steward"], "termIds": ["t_revenue"], "classificationIds": [], "tags": ["bi", "dashboard"] }
+    ],
+    "columns": [
+      { "id": "col_orders_id", "assetId": "a_raw_orders", "name": "order_id", "dataType": "string", "piiFlag": false, "termIds": ["t_order"] },
+      { "id": "col_orders_amount", "assetId": "a_raw_orders", "name": "amount_eur", "dataType": "decimal", "piiFlag": false, "termIds": ["t_revenue"] },
+      { "id": "col_cust_email", "assetId": "a_raw_customers", "name": "email", "dataType": "string", "piiFlag": true, "termIds": ["t_customer"] },
+      { "id": "col_cust_id", "assetId": "a_raw_customers", "name": "customer_id", "dataType": "string", "piiFlag": false, "termIds": ["t_customer"] },
+      { "id": "col_c360_churn", "assetId": "a_mart_customer_360", "name": "churn_score", "dataType": "float", "piiFlag": false, "termIds": ["t_churn"] }
+    ],
+    "glossaryTerms": [
+      { "id": "t_customer", "name": "Customer", "definition": "A person or organization that has placed at least one order.", "domain": "Sales", "stewardId": "o_steward" },
+      { "id": "t_order", "name": "Order", "definition": "A confirmed purchase transaction.", "domain": "Sales", "stewardId": "o_steward" },
+      { "id": "t_revenue", "name": "Revenue", "definition": "Net order amount in EUR, excluding tax and refunds.", "domain": "Finance", "stewardId": "o_steward" },
+      { "id": "t_churn", "name": "Churn Rate", "definition": "Share of customers who stop ordering within a 90-day window.", "domain": "Sales", "stewardId": "o_steward" }
+    ],
+    "classifications": [
+      { "id": "c_pii", "name": "PII", "scheme": "Confidential / Personal Data" },
+      { "id": "c_financial", "name": "Financial", "scheme": "Confidential / Financial" }
+    ],
+    "owners": [
+      { "id": "o_steward", "name": "Demo Data Steward", "role": "steward", "email": "steward@example.com" }
+    ],
+    "lineage": [
+      { "id": "l1", "fromAssetId": "a_raw_orders", "toAssetId": "a_mart_orders", "kind": "derives", "inferred": false, "evidence": "dbt model mart.orders selects from raw.orders" },
+      { "id": "l2", "fromAssetId": "a_raw_customers", "toAssetId": "a_mart_customer_360", "kind": "derives", "inferred": false, "evidence": "dbt model mart.customer_360 joins raw.customers" },
+      { "id": "l3", "fromAssetId": "a_mart_orders", "toAssetId": "a_mart_customer_360", "kind": "joins", "inferred": false, "evidence": "customer_360 aggregates mart.orders" },
+      { "id": "l4", "fromAssetId": "a_mart_orders", "toAssetId": "a_dash_revenue", "kind": "feeds", "inferred": true, "evidence": "dashboard data source name matches mart.orders" }
+    ],
+    "policies": [
+      { "id": "p_gdpr", "name": "GDPR Retention (Customer)", "kind": "retention", "appliesToAssetIds": ["a_raw_customers", "a_mart_customer_360"] },
+      { "id": "p_pii_access", "name": "PII Access Policy", "kind": "access", "appliesToAssetIds": ["a_raw_customers", "a_mart_customer_360"] }
+    ]
+  }
+}

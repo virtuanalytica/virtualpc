@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VirtuAnalytica — Your data team, as a product</title>
+  <meta name="description" content="Point VirtuAnalytica at your data catalog and it maps your whole data landscape — then does the work of five data roles." />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --primary: #60a5fa;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --border: rgba(148, 163, 184, .2);
+      --panel: #16213a;
+      --panel-2: #1b2742;
+      --ok: #41d18f;
+      --warn: #ffd166;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text-primary);
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55; -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--primary); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+    .eyebrow { color: var(--primary); font-size: 13px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; }
+    h1 { font-size: clamp(34px, 6vw, 60px); line-height: 1.05; margin: 12px 0 16px; letter-spacing: -1px; }
+    h2 { font-size: clamp(24px, 3.6vw, 34px); margin: 0 0 8px; letter-spacing: -0.4px; }
+    .subhead { color: var(--text-secondary); font-size: clamp(16px, 2.2vw, 20px); max-width: 640px; margin: 0 auto 28px; }
+    section { padding: 64px 0; border-top: 1px solid var(--border); }
+    section:first-of-type { border-top: 0; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      border: 0; border-radius: 12px; padding: 15px 26px; font-size: 16px; font-weight: 700;
+      color: #06122b; background: var(--primary); text-decoration: none;
+      transition: transform .08s ease, filter .15s ease;
+    }
+    .btn:hover { filter: brightness(1.08); }
+    .btn:active { transform: translateY(1px); }
+    .btn.ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
+    .btn:focus-visible, a:focus-visible, [tabindex]:focus-visible, .tab:focus-visible {
+      outline: 3px solid var(--primary); outline-offset: 3px; border-radius: 12px;
+    }
+
+    /* ── Hero ── */
+    .hero { text-align: center; padding-top: 84px; padding-bottom: 48px; }
+
+    /* ── Ascending staircase (the central metaphor) ── */
+    .staircase {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      margin-top: 56px; align-items: end; position: relative;
+    }
+    .staircase::after { /* stepped rail rising left→right behind the cards */
+      content: ""; position: absolute; left: 0; right: 0; bottom: -14px; height: 6px;
+      background: linear-gradient(90deg,
+        rgba(96,165,250,.15) 0%, rgba(96,165,250,.15) 33%,
+        rgba(96,165,250,.45) 33%, rgba(96,165,250,.45) 66%,
+        rgba(96,165,250,.95) 66%, rgba(96,165,250,.95) 100%);
+      border-radius: 4px;
+    }
+    .tier {
+      background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px 20px; text-align: left; position: relative;
+    }
+    /* ascending heights: tier 1 lowest, tier 3 tallest + lifted */
+    .tier[data-tier="1"] { margin-top: 96px; }
+    .tier[data-tier="2"] { margin-top: 48px; border-color: rgba(96,165,250,.35); }
+    .tier[data-tier="3"] { margin-top: 0; border-color: rgba(96,165,250,.6);
+      box-shadow: 0 18px 50px rgba(96,165,250,.12); }
+    .tier .step-num { font-size: 12px; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+    .tier h3 { margin: 6px 0 2px; font-size: 19px; }
+    .tier .tagline { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .5px;
+      text-transform: uppercase; color: var(--ok); margin-bottom: 10px; }
+    .tier p { color: var(--text-secondary); font-size: 14px; margin: 0 0 14px; }
+    .tier .count { font-size: 13px; color: var(--text-primary); font-weight: 600; margin-top: 6px; }
+    .lock-badge {
+      position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .tier.unlocked .lock-badge { color: var(--ok); border-color: rgba(65,209,143,.4); background: rgba(65,209,143,.12); }
+    .tier.demo .lock-badge { color: var(--warn); border-color: rgba(255,209,102,.4); background: rgba(255,209,102,.12); }
+    .tier.locked .lock-badge { color: var(--text-secondary); }
+    .tier .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .tier.unlocked .hint { display: none; }
+
+    /* ── Role cards ── */
+    .role-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-top: 26px; }
+    .role-card {
+      display: block; text-decoration: none; color: inherit; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+      transition: transform .1s ease, border-color .15s ease;
+    }
+    .role-card:hover { transform: translateY(-3px); border-color: rgba(96,165,250,.45); }
+    .role-card h3 { margin: 0 0 4px; font-size: 17px; }
+    .role-card .mission { color: var(--text-secondary); font-size: 13px; min-height: 38px; }
+    .mini-badges { display: flex; gap: 6px; margin-top: 12px; }
+    .mini { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--text-secondary); }
+    .mini.unlocked { color: var(--ok); border-color: rgba(65,209,143,.4); }
+    .mini.demo { color: var(--warn); border-color: rgba(255,209,102,.4); }
+
+    /* ── Ladder rows (give → get) ── */
+    .ladder-rows { margin-top: 26px; display: flex; flex-direction: column; gap: 14px; }
+    .ladder-row {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px 22px;
+    }
+    .give, .get { font-size: 15px; }
+    .give .label, .get .label { display: block; font-size: 11px; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 4px; }
+    .get { text-align: left; }
+    .arrow { color: var(--primary); font-size: 22px; font-weight: 800; }
+
+    /* ── Trust strip ── */
+    .trust { text-align: center; }
+    .trust p { color: var(--text-secondary); font-size: 16px; margin: 0; }
+    .trust .lock { color: var(--ok); }
+
+    /* ── Connect panel ── */
+    .connect-card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+      padding: 26px; margin-top: 26px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .tab {
+      background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer;
+      color: var(--text-secondary); font-size: 14px; font-weight: 700; padding: 10px 14px;
+    }
+    .tab[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--primary); }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+    .field input, .field textarea {
+      width: 100%; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px;
+      color: var(--text-primary); font-size: 14px; padding: 11px 13px; font-family: inherit;
+    }
+    .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .field textarea { min-height: 140px; resize: vertical; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; }
+    .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .muted { color: var(--text-secondary); font-size: 13px; }
+    [hidden] { display: none !important; }
+
+    /* ── Import summary card ── */
+    #importResult { margin-top: 20px; }
+    .summary-card { background: var(--panel-2); border: 1px solid rgba(65,209,143,.4); border-radius: 14px; padding: 20px; }
+    .summary-card h3 { margin: 0 0 10px; color: var(--ok); font-size: 17px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 14px 0; }
+    .stat-box { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-box .num { font-size: 22px; font-weight: 800; color: var(--text-primary); }
+    .stat-box .lbl { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .5px; }
+    .role-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .role-links a { font-size: 13px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
+      text-decoration: none; }
+    .err-card { background: var(--panel-2); border: 1px solid rgba(255,107,107,.4); border-radius: 14px;
+      padding: 16px; color: var(--text-secondary); }
+
+    /* ── Footer ── */
+    footer { padding: 40px 0; border-top: 1px solid var(--border); }
+    .foot-links { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
+    .foot-links a { font-size: 14px; text-decoration: none; }
+    .foot-note { text-align: center; color: var(--text-secondary); font-size: 12px; margin-top: 16px; }
+
+    @media (max-width: 720px) {
+      .staircase { grid-template-columns: 1fr; gap: 14px; }
+      .staircase::after { display: none; }
+      .tier[data-tier] { margin-top: 0; }
+      .ladder-row { grid-template-columns: 1fr; text-align: center; gap: 10px; }
+      .arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- ════ A. HERO ════ -->
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">VirtuAnalytica</p>
+      <h1>Your data team, as a product.</h1>
+      <p class="subhead">Point us at your data catalog and VirtuAnalytica maps your whole data landscape — then does the work of five data roles.</p>
+      <a class="btn" href="#connect">Connect your catalog</a>
+
+      <!-- The ascending 3-tier staircase: central metaphor -->
+      <div class="staircase" aria-label="The VirtuAnalytica value ladder, three rising tiers">
+        <article class="tier locked" data-tier="1">
+          <span class="lock-badge" data-badge>🔒 Locked</span>
+          <span class="step-num">TIER 1</span>
+          <h3>Give us your catalog</h3>
+          <span class="tagline">Works well</span>
+          <p>We read your catalog, map your data landscape, and build a knowledge graph for every role.</p>
+          <div class="count" data-count>— assets mapped</div>
+          <div class="hint" data-hint>Unlock by importing a catalog below.</div>
+        </article>
+        <article class="tier locked" data-tier="2">
+          <span class="lock-badge" data-badge>🔒 Locked</span>
+          <span class="step-num">TIER 2</span>
+          <h3>Add database access</h3>
+          <span class="tagline">Even better</span>
+          <p>We profile your real tables, infer lineage, check quality, and answer questions against live schemas.</p>
+          <div class="count" data-count>— tables profiled</div>
+          <div class="hint" data-hint>Unlock by connecting a read-only database.</div>
+        </article>
+        <article class="tier locked" data-tier="3">
+          <span class="lock-badge" data-badge>🔒 Locked</span>
+          <span class="step-num">TIER 3</span>
+          <h3>Grant tools</h3>
+          <span class="tagline">Best</span>
+          <p>We actually do the work — run transformations, queries, notebooks, pipelines, and BI exports.</p>
+          <div class="count" data-count>— tools ready</div>
+          <div class="hint" data-hint>Unlock by enabling a tool integration.</div>
+        </article>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════ B. FIVE ROLE ENTRY POINTS ════ -->
+  <section id="roles">
+    <div class="wrap">
+      <h2>Built for your whole data team.</h2>
+      <p class="muted">One landscape, five lenses. Each role gets its own knowledge graph.</p>
+      <div class="role-grid" id="roleGrid" aria-busy="true">
+        <!-- populated from /roles; falls back to static defaults -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ C. HOW THE LADDER WORKS ════ -->
+  <section>
+    <div class="wrap">
+      <h2>How the ladder works.</h2>
+      <p class="muted">The more you let us see and touch, the more we can do for you.</p>
+      <div class="ladder-rows">
+        <div class="ladder-row">
+          <div class="give"><span class="label">You give</span>Your data catalog (Collibra export or any catalog JSON).</div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="get"><span class="label">You get</span>A mapped data landscape and a knowledge graph for every role.</div>
+        </div>
+        <div class="ladder-row">
+          <div class="give"><span class="label">You give</span>Read-only access to your databases.</div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="get"><span class="label">You get</span>Real table profiling, inferred lineage, quality checks, and answers against live schemas.</div>
+        </div>
+        <div class="ladder-row">
+          <div class="give"><span class="label">You give</span>Permission to use specific tools.</div>
+          <div class="arrow" aria-hidden="true">→</div>
+          <div class="get"><span class="label">You get</span>Work actually done — transformations, queries, notebooks, pipelines, and BI exports.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ D. TRUST STRIP ════ -->
+  <section class="trust">
+    <div class="wrap">
+      <p><span class="lock" aria-hidden="true">🔒</span> Credentials are encrypted at rest. Read-only by default. You choose what we can touch.</p>
+    </div>
+  </section>
+
+  <!-- ════ E. CONNECT PANEL ════ -->
+  <section id="connect">
+    <div class="wrap">
+      <h2>Connect your catalog.</h2>
+      <p class="muted">Start with Tier 1 — no database access needed. Try the demo to see it end-to-end.</p>
+
+      <div class="connect-card">
+        <div class="tabs" role="tablist" aria-label="Connection method">
+          <button class="tab" id="tab-collibra" role="tab" aria-selected="true" aria-controls="panel-collibra">Connect Collibra</button>
+          <button class="tab" id="tab-upload" role="tab" aria-selected="false" aria-controls="panel-upload" tabindex="-1">Upload export</button>
+        </div>
+
+        <!-- Tab 1: Collibra -->
+        <div id="panel-collibra" role="tabpanel" aria-labelledby="tab-collibra">
+          <div class="field">
+            <label for="cb-url">Collibra base URL</label>
+            <input id="cb-url" type="url" placeholder="https://your-org.collibra.com" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="cb-token">API token</label>
+            <input id="cb-token" type="password" placeholder="Paste your Collibra API token" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="cb-domain">Domain (optional)</label>
+            <input id="cb-domain" type="text" placeholder="e.g. Sales / Finance" autocomplete="off" />
+          </div>
+          <div class="panel-actions">
+            <button class="btn" id="cb-connect">Connect Collibra</button>
+            <span class="muted" style="align-self:center">Token is encrypted at rest and never returned.</span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Upload -->
+        <div id="panel-upload" role="tabpanel" aria-labelledby="tab-upload" hidden>
+          <div class="field">
+            <label for="up-payload">Paste a Collibra CSV/JSON export, or any generic catalog JSON</label>
+            <textarea id="up-payload" placeholder='{ "model": { "assets": [...], "glossaryTerms": [...] } }'></textarea>
+          </div>
+          <div class="panel-actions">
+            <button class="btn" id="up-import">Import this catalog</button>
+            <button class="btn ghost" id="demo-btn">Try the demo catalog</button>
+          </div>
+        </div>
+
+        <div id="importResult" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ F. FOOTER ════ -->
+  <footer>
+    <div class="wrap">
+      <nav class="foot-links" aria-label="Role pages and tools">
+        <a href="role-graph.html?role=engineer">Data Engineer</a>
+        <a href="role-graph.html?role=steward">Data Steward</a>
+        <a href="role-graph.html?role=scientist">Data Scientist</a>
+        <a href="role-graph.html?role=manager">Data Manager</a>
+        <a href="role-graph.html?role=analyst">Data Analyst</a>
+        <a href="role-graph.html">View combined graph</a>
+        <a href="/docs/VIRTUANALYTICA-API.md" target="_blank" rel="noopener">API docs</a>
+      </nav>
+      <p class="foot-note">VirtuAnalytica — your data team, as a product.</p>
+    </div>
+  </footer>
+
+  <script>
+    const API = '/api/virtuanalytica';
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+    // Static fallbacks so the page is never broken if /roles 404s on startup.
+    const ROLE_FALLBACK = [
+      { key: 'engineer',  name: 'Data Engineer',  mission: 'Pipelines, lineage, and transformations.' },
+      { key: 'steward',   name: 'Data Steward',   mission: 'Glossary, ownership, classification, policy.' },
+      { key: 'scientist', name: 'Data Scientist', mission: 'Features, datasets, experiment-ready data.' },
+      { key: 'manager',   name: 'Data Manager',   mission: 'Coverage, quality, and team-wide health.' },
+      { key: 'analyst',   name: 'Data Analyst',   mission: 'Questions answered against real schemas, BI exports.' },
+    ];
+
+    let lastState = null;
+
+    // ── Tier badges + counts from /state ──
+    function applyState(state) {
+      lastState = state;
+      const tiers = (state && state.tiers) || {};
+      const cfg = {
+        1: { data: tiers.tier1 || {}, count: t => `${t.assets ?? 0} assets mapped` },
+        2: { data: tiers.tier2 || {}, count: t => `${t.connections ?? 0} tables profiled` },
+        3: { data: tiers.tier3 || {}, count: t => `${t.tools ?? 0} tools ready` },
+      };
+      document.querySelectorAll('.tier[data-tier]').forEach(card => {
+        const n = Number(card.dataset.tier);
+        const t = cfg[n].data;
+        const badge = card.querySelector('[data-badge]');
+        const count = card.querySelector('[data-count]');
+        card.classList.remove('locked', 'unlocked', 'demo');
+        if (t.unlocked) {
+          card.classList.add('unlocked');
+          badge.textContent = '✓ Unlocked';
+        } else if (t.demo) {
+          card.classList.add('demo');
+          badge.textContent = '◐ Demo';
+        } else {
+          card.classList.add('locked');
+          badge.textContent = '🔒 Locked';
+        }
+        count.textContent = cfg[n].count(t);
+      });
+      // Refresh role-card mini badges
+      const miniState = [
+        { n: 1, on: !!(tiers.tier1 && tiers.tier1.unlocked), demo: false },
+        { n: 2, on: !!(tiers.tier2 && tiers.tier2.unlocked), demo: !!(tiers.tier2 && tiers.tier2.demo) },
+        { n: 3, on: !!(tiers.tier3 && tiers.tier3.unlocked), demo: false },
+      ];
+      document.querySelectorAll('.mini-badges').forEach(box => {
+        box.querySelectorAll('.mini').forEach((m, i) => {
+          m.classList.remove('unlocked', 'demo');
+          if (miniState[i].on) m.classList.add('unlocked');
+          else if (miniState[i].demo) m.classList.add('demo');
+        });
+      });
+    }
+
+    async function loadState() {
+      try {
+        const res = await fetch(`${API}/state`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        applyState(await res.json());
+      } catch (_) {
+        // Neutral "starting up" state — never a broken page.
+        document.querySelectorAll('.tier[data-tier] [data-badge]').forEach(b => b.textContent = '… starting up');
+      }
+    }
+
+    // ── Role cards from /roles ──
+    function renderRoles(roles) {
+      const grid = document.getElementById('roleGrid');
+      grid.innerHTML = '';
+      roles.forEach(r => {
+        const a = document.createElement('a');
+        a.className = 'role-card';
+        a.href = `role-graph.html?role=${encodeURIComponent(r.key)}`;
+        a.innerHTML =
+          `<h3>${esc(r.name)}</h3>
+           <div class="mission">${esc(r.mission)}</div>
+           <div class="mini-badges" aria-label="Tier status">
+             <span class="mini">T1</span><span class="mini">T2</span><span class="mini">T3</span>
+           </div>`;
+        grid.appendChild(a);
+      });
+      grid.setAttribute('aria-busy', 'false');
+    }
+
+    async function loadRoles() {
+      try {
+        const res = await fetch(`${API}/roles`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        renderRoles((data.roles && data.roles.length) ? data.roles : ROLE_FALLBACK);
+      } catch (_) {
+        renderRoles(ROLE_FALLBACK);
+      }
+    }
+
+    // ── Tabs (accessible) ──
+    function selectTab(which) {
+      const isCollibra = which === 'collibra';
+      const tCol = document.getElementById('tab-collibra');
+      const tUp = document.getElementById('tab-upload');
+      tCol.setAttribute('aria-selected', String(isCollibra));
+      tUp.setAttribute('aria-selected', String(!isCollibra));
+      tCol.tabIndex = isCollibra ? 0 : -1;
+      tUp.tabIndex = isCollibra ? -1 : 0;
+      document.getElementById('panel-collibra').hidden = !isCollibra;
+      document.getElementById('panel-upload').hidden = isCollibra;
+    }
+    document.getElementById('tab-collibra').addEventListener('click', () => selectTab('collibra'));
+    document.getElementById('tab-upload').addEventListener('click', () => selectTab('upload'));
+    // Arrow-key navigation between tabs
+    document.querySelector('.tabs').addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        selectTab(e.target.id === 'tab-collibra' ? 'upload' : 'collibra');
+        document.getElementById(e.target.id === 'tab-collibra' ? 'tab-upload' : 'tab-collibra').focus();
+      }
+    });
+
+    // ── Import result rendering ──
+    function showImportSummary(resp) {
+      const imp = (resp && resp.imported) || {};
+      const g = (resp && resp.graph) || {};
+      const num = (v) => (typeof v === 'number' ? v : (Array.isArray(v) ? v.length : 0));
+      const stats = [
+        ['Assets', num(imp.assets)],
+        ['Columns', num(imp.columns)],
+        ['Terms', num(imp.terms)],
+        ['Classifications', num(imp.classifications)],
+        ['Owners', num(imp.owners)],
+        ['Lineage', num(imp.lineage)],
+        ['Policies', num(imp.policies)],
+      ].filter(([, v]) => v > 0);
+      const graphNote = g.edges != null
+        ? `Knowledge graph built: ${num(g.edges)} relations across your landscape.`
+        : 'Knowledge graph built across your landscape.';
+      document.getElementById('importResult').innerHTML =
+        `<div class="summary-card">
+           <h3>✓ Catalog imported</h3>
+           <p class="muted">${esc(graphNote)}</p>
+           <div class="stat-grid">
+             ${stats.map(([l, v]) => `<div class="stat-box"><div class="num">${v}</div><div class="lbl">${esc(l)}</div></div>`).join('')}
+           </div>
+           <p class="muted">Explore it by role:</p>
+           <div class="role-links">
+             <a href="role-graph.html?role=engineer">Engineer</a>
+             <a href="role-graph.html?role=steward">Steward</a>
+             <a href="role-graph.html?role=scientist">Scientist</a>
+             <a href="role-graph.html?role=manager">Manager</a>
+             <a href="role-graph.html?role=analyst">Analyst</a>
+             <a href="role-graph.html">Combined</a>
+           </div>
+         </div>`;
+    }
+    function showImportError(msg) {
+      document.getElementById('importResult').innerHTML =
+        `<div class="err-card">Could not import right now (${esc(msg)}). The service may still be starting up — try again in a moment.</div>`;
+    }
+
+    async function postImport(body, btn) {
+      const orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Importing…'; }
+      try {
+        const res = await fetch(`${API}/catalog/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.success === false) throw new Error(data.error || ('HTTP ' + res.status));
+        showImportSummary(data);
+        await loadState(); // flips Tier-1 badge to unlocked
+      } catch (e) {
+        showImportError(e.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+      }
+    }
+
+    // Demo button → POST {demo:true}
+    document.getElementById('demo-btn').addEventListener('click', e => postImport({ demo: true }, e.currentTarget));
+
+    // Upload tab → POST pasted payload (JSON if parseable, else raw string)
+    document.getElementById('up-import').addEventListener('click', e => {
+      const raw = document.getElementById('up-payload').value.trim();
+      if (!raw) { showImportError('paste a catalog export first'); return; }
+      let body;
+      try {
+        const parsed = JSON.parse(raw);
+        body = { source: 'generic', format: 'generic-json', payload: parsed };
+      } catch (_) {
+        // Not JSON — treat as a Collibra CSV string payload
+        body = { source: 'collibra', format: 'collibra-csv', payload: raw };
+      }
+      postImport(body, e.currentTarget);
+    });
+
+    // Collibra tab → register a connection-style import via the same endpoint.
+    document.getElementById('cb-connect').addEventListener('click', e => {
+      const url = document.getElementById('cb-url').value.trim();
+      const token = document.getElementById('cb-token').value.trim();
+      const domain = document.getElementById('cb-domain').value.trim();
+      if (!url || !token) { showImportError('a Collibra base URL and API token are required'); return; }
+      postImport({ source: 'collibra', payload: { baseUrl: url, token, domain: domain || undefined } }, e.currentTarget);
+    });
+
+    // ── Init ──
+    loadState();
+    loadRoles();
+  </script>
+</body>
+</html>
