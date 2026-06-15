@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Settings.css';
 
 export default function Settings() {
@@ -6,21 +6,43 @@ export default function Settings() {
     theme: 'dark',
     refreshRate: '5000',
     notifications: true,
-    autoBackup: true
+    autoBackup: true,
   });
 
-  const handleChange = (field: string, value: any) => {
-    setSettings({ ...settings, [field]: value });
+  useEffect(() => {
+    const saved = localStorage.getItem('virtualpc-settings');
+    if (!saved) return;
+    try {
+      setSettings((current) => ({ ...current, ...JSON.parse(saved) }));
+    } catch {
+      // Ignore invalid local storage and keep defaults.
+    }
+  }, []);
+
+  const handleChange = (field: string, value: string | boolean) => {
+    setSettings((current) => ({ ...current, [field]: value }));
   };
 
   const handleSave = () => {
     localStorage.setItem('virtualpc-settings', JSON.stringify(settings));
-    alert('Settings saved!');
+    alert('Settings saved');
+  };
+
+  const resetSettings = () => {
+    if (!confirm('Reset all settings to defaults?')) return;
+    setSettings({ theme: 'dark', refreshRate: '5000', notifications: true, autoBackup: true });
+    alert('Settings reset');
+  };
+
+  const clearLocalData = () => {
+    if (!confirm('Clear all local data? This cannot be undone.')) return;
+    localStorage.clear();
+    alert('Local data cleared');
   };
 
   return (
     <div className="settings-container">
-      <h1>⚙️ Settings</h1>
+      <h1>Settings</h1>
 
       <div className="settings-sections">
         <section className="settings-section">
@@ -37,7 +59,7 @@ export default function Settings() {
         </section>
 
         <section className="settings-section">
-          <h2>Updates & Refresh</h2>
+          <h2>Updates and Refresh</h2>
           <div className="setting-group">
             <label>Refresh Rate (ms)</label>
             <input
@@ -48,7 +70,7 @@ export default function Settings() {
               max="60000"
               step="1000"
             />
-            <p className="setting-hint">How often to fetch updated data (milliseconds)</p>
+            <p className="setting-hint">How often to fetch updated data</p>
           </div>
 
           <div className="setting-group">
@@ -60,7 +82,7 @@ export default function Settings() {
               />
               <span>Auto-backup memory data</span>
             </label>
-            <p className="setting-hint">Automatically backup LightRAG data periodically</p>
+            <p className="setting-hint">Automatically back up local memory data periodically</p>
           </div>
         </section>
 
@@ -92,11 +114,11 @@ export default function Settings() {
             </div>
             <div className="info-item">
               <span className="info-label">Neo4j Memory:</span>
-              <span className="info-value">Connected</span>
+              <span className="info-value">Configured</span>
             </div>
             <div className="info-item">
               <span className="info-label">Kafka Broker:</span>
-              <span className="info-value">Active</span>
+              <span className="info-value">Optional</span>
             </div>
           </div>
         </section>
@@ -104,21 +126,11 @@ export default function Settings() {
         <section className="settings-section danger-zone">
           <h2>Danger Zone</h2>
           <div className="danger-actions">
-            <button className="btn-danger" onClick={() => {
-              if (confirm('Clear all local data? This cannot be undone.')) {
-                localStorage.clear();
-                alert('Local data cleared');
-              }
-            }}>
-              🗑️ Clear Local Data
+            <button className="btn-danger" onClick={clearLocalData}>
+              Clear Local Data
             </button>
-            <button className="btn-danger" onClick={() => {
-              if (confirm('Reset all settings to defaults?')) {
-                setSettings({ theme: 'dark', refreshRate: '5000', notifications: true, autoBackup: true });
-                alert('Settings reset');
-              }
-            }}>
-              🔄 Reset Settings
+            <button className="btn-danger" onClick={resetSettings}>
+              Reset Settings
             </button>
           </div>
         </section>
@@ -126,7 +138,7 @@ export default function Settings() {
 
       <div className="settings-footer">
         <button className="btn-primary" onClick={handleSave}>
-          💾 Save Settings
+          Save Settings
         </button>
       </div>
     </div>

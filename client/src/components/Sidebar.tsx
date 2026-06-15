@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -8,6 +8,16 @@ interface SidebarProps {
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const [systemStatus, setSystemStatus] = useState('online');
+  const [vaEnabled, setVaEnabled] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/virtuanalytica/entitlement')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) setVaEnabled(data.entitlement.enabled);
+      })
+      .catch(() => setVaEnabled(false));
+  }, []);
 
   const menuItems = [
     { id: 'dashboard', label: '📊 Dashboard', icon: '📊' },
@@ -15,6 +25,9 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
     { id: 'issues', label: '⚠️ Issues', icon: '⚠️' },
     { id: 'memory', label: '🧠 Memory', icon: '🧠' },
     { id: 'analytics', label: '📈 Analytics', icon: '📈' },
+    { id: 'terminal-coordination', label: '⌁ Terminal Ops', icon: '⌁' },
+    { id: 'daily-management', label: '▤ Management', icon: '▤' },
+    ...(vaEnabled ? [{ id: 'virtuanalytica', label: '🛰️ VirtuAnalytica', icon: '🛰️' }] : []),
     { id: 'team', label: '👥 Team', icon: '👥' },
     { id: 'settings', label: '⚙️ Settings', icon: '⚙️' },
   ];

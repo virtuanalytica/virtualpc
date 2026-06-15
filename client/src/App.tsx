@@ -6,10 +6,13 @@ import Backlog from './pages/Backlog';
 import Issues from './pages/Issues';
 import Memory from './pages/Memory';
 import Settings from './pages/Settings';
+import VirtuAnalytica from './pages/VirtuAnalytica';
 import { AnalyticsDashboard } from './pages/AnalyticsDashboard';
 import { TeamCollaboration } from './pages/TeamCollaboration';
+import { TerminalCoordination } from './pages/TerminalCoordination';
+import { DailyManagementOverview } from './pages/DailyManagementOverview';
 
-type PageType = 'dashboard' | 'backlog' | 'issues' | 'memory' | 'settings' | 'analytics' | 'team';
+type PageType = 'dashboard' | 'backlog' | 'issues' | 'memory' | 'settings' | 'analytics' | 'team' | 'terminal-coordination' | 'daily-management' | 'virtuanalytica';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
@@ -37,6 +40,12 @@ export default function App() {
         return <AnalyticsDashboard />;
       case 'team':
         return <TeamCollaboration />;
+      case 'terminal-coordination':
+        return <TerminalCoordination />;
+      case 'daily-management':
+        return <DailyManagementOverview />;
+      case 'virtuanalytica':
+        return <VirtuAnalytica />;
       case 'settings':
         return <Settings />;
       default:

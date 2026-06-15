@@ -38,6 +38,9 @@ import type { CatalogModel, RoleKey } from './role-graph';
 import * as store from './store';
 import * as catalog from './catalog';
 import * as roles from './roles';
+import * as commerce from './commerce';
+import * as rolesCatalog from './roles-catalog';
+import * as capabilitiesCatalog from './capabilities-catalog';
 
 const DATA_DIR = path.join(__dirname, '..', '..', 'data');
 const SAMPLE_CATALOG_PATH = path.join(DATA_DIR, 'virtuanalytica-sample-catalog.json');
@@ -186,7 +189,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
   });
 
   // ─── Tier 1: catalog import / browse ──────────────────────────────────────
-  app.post(`${base}/catalog/import`, async (req, res) => {
+  app.post(`${base}/catalog/import`, requireEnabled, async (req, res) => {
     try {
       const body = req.body || {};
       const isEmptyBody = !body || Object.keys(body).length === 0 || (!body.payload && !body.demo);
@@ -233,7 +236,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.get(`${base}/catalog`, (_req, res) => {
+  app.get(`${base}/catalog`, requireEnabled, (_req, res) => {
     try {
       const model = store.getCatalogModel();
       if (!model) {
@@ -255,7 +258,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.get(`${base}/catalog/asset/:id`, (req, res) => {
+  app.get(`${base}/catalog/asset/:id`, requireEnabled, (req, res) => {
     try {
       const model = store.getCatalogModel();
       const id = String(req.params.id);
@@ -273,7 +276,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
   });
 
   // ─── Tier 2: connections (locked stub, demo-safe) ─────────────────────────
-  app.get(`${base}/connections`, (_req, res) => {
+  app.get(`${base}/connections`, requireEnabled, (_req, res) => {
     try {
       const connections = store.listConnections().map((c) => ({
         id: c.id,
@@ -288,7 +291,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.post(`${base}/connections`, (req, res) => {
+  app.post(`${base}/connections`, requireEnabled, (req, res) => {
     try {
       const body = req.body || {};
       if (!body.name || !body.engine) { fail(res, 400, 'name and engine are required'); return; }
@@ -307,7 +310,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.post(`${base}/connections/:id/profile`, (req, res) => {
+  app.post(`${base}/connections/:id/profile`, requireEnabled, (req, res) => {
     try {
       const conn = store.getConnection(String(req.params.id));
       if (!conn) { fail(res, 404, 'connection not found'); return; }
@@ -322,7 +325,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
   });
 
   // ─── Tier 3: tools (locked stub, demo-safe) ───────────────────────────────
-  app.get(`${base}/tools`, (_req, res) => {
+  app.get(`${base}/tools`, requireEnabled, (_req, res) => {
     try {
       const tools = store.listTools().map((t) => ({
         id: t.id,
@@ -335,7 +338,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.post(`${base}/tools`, (req, res) => {
+  app.post(`${base}/tools`, requireEnabled, (req, res) => {
     try {
       const body = req.body || {};
       if (!body.name || !body.kind) { fail(res, 400, 'name and kind are required'); return; }
@@ -349,7 +352,7 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
     } catch (e: any) { fail(res, 500, e.message); }
   });
 
-  app.post(`${base}/tools/:id/run`, (req, res) => {
+  app.post(`${base}/tools/:id/run`, requireEnabled, (req, res) => {
     try {
       const tool = store.getTool(String(req.params.id));
       if (!tool) { fail(res, 404, 'tool not found'); return; }
@@ -373,6 +376,108 @@ export function registerVirtuAnalyticaRoutes(app: Express): void {
       });
       ok(res, { runId, status });
     } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  // ─── Tier 1: pretrained role / capability catalog ─────────────────────────
+  app.get(`${base}/catalog/roles`, (_req, res) => {
+    try {
+      ok(res, { success: true, roles: rolesCatalog.listRoles().map((r) => ({
+        id: r.id,
+        name: r.name,
+        category: r.category,
+        shortDescription: r.shortDescription,
+        priceEur: r.priceEur,
+      })) });
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.get(`${base}/catalog/capabilities`, (_req, res) => {
+    try {
+      ok(res, { success: true, capabilities: capabilitiesCatalog.listCapabilities().map((c) => ({
+        id: c.id,
+        name: c.name,
+        category: c.category,
+        shortDescription: c.shortDescription,
+        priceEur: c.priceEur,
+      })) });
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/price`, (req, res) => {
+    try {
+      const body = req.body || {};
+      const price = commerce.calculatePrice(body.selectedRoles || [], body.selectedCapabilities || []);
+      ok(res, { price });
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/selection`, (req, res) => {
+    try {
+      const body = req.body || {};
+      const entitlement = commerce.setSelection(body.selectedRoles || [], body.selectedCapabilities || []);
+      ok(res, { entitlement });
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  // ─── Tier 4: commercial entitlement ───────────────────────────────────────
+  function requireEnabled(req: Request, res: Response, next: any): void {
+    const ent = commerce.getEntitlement();
+    if (!ent.enabled) {
+      fail(res, 402, 'VirtuAnalytica is not enabled. Activate it in Settings.');
+      return;
+    }
+    const consume = commerce.consumeTokens(1);
+    if (!consume.allowed) {
+      fail(res, 402, consume.error || 'Insufficient tokens');
+      return;
+    }
+    next();
+  }
+
+  app.get(`${base}/entitlement`, (_req, res) => {
+    try { ok(res, { entitlement: commerce.getEntitlement() }); }
+    catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/payment-intent`, async (req, res) => {
+    try {
+      const body = req.body || {};
+      const result = await commerce.createPaymentIntent(
+        body.selectedRoles,
+        body.selectedCapabilities,
+        body.currency || 'eur',
+        body.paymentMethodType || 'card',
+      );
+      if (result.success) ok(res, { paymentIntentId: result.paymentIntentId, clientSecret: result.clientSecret, amountCents: result.amountCents, currency: result.currency });
+      else fail(res, 400, result.error || 'Payment intent creation failed');
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/activate`, (req, res) => {
+    try {
+      const body = req.body || {};
+      const result = commerce.activate(String(body.paymentIntentId || ''));
+      if (result.success) ok(res, { entitlement: result.entitlement });
+      else fail(res, 400, result.error || 'Activation failed');
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/toggle-test`, (req, res) => {
+    try {
+      const body = req.body || {};
+      if (body.enabled === true || body.enabled === undefined) {
+        const entitlement = commerce.enableTestMode(body.selectedRoles, body.selectedCapabilities);
+        ok(res, { entitlement });
+      } else {
+        const entitlement = commerce.disableCommercial();
+        ok(res, { entitlement });
+      }
+    } catch (e: any) { fail(res, 500, e.message); }
+  });
+
+  app.post(`${base}/disable`, (_req, res) => {
+    try { ok(res, { entitlement: commerce.disableCommercial() }); }
+    catch (e: any) { fail(res, 500, e.message); }
   });
 
   logger.info('✓ VirtuAnalytica routes registered (FROZEN contract)');

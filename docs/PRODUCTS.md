@@ -108,20 +108,23 @@ instrumented, and any spend explicitly human-approved with an audit trail.
 
 ## Shared platform capabilities *(not standalone products)*
 
-These serve all three products and are funded as infrastructure, not sold
+These serve the platform products and are funded as infrastructure, not sold
 separately: **Governance & data-lineage**, **Corpus/Memory (LightRAG+Neo4j)**,
 **Vitals / self-heal**, **Auth & audit**, **LiteLLM model routing**.
 
 ---
 
-## Portfolio priorities — this sprint (PO call, 2026-06-03)
+## Portfolio priorities — this sprint (PO call, 2026-06-15)
 
 1. **Unblock P1 persistence** — the two `critical` items (Postgres tier +
-   LM Studio inference) gate everything else; nothing is durably "done" until
-   the task engine survives a restart. *Top priority.*
+   LM Studio inference) gate durable config for every other product. *Top
+   priority.*
 2. **Burn down P2b's 31 web bugs** — the showcase can't demo with that bug
    load; it undermines the investor story for P1.
 3. **Land the P3 investor reel** — but only against a stabilised P1/P2b, so the
    footage is real.
-4. **Backlog hygiene** — collapse the ~46 duplicate "define task pool"
+4. **Keep private vertical products outside this repo** — product-specific GUI,
+   role packs, dictionaries, and commercial entitlements live in separate
+   private repositories.
+5. **Backlog hygiene** — collapse the ~46 duplicate "define task pool"
    placeholders so WIP reflects reality (see charter §5).

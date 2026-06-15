@@ -6,7 +6,6 @@
  */
 
 import express from 'express';
-import { config } from 'dotenv';
 import * as http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import logger from './utils/logger';
@@ -74,6 +73,7 @@ import { registerFinanceRoutes } from './finance';
 import { registerGpuRoutes, getGpuAvailable } from './gpu';
 import { registerQueryRoutes } from './query-builder';
 import { registerVirtuAnalyticaRoutes } from './virtuanalytica';
+import * as virtuCommerce from './virtuanalytica/commerce';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
 import { registerTournamentRoutes } from './org/tournament-routes';
@@ -89,13 +89,11 @@ import * as credentials from './credentials';
 import * as commercialization from './commercialization';
 import * as commitAudit from './commit-audit';
 import { TerminalAuthError, terminalCoordination } from './terminal-coordination';
+import { buildDailyManagementOverview } from './daily-management-overview';
 
-// Load environment
-config();
-// Re-load credentials now that dotenv has populated process.env: the module's
-// boot-time load ran at import (before config()), so FIELD_ENCRYPTION_KEY from
-// .env was not yet visible. This pass decrypts api_keys and migrates any
-// plaintext-at-rest to encrypted (no-op when the key is unset). See #31.
+// Load encrypted provider credentials from the local state store. Open-source
+// VirtualPC does not read .env files; deployments inject non-secret runtime
+// config and Infisical bootstrap variables through the process manager.
 credentials.loadCredentials();
 
 const app = express();
@@ -967,6 +965,30 @@ app.get('/api/tokens/events', (req, res) => {
   const agent = req.query.agent as string | undefined;
   const limit = parseInt(req.query.limit as string) || 20;
   res.json({ success: true, events: tokenTracker.getRecentEvents(agent, limit) });
+});
+
+app.get('/api/management/daily-overview', (_req, res) => {
+  const ent = virtuCommerce.getEntitlement();
+  if (!ent.enabled) {
+    res.status(402).json({ success: false, error: 'VirtuAnalytica is not enabled. Activate it in Settings.' });
+    return;
+  }
+  const consume = virtuCommerce.consumeTokens(1);
+  if (!consume.allowed) {
+    res.status(402).json({ success: false, error: consume.error || 'Insufficient tokens' });
+    return;
+  }
+  res.json({
+    success: true,
+    tokensRemaining: consume.remaining,
+    overview: buildDailyManagementOverview({
+      tokenSummary: tokenTracker.getAgentSummary(),
+      dailyUsage: tokenTracker.getDailyUsage(),
+      workLog: taskEngine.getWorkLog(undefined, 10000),
+      terminalCoordination: terminalCoordination.snapshot(),
+      terminalActivity: activityMonitor.getSummary(),
+    }),
+  });
 });
 
 // Auto-update status — what the last scripts/auto-update.sh tick observed.
@@ -2286,26 +2308,6 @@ async function initialize() {
       else if (!ch.offline) logger.info(`✓ family-graph: chemie — ${ch.entities} entiteiten, ${ch.edges} randen`);
     } catch (e: any) {
       logger.warn(`family-graph init failed: ${e.message}`);
-    }
-
-    // 1d. Ingest the VirtuAnalytica role graph — the five data-team roles
-    //     (engineer/steward/scientist/manager/analyst) + their responsibilities,
-    //     tools, skills, deliverables, KPIs, lifecycle stages and the catalog
-    //     concepts they care about. Same graceful-offline behaviour. If a
-    //     normalized catalog has been imported (data/virtuanalytica-catalog.json),
-    //     its delta is re-applied so connected metadata survives a restart.
-    try {
-      const rg = await import('./virtuanalytica/role-graph');
-      const path = await import('path');
-      const r = await rg.ingestRoleGraph(lightrag);
-      if (r.offline) logger.warn('role-graph: LightRAG offline — skip ingest');
-      else logger.info(`✓ role-graph: ${r.roles} roles, ${r.nodes} nodes, ${r.categories} categories, ${r.roleEdges} role-edges + ${r.explicitEdges} explicit`);
-      // Re-apply the imported catalog delta (idempotent, tagged source='collibra').
-      const catFile = path.join(__dirname, '..', 'data', 'virtuanalytica-catalog.json');
-      const cd = await rg.ingestCatalogDelta(lightrag, catFile, 'collibra');
-      if (!cd.offline && cd.assets) logger.info(`✓ role-graph: catalog delta — ${cd.assets} assets, ${cd.terms} terms, ${cd.lineage} lineage, ${cd.edges} edges`);
-    } catch (e: any) {
-      logger.warn(`role-graph init failed: ${e.message}`);
     }
 
     // Familie-graaf endpoints. GET /graph → 3D node-link JSON (respecteert de
