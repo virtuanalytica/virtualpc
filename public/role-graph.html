@@ -126,11 +126,11 @@
       .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
       .nodeVal(n => n.val || 2)
       .nodeOpacity(0.95)
-      // Inferred = lighter; verified/stated = stronger
-      .linkColor(l => l.inferred ? 'rgba(255,209,102,0.40)' : 'rgba(120,150,220,0.65)')
-      .linkWidth(l => l.inferred ? 0.6 : 1.2)
-      // 3d-force-graph draws a dashed line when linkLineDash returns an array
-      .linkLineDash(l => l.inferred ? [2, 2] : null)
+      // Inferred = lighter/thinner (amber); verified/stated = stronger (blue).
+      // NB: 3d-force-graph@1.73.4 has no .linkLineDash (that is a force-graph 2D
+      // method); the inferred/verified distinction is carried by colour + width.
+      .linkColor(l => l.inferred ? 'rgba(255,209,102,0.45)' : 'rgba(120,150,220,0.7)')
+      .linkWidth(l => l.inferred ? 0.5 : 1.4)
       .linkDirectionalArrowLength(3.2)
       .linkDirectionalArrowRelPos(1)
       // Link label: relation type + evidence/confidence when present

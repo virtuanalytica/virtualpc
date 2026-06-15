@@ -34,15 +34,26 @@ routes), **Kimi** (frontend). Coordination lanes: `virtualpc/va-{coordination,ba
 The live **Codex session** independently implemented the same plan (it wired routes
 in `src/index.ts`, fixed the `/roles/graph` vs `/roles/:role` ordering, imported the
 sample catalog, and restarted the server). Convergence was clean because the API
-contract was frozen first (`docs/VIRTUANALYTICA-API.md`). Open cleanups for the team:
+contract was frozen first (`docs/VIRTUANALYTICA-API.md`).
 
-1. **`src/virtuanalytica/index.ts`** has a duplicate `/roles/graph` route block
-   (harmless — first registration wins). Remove the second one.
-2. **`docs/PRODUCTS.md` P4** lists 3 role lenses (Steward/Analyst/Engineer) and a
-   different PO; the shipped MVP delivers **5 roles** (engineer, steward, scientist,
-   manager, analyst) and is no longer "(none yet)". Update P4 "Shipped" + role count.
-3. Confirm a single role-graph boot-ingest block remains in `src/index.ts` after the
-   sessions settle (verified one block at time of writing).
+- ✅ **Duplicate `/roles/graph` route** — resolved by the Codex session; only the
+  correct (before-`:role`) registration remains. Verified: 3 clean route regs.
+- ✅ **Viewer fatal bug (found in visual verification)** — `public/role-graph.html`
+  called `.linkLineDash(...)`, which does **not** exist on 3d-force-graph@1.73.4
+  (it is a force-graph 2D method). It threw at graph init, leaving the canvas blank
+  and the title/counts unpopulated (HTTP 200 hid it). Fixed: removed the call;
+  inferred-vs-verified links are distinguished by colour (amber/blue) + width.
+  Re-verified headless: title → "Data Steward", 64 nodes / 181 relations, graph
+  renders, zero console errors.
+- 🟠 **`docs/PRODUCTS.md` P4** (Codex-session-owned) lists 3 role lenses and a
+  different PO; the shipped MVP delivers **5 roles** and is no longer "(none yet)".
+  Suggested update left to that session to avoid clobbering its active edits.
+
+## Visual verification artifacts
+Headless-chromium screenshots captured during acceptance: homepage value-ladder
+staircase (all 3 tiers + live badges, 5 role tiles) and the Data Steward 3D graph
+(64n/181l, full 10-group colour legend). Both confirm the "clear from the bat
+home page" requirement and a working per-role 3D knowledge graph.
 
 ## Athena review gate
 
