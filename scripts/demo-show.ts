@@ -1,6 +1,6 @@
 import { chromium } from '@playwright/test';
 
-const DEMO_URL = process.env.DEMO_URL || 'http://localhost:3100/virtuanalytica.html';
+const DEMO_URL = process.env.DEMO_URL || 'http://localhost:3100/demo-dashboard.html';
 
 (async () => {
   console.log(`Launching headed browser for ${DEMO_URL} ...`);

@@ -46,7 +46,7 @@ GAZ = {
     "EHMAC B.V.": ("bedrijf", ["EHMAC"]),
     "SLAG B.V.": ("bedrijf", ["Slag B.V.", "SLAG B.V."]),
     "Slakkenspoor VOF": ("bedrijf", ["Slakkenspoor"]),
-    "VirtuAnalytica VOF": ("bedrijf", ["VirtuAnalytica"]),
+    "VirtualPC VOF": ("bedrijf", ["VirtualPC"]),
     "Uniforce Group B.V.": ("bedrijf", ["Uniforce"]),
     "Magnit": ("bedrijf", ["Magnit"]),
     "APG": ("bedrijf", ["APG"]),

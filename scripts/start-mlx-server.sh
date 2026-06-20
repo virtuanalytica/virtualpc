@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Start the local MLX server for the VirtuAnalytica demo.
+# Start the local MLX server for the VirtualPC demo dashboard.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 VENV="./.venv-mlx"

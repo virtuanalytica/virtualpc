@@ -120,7 +120,7 @@ const ENTITIES: Entity[] = [
   { name: 'VirtualV Holding B.V.',     cat: 'bedrijf', note: 'Holding' },
   { name: 'EHMAC B.V.',                cat: 'bedrijf' },
   { name: 'SLAG B.V.',                 cat: 'bedrijf' },
-  { name: 'VirtuAnalytica VOF',        cat: 'bedrijf', note: 'VOF' },
+  { name: 'VirtualPC VOF',             cat: 'bedrijf', note: 'VOF' },
   { name: "Zack's Holding B.V.",       cat: 'bedrijf', note: 'Holding' },
   { name: "Zack's Consultancy B.V.",   cat: 'bedrijf' },
   { name: 'Uniforce Group B.V.',       cat: 'bedrijf' },
