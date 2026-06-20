@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Familie — Kennisgraaf (3D)</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --panel: rgba(18, 24, 38, 0.92);
+      --ink: #e6edf3;
+      --muted: #8b98ad;
+      --accent: #5b8cff;
+      --hidden: #ff6b6b;
+      --ok: #41d18f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+    #graph { position: fixed; inset: 0; }
+    #hud {
+      position: fixed; top: 16px; left: 16px; z-index: 10; width: 320px; max-width: calc(100vw - 32px);
+      background: var(--panel); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 16px 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    }
+    #hud h1 { margin: 0 0 2px; font-size: 18px; letter-spacing: 0.2px; }
+    #hud .sub { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0; }
+    .stat { color: var(--muted); font-size: 12px; }
+    .stat b { color: var(--ink); font-weight: 600; }
+    button {
+      cursor: pointer; border: 0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600;
+      color: #fff; background: var(--accent); transition: transform .08s ease, filter .15s ease; width: 100%;
+    }
+    button:hover { filter: brightness(1.08); }
+    button:active { transform: translateY(1px); }
+    button.hidden-state { background: var(--hidden); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 9px; border-radius: 999px; }
+    .badge.vis { background: rgba(65,209,143,0.16); color: var(--ok); }
+    .badge.hid { background: rgba(255,107,107,0.16); color: var(--hidden); }
+    #legend { margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; display: grid;
+      grid-template-columns: 1fr 1fr; gap: 6px 10px; }
+    .leg { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; }
+    #note { margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.5; }
+    #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 20;
+      background: var(--panel); border: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; border-radius: 10px;
+      font-size: 13px; opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+    #toast.show { opacity: 1; }
+    a.api { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div id="graph"></div>
+
+  <div id="hud">
+    <h1>Familie <span style="opacity:.5;font-weight:400">— kennisgraaf</span></h1>
+    <div class="sub">Aparte, verbergbare graaf in de LightRAG/Neo4j familie</div>
+
+    <div class="row">
+      <span class="stat">Status</span>
+      <span id="visBadge" class="badge vis">● zichtbaar</span>
+    </div>
+    <div class="row"><span class="stat">Objecten</span><span class="stat"><b id="nodeCount">–</b></span></div>
+    <div class="row"><span class="stat">Relaties</span><span class="stat"><b id="linkCount">–</b></span></div>
+
+    <div class="row" style="margin-top:14px">
+      <button id="toggleBtn" onclick="toggleVisibility()">Verbergen</button>
+    </div>
+
+    <div id="legend"></div>
+    <div id="note">
+      Sleep om te draaien · scroll om te zoomen · klik een knoop om te focussen.<br/>
+      Bron: <a class="api" href="/api/family/graph" target="_blank">/api/family/graph</a>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/3d-force-graph@1.73.4/dist/3d-force-graph.min.js"></script>
+  <script>
+    // Categorie-groep → kleur (matcht family-graph.ts CATEGORIES.group)
+    const GROUP_COLORS = {
+      1: '#ff8fab', // Personen
+      2: '#5b8cff', // Bedrijven
+      3: '#ffd166', // Hardware
+      4: '#06d6a0', // Software / OS
+      5: '#9b8cff', // Diensten
+      6: '#ff9f5b', // Projecten
+      7: '#4dd2ff', // Winning
+      8: '#c0e34d', // Materialen
+      9: '#ff6b9d', // Game-engines
+      10:'#7ee787', // Studio / Tools
+      11:'#36c5f0', // Locaties
+      12:'#f5a623', // Activiteiten
+      13:'#b07cff', // Onderwerpen
+      14:'#8899aa', // Chats
+      17:'#e07a5f', // Elementen
+      18:'#81b29a', // Verbindingen
+      19:'#f2cc8f', // Fasen
+      20:'#e06c9f', // Reacties
+      21:'#6db5c4', // Processen
+      22:'#b8b8d1', // Parameters
+      0: '#cfd8e3', // root / overig
+    };
+    const GROUP_LABELS = {
+      1:'Personen', 2:'Bedrijven', 3:'Hardware', 4:'Software / OS', 5:'Diensten',
+      6:'Projecten', 7:'Winning', 8:'Materialen', 9:'Game-engines', 10:'Studio / Tools',
+    };
+
+    const elGraph = document.getElementById('graph');
+    let Graph = ForceGraph3D()(elGraph)
+      .backgroundColor('#0b0e14')
+      .nodeLabel(n => `<div style="padding:4px 8px;background:#11182b;border:1px solid #2a3550;border-radius:6px;font-size:12px">
+          <b>${n.name}</b><br/><span style="color:#8b98ad">${n.type}${n.note ? ' · ' + n.note : ''}</span></div>`)
+      .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
+      .nodeVal(n => n.val || 2)
+      .nodeOpacity(0.95)
+      .linkColor(l => l.inferred ? 'rgba(255,209,102,0.35)' : 'rgba(120,150,220,0.55)')
+      .linkWidth(l => l.inferred ? 0.6 : 1.1)
+      .linkDirectionalArrowLength(3.2)
+      .linkDirectionalArrowRelPos(1)
+      .linkLabel(l => {
+        const tag = l.verified ? (l.confidence === 'inferred' ? 'geverifieerd · afgeleid' : 'geverifieerd · gesteld')
+                  : (l.inferred ? 'naam-afleiding' : '');
+        return `<div style="padding:4px 8px;background:#11182b;border:1px solid #2a3550;border-radius:6px;font-size:12px;max-width:280px">
+            <b>${l.type}</b>${l.share ? ' <b style="color:#ffd166">' + l.share + '</b>' : ''}${tag ? ' · <span style="color:#8b98ad">' + tag + '</span>' : ''}
+            ${l.evidence ? '<br/><span style="color:#8b98ad;font-style:italic">"' + l.evidence + '"</span>' : ''}
+            ${l.review ? '<br/><span style="color:#ff9f5b">⚠ ' + l.review + '</span>' : ''}</div>`;
+      })
+      .onNodeClick(node => {
+        // Focus camera op de aangeklikte knoop
+        const dist = 80;
+        const ratio = 1 + dist / Math.hypot(node.x || 1, node.y || 1, node.z || 1);
+        Graph.cameraPosition(
+          { x: (node.x || 0) * ratio, y: (node.y || 0) * ratio, z: (node.z || 0) * ratio },
+          node, 900,
+        );
+      });
+
+    function buildLegend(groupsPresent) {
+      const box = document.getElementById('legend');
+      box.innerHTML = '';
+      Object.keys(GROUP_LABELS).forEach(g => {
+        if (!groupsPresent.has(Number(g))) return;
+        const d = document.createElement('div');
+        d.className = 'leg';
+        d.innerHTML = `<span class="dot" style="background:${GROUP_COLORS[g]}"></span>${GROUP_LABELS[g]}`;
+        box.appendChild(d);
+      });
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function applyVisibilityUI(hidden) {
+      const badge = document.getElementById('visBadge');
+      const btn = document.getElementById('toggleBtn');
+      if (hidden) {
+        badge.className = 'badge hid'; badge.textContent = '● verborgen';
+        btn.textContent = 'Tonen'; btn.classList.add('hidden-state');
+      } else {
+        badge.className = 'badge vis'; badge.textContent = '● zichtbaar';
+        btn.textContent = 'Verbergen'; btn.classList.remove('hidden-state');
+      }
+    }
+
+    async function loadGraph() {
+      try {
+        const res = await fetch('/api/family/graph');
+        const data = await res.json();
+        applyVisibilityUI(!!data.hidden);
+        document.getElementById('nodeCount').textContent = (data.nodes || []).length;
+        document.getElementById('linkCount').textContent = (data.links || []).length;
+        const groups = new Set((data.nodes || []).map(n => n.group));
+        buildLegend(groups);
+        Graph.graphData({ nodes: data.nodes || [], links: data.links || [] });
+        if (data.hidden) toast('Familie-graaf is verborgen');
+      } catch (e) {
+        toast('Kon graaf niet laden: ' + e.message);
+      }
+    }
+
+    async function toggleVisibility() {
+      try {
+        const res = await fetch('/api/family/toggle', { method: 'POST' });
+        const v = await res.json();
+        applyVisibilityUI(!!v.hidden);
+        toast(v.hidden ? 'Familie-graaf verborgen' : 'Familie-graaf zichtbaar');
+        await loadGraph();
+      } catch (e) {
+        toast('Toggle mislukt: ' + e.message);
+      }
+    }
+
+    loadGraph();
+    window.addEventListener('resize', () => Graph.width(window.innerWidth).height(window.innerHeight));
+  </script>
+</body>
+</html>

@@ -179,7 +179,7 @@
       </div>
       <div class="modal-body">
         <div>
-          <div class="section-title">Persona Prompt (drafted by Gemma 4)</div>
+          <div class="section-title">Persona Prompt (drafted by matched model)</div>
           <pre class="prompt-box" id="mPrompt">Loading…</pre>
           <div class="prompt-meta" id="mPromptMeta"></div>
         </div>
@@ -192,7 +192,7 @@
           <div class="activity-list" id="mActivity">Loading…</div>
         </div>
         <div>
-          <div class="section-title">Ask this agent (live, runs on local Gemma 4)</div>
+          <div class="section-title">Ask this agent (uses matched local model)</div>
           <form id="mAskForm" class="ask-form" autocomplete="off">
             <input id="mAskInput" type="text" placeholder="Ask a question — answered in this agent's voice…" />
             <button type="submit" id="mAskBtn">Ask</button>
@@ -345,7 +345,7 @@ askForm.addEventListener('submit', async (e) => {
   askBtn.disabled = true;
   askBtn.textContent = 'Thinking…';
   askOut.style.display = 'block';
-  askOut.textContent = `Routing to ${currentAgent} via local Gemma 4 …`;
+  askOut.textContent = `Routing to ${currentAgent} via model-router …`;
   try {
     const t0 = Date.now();
     // Use the drafted persona as the system prompt; force concept route → gemma-4-26b.
@@ -370,7 +370,24 @@ askForm.addEventListener('submit', async (e) => {
     } else if (j.success) {
       askOut.textContent = `(empty response — model ${j.model} used the full thinking budget; try a shorter question)\n\n— ${dt}s`;
     } else {
-      askOut.textContent = `Error: ${j.reason || j.error || 'unknown'}`;
+      const hint = j.hint ? `\n\n${j.hint}` : '';
+      askOut.innerHTML = `<span style="color:var(--danger)">Error: ${escapeHtml(j.reason || j.error || 'unknown')}</span>${hint ? '<br><br>' + escapeHtml(hint).replace(/\n/g, '<br>') : ''}`;
+      if (j.hint && /lms load|download/i.test(j.hint)) {
+        const loadBtn = document.createElement('button');
+        loadBtn.textContent = 'Load recommended model';
+        loadBtn.style.marginTop = '10px';
+        loadBtn.onclick = async () => {
+          loadBtn.disabled = true; loadBtn.textContent = 'Loading…';
+          try {
+            const dr = await fetch('/api/models/download-recommended', { method: 'POST' }).then(r => r.json());
+            askOut.innerHTML += `<br><br>${dr.success ? '✅ ' + escapeHtml(dr.message || 'download started') : '❌ ' + escapeHtml(dr.message || 'failed')}`;
+          } catch (e) {
+            askOut.innerHTML += '<br><br>❌ Network error: ' + escapeHtml(e.message);
+          }
+        };
+        askOut.appendChild(document.createElement('br'));
+        askOut.appendChild(loadBtn);
+      }
     }
   } catch (err) {
     askOut.textContent = 'Network error: ' + err.message;

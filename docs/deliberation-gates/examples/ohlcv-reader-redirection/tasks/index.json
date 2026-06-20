@@ -1,0 +1,132 @@
+{
+  "version": "1",
+  "slug": "ohlcv-reader-redirection",
+  "deliberation_refs": [
+    "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+  ],
+  "tasks": [
+    {
+      "id": "T-001",
+      "title": "Create canonical ohlcv table",
+      "file": "T-001.md",
+      "implementation_agent": "codex",
+      "parallel_group": null,
+      "depends_on": [],
+      "owned_files": [
+        "src/db/migrations/20260614_create_canonical_ohlcv.sql",
+        "src/db/schema.ts"
+      ],
+      "risk_flags": [
+        "schema_migration"
+      ],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "Backfill canonical ohlcv table",
+      "file": "T-002.md",
+      "implementation_agent": "codex",
+      "parallel_group": null,
+      "depends_on": [
+        "T-001"
+      ],
+      "owned_files": [
+        "src/db/backfill/ohlcv_backfill.ts",
+        "tests/db/ohlcv_backfill.test.ts"
+      ],
+      "risk_flags": [
+        "schema_migration"
+      ],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Create compatibility view for old readers",
+      "file": "T-003.md",
+      "implementation_agent": "codex",
+      "parallel_group": null,
+      "depends_on": [
+        "T-001"
+      ],
+      "owned_files": [
+        "src/db/migrations/20260614_ohlcv_compat_view.sql",
+        "src/db/schema.ts"
+      ],
+      "risk_flags": [
+        "reader_redirection"
+      ],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Update ingestion writer to canonical table",
+      "file": "T-004.md",
+      "implementation_agent": "codex",
+      "parallel_group": null,
+      "depends_on": [
+        "T-002"
+      ],
+      "owned_files": [
+        "src/ingestion/ohlcv_writer.ts",
+        "tests/ingestion/ohlcv_writer.test.ts"
+      ],
+      "risk_flags": [
+        "schema_migration"
+      ],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "Redirect L3 readers after validation",
+      "file": "T-005.md",
+      "implementation_agent": "claude",
+      "parallel_group": null,
+      "depends_on": [
+        "T-003",
+        "T-004"
+      ],
+      "owned_files": [
+        "src/readers/l3_ohlcv_reader.ts",
+        "docs/adr/015-ohlcv-reader-redirection.md"
+      ],
+      "risk_flags": [
+        "reader_redirection",
+        "risk_regime"
+      ],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    },
+    {
+      "id": "T-006",
+      "title": "Integration verification",
+      "file": "T-006.md",
+      "implementation_agent": "codex",
+      "parallel_group": null,
+      "depends_on": [
+        "T-005"
+      ],
+      "owned_files": [
+        "tests/integration/ohlcv_migration.test.ts"
+      ],
+      "risk_flags": [],
+      "gate_status": "deliberation_approved",
+      "deliberation_refs": [
+        "../preflight/2026-06-14-ohlcv-reader-redirection.md"
+      ]
+    }
+  ]
+}

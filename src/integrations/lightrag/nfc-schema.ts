@@ -171,7 +171,7 @@ export const NFC_INDEXES: Record<string, string> = {
   nfcRegistryByName:
     `CREATE INDEX IF NOT EXISTS FOR (r:NFCRegistry) ON (r.series_name)`,
   nfcFullText:
-    `CREATE FULLTEXT INDEX IF NOT EXISTS nfc_search FOR (n:NFCToken|NFCRegistry|CommodityMarket) ON EACH [n.content]`,
+    `CREATE FULLTEXT INDEX nfc_search IF NOT EXISTS FOR (n:NFCToken|NFCRegistry|CommodityMarket) ON EACH [n.content]`,
 };
 
 // ──────────────────────────────────────────────────────────────────────────────

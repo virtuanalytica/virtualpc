@@ -1,0 +1,59 @@
+{
+  "gate": "deliberation-preflight",
+  "slug": "ohlcv-reader-redirection",
+  "verdict": "approve_for_task_graph",
+  "summary": "The ohlcv canonical-table migration is feasible but must be split into explicit, validated phases. The biggest risk is redirecting L3 readers before the canonical table is validated and a compatibility view exists. Reader redirection and live-trading timing require Claude/human oversight.",
+  "consensus_findings": [
+    "The migration needs a compatibility view to keep old readers working during cutover.",
+    "Reader redirection must happen after canonical-table validation and writer cutover.",
+    "ML feature references need to be enumerated before the compatibility view is removed."
+  ],
+  "contradictions_between_reviewers": [],
+  "blind_spots": [
+    "Downstream aggregation jobs outside the current repo.",
+    "Real-time consumers that cache ohlcv aggregates.",
+    "Backfill idempotency and retry semantics."
+  ],
+  "blockers": [],
+  "major_risks": [
+    "L3 reader redirection before canonical table validation (RISK-002).",
+    "Missing backwards-compatible reader strategy (RISK-003).",
+    "Live-trading regime feature timing risk (RISK-005).",
+    "Reader redirection too ambiguous for Codex alone (RISK-007)."
+  ],
+  "task_graph_constraints": [
+    "T-001 Create canonical ohlcv table must complete before backfill.",
+    "T-002 Backfill canonical table must be idempotent and verified with row-count parity.",
+    "T-003 Compatibility view must exist before any reader redirection task.",
+    "T-004 Writer cutover to canonical table must complete before reader redirection.",
+    "T-005 Redirect L3 readers must depend on validation of canonical table and compatibility view.",
+    "T-005 must be implementation_agent claude or human.",
+    "T-006 Integration verification must run after all other tasks."
+  ],
+  "required_integration_tasks": [
+    "Row-count parity between old table, canonical table, and compatibility view.",
+    "Reader query result parity test.",
+    "Regime feature output parity before/after redirection."
+  ],
+  "required_verification_gates": [
+    "Schema diff test and SELECT parity test.",
+    "Feature pipeline dry-run against new schema.",
+    "IAM role definition test for backfill job."
+  ],
+  "route_to_claude": [
+    "Reader redirection orchestration and cross-file reader impact analysis (T-005)."
+  ],
+  "route_to_human": [
+    "Live-trading timing decision for reader redirection."
+  ],
+  "safe_for_codex_scopes": [
+    "DDL for canonical table (T-001).",
+    "Idempotent backfill script (T-002).",
+    "Compatibility view DDL (T-003).",
+    "Writer cutover in ingestion service (T-004).",
+    "Integration tests (T-006)."
+  ],
+  "must_not_dispatch_to_codex": [
+    "Reader redirection orchestration without human/Claude review."
+  ]
+}

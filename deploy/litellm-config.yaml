@@ -85,6 +85,14 @@ model_list:
     litellm_params:
       model: openai/gpt-4o-mini
       api_key: os.environ/OPENAI_API_KEY
+  # GPT-5.5 (premium, tier-3). Engages the moment OPENAI_API_KEY is set. Note: a
+  # chatgpt.com *subscription* does NOT provide this key — it needs a separate
+  # platform.openai.com API key with its own usage billing. Confirm the exact
+  # model id against `curl https://api.openai.com/v1/models` before relying on it.
+  - model_name: gpt-5.5
+    litellm_params:
+      model: openai/gpt-5.5
+      api_key: os.environ/OPENAI_API_KEY
   - model_name: grok
     litellm_params:
       model: xai/grok-2-latest

@@ -1,0 +1,8 @@
+ticker,company,period,revenue,netIncome,eps,peRatio,marketCap,source,publicationDate
+AAPL,Apple Inc.,FY2024,391035,93736,6.16,32.5,3000000,Apple Investor Relations,2024-11-01
+MSFT,Microsoft Corp.,FY2024,245122,88136,11.80,35.2,3100000,Microsoft SEC Filing,2024-07-30
+GOOGL,Alphabet Inc.,FY2024,350018,100690,8.04,24.8,2200000,Alphabet Investor Relations,2025-02-05
+AMZN,Amazon.com Inc.,FY2024,637959,59248,5.53,48.1,2300000,Amazon SEC Filing,2025-02-06
+TSLA,Tesla Inc.,FY2024,97690,71530,3.52,62.3,800000,Tesla Investor Relations,2025-01-29
+NVDA,NVIDIA Corp.,FY2025,113270,72880,2.94,55.6,3300000,NVIDIA SEC Filing,2025-02-26
+META,Meta Platforms Inc.,FY2024,164203,62360,24.50,25.4,1500000,Meta Investor Relations,2025-01-29

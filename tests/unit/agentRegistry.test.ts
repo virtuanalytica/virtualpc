@@ -58,9 +58,11 @@ describe('agent-registry', () => {
     expect(Object.keys(ROLE_MAP).sort()).toEqual([...AGENT_NAMES].sort());
   });
 
-  it('exactly one agent runs on the Opus reviewer tier (Athena)', () => {
-    const opusOnly = AGENT_META.filter(a => a.models.length === 1 && a.models[0] === 'claude-opus');
-    expect(opusOnly.map(a => a.name)).toEqual(['Athena']);
+  it('exactly one agent is the GPT-5.5 (Codex) reviewer (Athena)', () => {
+    // As of 2026-06-04 the PhD reviewer runs on GPT-5.5 via Codex (was Opus 4.8).
+    const reviewerModel = AGENT_META.filter(a => a.models.length === 1 && a.models[0] === 'gpt-5.5');
+    expect(reviewerModel.map(a => a.name)).toEqual(['Athena']);
+    expect(getAgent('Athena')?.kind).toBe('reviewer');
   });
 
   it('tool ACLs (when present) are non-empty strings', () => {

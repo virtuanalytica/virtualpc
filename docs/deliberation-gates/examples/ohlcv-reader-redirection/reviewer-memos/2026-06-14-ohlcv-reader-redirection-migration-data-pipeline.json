@@ -1,0 +1,38 @@
+{
+  "reviewer": "migration-data-pipeline",
+  "verdict": "revise",
+  "risk_items": [
+    {
+      "id": "RISK-002",
+      "severity": "blocker",
+      "category": "reader_redirection",
+      "finding": "L3 readers would be redirected before the canonical table is validated and a compatibility view is in place.",
+      "evidence": "Task ordering lists reader redirection immediately after table creation, before backfill and compatibility view.",
+      "why_it_matters": "Redirecting readers to an unvalidated table breaks downstream dashboards and could corrupt published features.",
+      "recommended_constraint": "Block L3 reader redirection until (a) backfill is verified, (b) compatibility view exists, and (c) writer writes to canonical table.",
+      "required_verification": "Reader compatibility test against the view, plus row-count parity.",
+      "route_impact": "human_required"
+    },
+    {
+      "id": "RISK-003",
+      "severity": "major",
+      "category": "migration",
+      "finding": "No backwards-compatible reader strategy is defined for the old schema.",
+      "evidence": "No compatibility view or dual-write period is mentioned.",
+      "why_it_matters": "Downstream readers cannot be atomically cut over without downtime or wrong data.",
+      "recommended_constraint": "Introduce a compatibility view that mirrors the old schema while the canonical table becomes the source of truth.",
+      "required_verification": "Schema diff test and SELECT parity test.",
+      "route_impact": "claude_preferred"
+    }
+  ],
+  "blind_spots": ["Backfill idempotency and failure retry behavior."],
+  "questions": ["What is the rollback window if reader redirection fails?"],
+  "recommended_task_graph_constraints": [
+    "Compatibility view must exist before any reader redirection task.",
+    "Backfill task must be idempotent and verifiable."
+  ],
+  "recommended_verification_gates": [
+    "Row-count parity between old table, canonical table, and compatibility view.",
+    "Reader query result parity test."
+  ]
+}

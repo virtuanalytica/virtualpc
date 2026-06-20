@@ -1,0 +1,25 @@
+{
+  "reviewer": "trading-risk-regime",
+  "verdict": "revise",
+  "risk_items": [
+    {
+      "id": "RISK-005",
+      "severity": "major",
+      "category": "risk_regime",
+      "finding": "Reader redirection during market hours could alter regime feature values used by live strategies.",
+      "evidence": "Proposal does not specify a maintenance window or feature freeze.",
+      "why_it_matters": "A timing mismatch between writer cutover and reader redirection can produce inconsistent regime signals.",
+      "recommended_constraint": "Schedule reader redirection outside trading hours or under a feature freeze with explicit validation.",
+      "required_verification": "Regime feature parity check before and after redirection.",
+      "route_impact": "human_required"
+    }
+  ],
+  "blind_spots": ["Real-time consumers that cache ohlcv aggregates."],
+  "questions": ["Which strategies consume ohlcv-derived regime features?"],
+  "recommended_task_graph_constraints": [
+    "Live-trading risk tasks must be human-approved before dispatch."
+  ],
+  "recommended_verification_gates": [
+    "Regime feature output parity before/after redirection."
+  ]
+}

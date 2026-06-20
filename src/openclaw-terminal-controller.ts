@@ -15,6 +15,7 @@
 
 import { exec, execSync } from 'child_process';
 import * as os from 'os';
+import { containmentGuard, ContainmentError } from './containment';
 // Note: Keyboard and mouse automation handled via system commands (xdotool, powershell)
 
 interface TerminalConfig {
@@ -398,6 +399,21 @@ export class OpenClawTerminalController {
    * Execute command in specific terminal
    */
   public async executeInTerminal(terminalId: string, command: string): Promise<string> {
+    // ── ContainmentGuard MEGA chokepoint ──────────────────────────────────
+    // Every command an agent runs through a terminal is evaluated against
+    // policy BEFORE execution. In enforce mode a denied command throws and is
+    // never run; in monitor mode the breach is logged and execution proceeds.
+    const agent = terminalId === 'primary' ? 'VirtualPC' : 'GameDev';
+    try {
+      containmentGuard.assertAllowed({ kind: 'command', agent, command });
+    } catch (e) {
+      if (e instanceof ContainmentError) {
+        console.error(`⛔ ContainmentGuard blocked command in ${terminalId}: ${e.message}`);
+        return '';
+      }
+      throw e;
+    }
+
     try {
       // Build tmux/screen command
       const platform = os.platform();

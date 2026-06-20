@@ -1,0 +1,25 @@
+{
+  "reviewer": "tooling-model-selection",
+  "verdict": "revise",
+  "risk_items": [
+    {
+      "id": "RISK-007",
+      "severity": "major",
+      "category": "tooling",
+      "finding": "Reader redirection and cross-file reader impact analysis is too ambiguous for Codex alone.",
+      "evidence": "Multiple downstream readers across different modules and languages are affected; the exact cutover sequence requires exploratory reasoning.",
+      "why_it_matters": "Codex is best for bounded implementation tasks with deterministic verification. The redirection orchestration needs broader reasoning.",
+      "recommended_constraint": "Route reader-redirection orchestration to Claude or human; keep Codex for bounded DDL/DML and test files.",
+      "required_verification": "Manual review of the redirection plan before execution.",
+      "route_impact": "claude_preferred"
+    }
+  ],
+  "blind_spots": ["Whether any readers are outside the current repo."],
+  "questions": ["Is there a central registry of ohlcv consumers?"],
+  "recommended_task_graph_constraints": [
+    "Reader redirection tasks must be marked implementation_agent: claude or human."
+  ],
+  "recommended_verification_gates": [
+    "Code-owner sign-off on reader redirection."
+  ]
+}

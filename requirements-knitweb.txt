@@ -1,0 +1,6 @@
+# knitweb Python package — standard library only; no third-party deps.
+# For the REST API layer (optional, future):
+#   fastapi>=0.111
+#   uvicorn[standard]>=0.29
+# For tests:
+pytest>=8.0

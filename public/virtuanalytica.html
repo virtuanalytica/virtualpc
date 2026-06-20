@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <title>VirtuAnalytica — VirtualPC Demo</title>
+  <style>
+    :root {
+      --bg: #0b0f19; --bg-2: #111827; --card: #1f2937; --card-hover: #273549;
+      --text: #e5e7eb; --muted: #9ca3af; --border: #374151;
+      --primary: #60a5fa; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+    .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--bg-2); border-right: 1px solid var(--border); padding: 16px;
+      overflow-y: auto; position: sticky; top: 0; height: 100vh;
+    }
+    .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 1.6rem; }
+    .sidebar-title { font-weight: 700; font-size: 1.05rem; }
+    .sidebar-subtitle { color: var(--muted); font-size: 0.7rem; margin-top: 2px; }
+    .nav-section { margin-bottom: 20px; }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 4px;
+      border-radius: 6px; cursor: pointer; color: var(--muted); border-left: 3px solid transparent;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: rgba(96,165,250,0.1); color: var(--primary); }
+    .nav-item.active { background: rgba(96,165,250,0.15); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+    .nav-icon { font-size: 1.1rem; min-width: 22px; text-align: center; }
+    .main-content { min-width: 0; }
+    .topbar {
+      padding: 14px 24px; background: linear-gradient(90deg, #111827, #0b0f19); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar h1 { margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 10px; }
+    .subtitle { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
+    .status { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .badge { padding: 5px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-size: 0.8rem; }
+    .badge.ok { border-color: var(--success); color: var(--success); }
+    .badge.warn { border-color: var(--warning); color: var(--warning); }
+    .badge.danger { border-color: var(--danger); color: var(--danger); }
+    main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; }
+    .card h2 { margin: 0 0 12px; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .card h3 { margin: 0 0 8px; font-size: 0.95rem; }
+    .muted { color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; table-layout: fixed; }
+    th, td { text-align: left; padding: 7px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: break-word; word-wrap: break-word; }
+    #backlog-table td:first-child { max-width: 260px; }
+    th { color: var(--muted); font-weight: 500; }
+    tr:hover td { background: var(--card-hover); }
+    .progress { background: #374151; border-radius: 4px; height: 6px; overflow: hidden; }
+    .progress > div { background: var(--primary); height: 100%; }
+    .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; background: rgba(96,165,250,0.15); color: var(--primary); font-size: 0.75rem; }
+    .pill.success { background: rgba(34,197,94,0.15); color: var(--success); }
+    .pill.warn { background: rgba(245,158,11,0.15); color: var(--warning); }
+    .pill.danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+    button { background: var(--primary); color: #0b0f19; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    button:disabled { opacity: 0.5; }
+    input[type="text"] { background: var(--bg-2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; }
+    .row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .summary-box { white-space: pre-wrap; background: var(--bg-2); padding: 12px; border-radius: 8px; border: 1px solid var(--border); min-height: 80px; font-size: 0.9rem; }
+    .steps { line-height: 1.7; font-size: 0.9rem; }
+    .small { font-size: 0.75rem; }
+    .agents { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .agent { background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .agent:hover { background: var(--card-hover); border-color: var(--primary); }
+    .agent .emoji { font-size: 1.4rem; }
+    .agent .name { font-weight: 600; font-size: 0.85rem; margin-top: 4px; }
+    .agent .role { font-size: 0.7rem; color: var(--muted); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+    .form-grid input, .form-grid select, .form-grid textarea { width: 100%; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; }
+    .form-grid textarea { resize: vertical; min-height: 60px; }
+    .menu-toggle {
+      display: none; position: fixed; top: 12px; left: 12px; z-index: 1000;
+      background: var(--primary); color: #0b0f19; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 700;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; z-index: 999; transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: block; }
+      .topbar { padding-left: 50px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">🧠</div>
+        <div>
+          <div class="sidebar-title">VirtuAnalytica</div>
+          <div class="sidebar-subtitle">VirtualPC demo</div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Demo</div>
+        <div class="nav-item active" data-target="page-summary"><div class="nav-icon">🤖</div><div>LLM Summary</div></div>
+        <div class="nav-item" data-target="page-activity"><div class="nav-icon">🌍</div><div>Live activity</div></div>
+        <div class="nav-item" data-target="page-backlog"><div class="nav-icon">📋</div><div>Backlog</div></div>
+        <div class="nav-item" data-target="page-add-backlog"><div class="nav-icon">➕</div><div>Add backlog</div></div>
+        <div class="nav-item" data-target="page-agents"><div class="nav-icon">👥</div><div>Agents</div></div>
+        <div class="nav-item" data-target="page-interaction"><div class="nav-icon">🎙️</div><div>Interact</div></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Data</div>
+        <div class="nav-item" data-target="page-fundamentals"><div class="nav-icon">📈</div><div>Fundamentals</div></div>
+        <div class="nav-item" data-target="page-news"><div class="nav-icon">📰</div><div>News & Filings</div></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Network</div>
+        <div class="nav-item" data-target="page-p2p"><div class="nav-icon">🕸️</div><div>Knitweb P2P</div></div>
+        <div class="nav-item" data-target="page-network"><div class="nav-icon">🌐</div><div>Port-forward</div></div>
+        <div class="nav-item" data-target="page-router"><div class="nav-icon">🧠</div><div>Model router</div></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Apps</div>
+        <div class="nav-item" onclick="window.open('/dashboard.html','_blank')"><div class="nav-icon">📊</div><div>VirtualPC Dashboard</div></div>
+        <div class="nav-item" onclick="window.open('/agents.html','_blank')"><div class="nav-icon">📟</div><div>Agents Terminal</div></div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <h1>🧠 VirtuAnalytica</h1>
+          <div class="subtitle">small local LLMs · VirtualPC backlog · fundamentals · knitweb P2P</div>
+        </div>
+        <div class="status">
+          <span class="badge" id="model-badge">Model: …</span>
+          <span class="badge" id="node-badge">Node: …</span>
+          <span class="badge" id="agents-badge">Agents: …</span>
+          <span class="badge" id="backlog-badge">Backlog: …</span>
+        </div>
+      </div>
+
+      <main>
+        <section class="content-section active" id="page-summary">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🤖 Local LLM Summary</h2>
+              <div class="row">
+                <input type="text" id="summary-ticker" value="AAPL" placeholder="Ticker" style="width:120px;text-transform:uppercase;">
+                <button id="summary-btn">Summarize fundamentals</button>
+                <span class="muted small" style="align-self:center;">Runs on the loaded 278 MB Qwen2.5 model</span>
+              </div>
+              <div class="summary-box" id="summary-box">Pick a ticker and click to generate a local-LLM summary.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-activity">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🌍 Global Live Activity Feed</h2>
+              <pre id="global-log" class="summary-box" style="max-height:70vh; overflow:auto; font-size:0.78rem;">Loading…</pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-backlog">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>📋 VirtualPC Backlog</h2>
+              <div id="backlog-table">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-add-backlog">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>➕ Add to VirtualPC Backlog</h2>
+              <p class="muted small">Create a new backlog item and assign it to an agent. Extra fields are optional.</p>
+              <div class="form-grid" style="margin: 12px 0;">
+                <input type="text" id="bl-title" placeholder="Title *">
+                <select id="bl-assignee"></select>
+                <select id="bl-priority">
+                  <option value="low">low</option>
+                  <option value="medium" selected>medium</option>
+                  <option value="high">high</option>
+                  <option value="critical">critical</option>
+                </select>
+                <input type="number" id="bl-hours" placeholder="Estimated hours" min="0" step="0.5">
+                <input type="text" id="bl-sprint" placeholder="Sprint (optional)">
+                <textarea id="bl-description" placeholder="Description *"></textarea>
+                <input type="text" id="bl-subtasks" placeholder="Subtasks, comma separated (optional)">
+              </div>
+              <button id="add-backlog-btn">Create backlog item</button>
+              <div id="bl-result" class="muted small" style="margin-top:8px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-agents">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>👥 Agents Overview</h2>
+              <div id="agents-grid">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-fundamentals">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>📈 Fundamentals</h2>
+              <div id="fundamentals-table">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-news">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>📰 News & Filings</h2>
+              <h3>News</h3>
+              <div id="news-table">Loading…</div>
+              <h3 style="margin-top:14px;">Filings</h3>
+              <div id="filings-table">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-p2p">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🕸️ Knitweb P2P</h2>
+              <p><strong>This node:</strong> <span id="node-url" class="muted">…</span></p>
+              <div class="row">
+                <input type="text" id="peer-url" placeholder="http://peer-ip:3100" style="flex:1;">
+                <button id="add-peer-btn">Add peer</button>
+              </div>
+              <div id="peers-table">Loading…</div>
+              <h3 style="margin-top:14px;">Silk nodes</h3>
+              <div id="silk-table">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-network">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🌐 Port-Forward Instructions</h2>
+              <div class="steps" id="network-steps">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-router">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🧠 Model Router Status</h2>
+              <div id="router-status">Loading…</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section" id="page-interaction">
+          <div class="grid">
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2>🎙️ Agent Live Interaction</h2>
+              <p class="muted small">Watch what agents are doing right now, then talk to one directly. Their answers are generated by the local model and can indirectly create or update backlog items.</p>
+              <div class="row" style="margin-top:10px;">
+                <select id="agent-select" style="background:var(--bg-2); color:var(--text); border:1px solid var(--border); padding:8px 12px; border-radius:6px;"></select>
+                <button id="load-agent-btn">Load activity</button>
+              </div>
+
+              <div class="grid" style="margin-top:14px; grid-template-columns: 1fr 1fr;">
+                <div>
+                  <h3>Recent CLI log</h3>
+                  <pre id="agent-log" class="summary-box" style="max-height:260px; overflow:auto; font-size:0.78rem;">Select an agent and click Load activity.</pre>
+                </div>
+                <div>
+                  <h3>In-progress tasks</h3>
+                  <div id="agent-tasks">Select an agent and click Load activity.</div>
+                </div>
+              </div>
+
+              <div style="margin-top:16px;">
+                <h3>Ask the selected agent</h3>
+                <div class="row">
+                  <input type="text" id="agent-question" placeholder="What should we build next?" style="flex:1;">
+                  <button id="ask-agent-btn">Ask agent</button>
+                </div>
+                <div class="summary-box" id="agent-answer" style="margin-top:10px;">The agent's reply will appear here.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const fmtDate = s => s ? new Date(s).toLocaleDateString() : '';
+    function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    async function api(path, opts) {
+      try { const r = await fetch(path, opts); return await r.json(); }
+      catch { return { success: false, error: 'network' }; }
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      const target = $(pageId);
+      if (target) target.classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function setActiveNav(item) {
+      document.querySelectorAll('.nav-item[data-target]').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      document.querySelector('.sidebar').classList.remove('open');
+      showPage(item.getAttribute('data-target'));
+    }
+
+    document.querySelectorAll('.nav-item[data-target]').forEach(item => {
+      item.addEventListener('click', () => setActiveNav(item));
+    });
+
+    async function loadModelStatus() {
+      const h = await api('/api/llm/health');
+      const badge = $('model-badge');
+      if (h.success && h.modelsLoaded > 0) { badge.textContent = `Model: ${h.models[0]}`; badge.classList.add('ok'); }
+      else { badge.textContent = 'Model: unavailable'; badge.classList.add('warn'); }
+      const r = await api('/api/health/models');
+      $('router-status').innerHTML = r.success
+        ? `<p><strong>Weight class:</strong> ${r.weightClass}</p>
+           <p><strong>Free RAM:</strong> ${(r.resources?.freeRAMGB||0).toFixed(1)} GB</p>
+           <p><strong>Free disk:</strong> ${(r.resources?.freeDiskGB||0).toFixed(1)} GB</p>
+           <p><strong>Recommended:</strong> ${r.recommendedDownloads?.map(m=>m.name).join(', ')||'none'}</p>`
+        : '<p class="muted">Could not load router status.</p>';
+    }
+
+    async function loadAgents() {
+      const j = await api('/api/agents/overview');
+      const badge = $('agents-badge');
+      if (j.success) {
+        badge.textContent = `Agents: ${j.agents?.length || 0}`;
+        badge.classList.add('ok');
+        $('agents-grid').innerHTML = j.agents?.map(a => `<div class="agent" onclick="selectAgent('${escapeHtml(a.name)}')" title="Click to see ${escapeHtml(a.name)} live detail">
+          <div class="emoji">${a.avatar}</div>
+          <div class="name">${a.name}</div>
+          <div class="role">${a.role}</div>
+          <div class="small muted" style="margin-top:4px;">${a.tasksCompleted||0} done · ${a.tasksInProgress||0} active</div>
+        </div>`).join('') || '<p class="muted">No agents.</p>';
+      } else {
+        $('agents-grid').innerHTML = '<p class="muted">Could not load agents.</p>';
+      }
+    }
+
+    async function loadBacklog() {
+      const j = await api('/api/backlog/per-person');
+      const badge = $('backlog-badge');
+      let rows = [];
+      if (j && typeof j === 'object' && !j.error) {
+        for (const person of Object.keys(j)) {
+          const entry = j[person];
+          if (entry && Array.isArray(entry.tasks)) {
+            for (const item of entry.tasks) {
+              item.assigned_to = item.assigned_to || person;
+              rows.push(item);
+            }
+          }
+        }
+      }
+      badge.textContent = `Backlog: ${rows.length}`;
+      badge.classList.add('ok');
+      $('backlog-table').innerHTML = rows.length ? `<table><thead><tr>
+        <th>Title</th><th>Assignee</th><th>Priority</th><th>Status</th><th>Sprint</th><th>Progress</th>
+      </tr></thead><tbody>` + rows.slice(0, 30).map(b => `<tr>
+        <td>${b.title}</td><td>${b.assigned_to}</td><td><span class="pill ${b.priority==='critical'?'danger':b.priority==='high'?'warn':'success'}">${b.priority}</span></td>
+        <td>${b.status}</td><td>${b.sprint||'-'}</td>
+        <td><div class="progress"><div style="width:${b.progress||0}%"></div></div><span class="small muted">${b.progress||0}%</span></td>
+      </tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">No backlog items.</p>';
+    }
+
+    async function loadFundamentals() {
+      const j = await api('/api/fundamentals');
+      $('fundamentals-table').innerHTML = j.success ? `<table><thead><tr>
+        <th>Ticker</th><th>Company</th><th>Period</th><th>Revenue $M</th><th>Net Inc $M</th><th>EPS</th><th>P/E</th><th>Source</th><th>Published</th>
+      </tr></thead><tbody>` + j.data.map(f => `<tr>
+        <td><strong>${f.ticker}</strong></td><td>${f.company}</td><td>${f.period}</td><td>${f.revenue.toLocaleString()}</td>
+        <td>${f.netIncome.toLocaleString()}</td><td>${f.eps}</td><td>${f.peRatio}</td>
+        <td>${f.source}</td><td>${fmtDate(f.publicationDate)}</td>
+      </tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">Could not load fundamentals.</p>';
+    }
+
+    async function loadNewsFilings() {
+      const news = await api('/api/fundamentals/news');
+      $('news-table').innerHTML = news.success && news.data.length ? `<table><thead><tr><th>Date</th><th>Ticker</th><th>Headline</th><th>Source</th></tr></thead><tbody>` +
+        news.data.map(n => `<tr><td>${fmtDate(n.publicationDate)}</td><td>${n.ticker}</td><td>${n.headline}</td><td>${n.source}</td></tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">No news.</p>';
+      const filings = await api('/api/fundamentals/filings');
+      $('filings-table').innerHTML = filings.success && filings.data.length ? `<table><thead><tr><th>Filing Date</th><th>Ticker</th><th>Form</th><th>Description</th><th>Source</th></tr></thead><tbody>` +
+        filings.data.map(f => `<tr><td>${fmtDate(f.filingDate)}</td><td>${f.ticker}</td><td>${f.formType}</td><td>${f.description}</td><td>${f.source}</td></tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">No filings.</p>';
+    }
+
+    async function loadP2P() {
+      const net = await api('/api/demo/network-info');
+      if (net.success) {
+        $('node-url').textContent = net.localUrl;
+        $('node-badge').textContent = 'Node: ' + net.localUrl;
+        $('network-steps').innerHTML = `<ol>` + net.routerSteps.map(s => `<li>${s}</li>`).join('') + `</ol>
+          <p class="small muted">Local URL: <code>${net.localUrl}</code></p>`;
+      }
+      const peers = await api('/api/swarm/peers');
+      $('peers-table').innerHTML = peers.success && peers.peers?.length ? `<table><thead><tr><th>URL</th><th>Score</th><th>Push</th><th>Pull</th><th>Choked</th></tr></thead><tbody>` +
+        peers.peers.map(p => `<tr><td>${p.url}</td><td>${p.score}</td><td>${p.pushOk}</td><td>${p.pullOk}</td><td>${p.choked}</td></tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">No peers configured.</p>';
+      const silk = await api('/api/silk/nodes');
+      $('silk-table').innerHTML = (silk.nodes || silk.data?.nodes)?.length ? `<table><thead><tr><th>URL</th><th>Label</th><th>Last Seen</th><th>Bridge</th></tr></thead><tbody>` +
+        (silk.nodes || silk.data?.nodes).map(n => `<tr><td>${n.url}</td><td>${n.label}</td><td>${new Date(n.lastSeenAt).toLocaleString()}</td><td>${n.bridgesKnitweb?'yes':'no'}</td></tr>`).join('') + '</tbody></table>'
+        : '<p class="muted">No silk nodes.</p>';
+    }
+
+    let agentList = [];
+    async function populateAgentSelect() {
+      const j = await api('/api/agents/overview');
+      if (!j.success) return;
+      agentList = j.agents || [];
+      const select = $('agent-select');
+      select.innerHTML = agentList.map(a => `<option value="${a.name}">${a.avatar} ${a.name} — ${a.role}</option>`).join('');
+      if (agentList.length) { select.value = agentList[0].name; await loadAgentActivity(); }
+      populateBacklogAssignee();
+    }
+
+    function populateBacklogAssignee() {
+      const sel = $('bl-assignee');
+      sel.innerHTML = agentList.map(a => `<option value="${a.name}">${a.avatar} ${a.name}</option>`).join('');
+      if (agentList.length) sel.value = agentList[0].name;
+    }
+
+    async function loadAgentActivity() {
+      const name = $('agent-select').value;
+      if (!name) return;
+      $('agent-log').textContent = 'Loading…';
+      $('agent-tasks').innerHTML = 'Loading…';
+      const [log, detail] = await Promise.all([
+        api(`/api/agents/${encodeURIComponent(name)}/cli-log?limit=20`),
+        api(`/api/agents/${encodeURIComponent(name)}/in-progress-detail`),
+      ]);
+      if (log.success && log.lines) {
+        $('agent-log').innerHTML = log.lines.map(l =>
+          `<div style="margin-bottom:4px; color:${l.level==='ok'?'var(--success)':l.level==='err'?'var(--danger)':l.level==='cmd'?'var(--primary)':'var(--muted)'}">[${new Date(l.ts).toLocaleTimeString()}] ${l.agent ? l.agent + ': ' : ''}${escapeHtml(l.line)}</div>`
+        ).join('');
+      } else {
+        $('agent-log').textContent = 'No recent activity.';
+      }
+      if (detail.success && detail.tasks) {
+        $('agent-tasks').innerHTML = detail.tasks.length ? `<table><thead><tr><th>Task</th><th>Priority</th><th>Progress</th><th>Started</th><th>Current subtask</th></tr></thead><tbody>` +
+          detail.tasks.map(t => `<tr><td>${escapeHtml(t.title)}</td><td><span class="pill ${(t.priority==='critical'?'danger':t.priority==='high'?'warn':'success')}">${escapeHtml(t.priority||'-')}</span></td><td><div class="progress"><div style="width:${t.progress||0}%"></div></div> <span class="small muted">${t.progress||0}%</span></td><td>${t.started_at ? new Date(t.started_at).toLocaleString() : '-'}</td><td class="small muted">${escapeHtml(t.currentSubtask||'-')}</td></tr>`).join('') + '</tbody></table>'
+          : '<p class="muted">No in-progress tasks.</p>';
+      } else {
+        $('agent-tasks').innerHTML = '<p class="muted">Could not load tasks.</p>';
+      }
+    }
+
+    async function selectAgent(name) {
+      const select = $('agent-select');
+      if (select.querySelector(`option[value="${escapeHtml(name)}"]`)) {
+        select.value = name;
+        await loadAgentActivity();
+        const nav = document.querySelector(`.nav-item[data-target="page-interaction"]`);
+        if (nav) setActiveNav(nav);
+      }
+    }
+
+    async function loadGlobalActivity() {
+      const j = await api('/api/agents/cli-log/all?limit=30');
+      if (j.success && (j.lines || j.events)) {
+        const lines = j.lines || j.events;
+        $('global-log').innerHTML = lines.map(e =>
+          `<div style="margin-bottom:4px; color:${e.level==='ok'?'var(--success)':e.level==='err'?'var(--danger)':e.level==='cmd'?'var(--primary)':'var(--muted)'}">[${new Date(e.ts).toLocaleTimeString()}] <strong>${e.agent}</strong>: ${escapeHtml(e.line)}</div>`
+        ).join('');
+      } else {
+        $('global-log').textContent = 'No global activity yet.';
+      }
+    }
+
+    $('load-agent-btn').addEventListener('click', loadAgentActivity);
+    async function askAgent() {
+      const name = $('agent-select').value;
+      const q = $('agent-question').value.trim();
+      if (!name || !q) return;
+      $('agent-answer').textContent = `${name} is thinking… (local LLM, ~30 s)`;
+      $('ask-agent-btn').disabled = true;
+      const j = await api('/api/llm/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent: name, message: q, taskType: 'concept', max_tokens: 400 }),
+      });
+      $('ask-agent-btn').disabled = false;
+      if (j.success) {
+        $('agent-answer').textContent = j.content + `\n\n— ${j.model} · ${(j.latencyMs/1000).toFixed(1)}s`;
+      } else {
+        $('agent-answer').textContent = 'Error: ' + (j.reason || j.error || 'unknown');
+      }
+    }
+    $('ask-agent-btn').addEventListener('click', askAgent);
+    $('agent-question').addEventListener('keydown', e => { if (e.key === 'Enter') askAgent(); });
+
+    $('summary-btn').addEventListener('click', async () => {
+      const ticker = $('summary-ticker').value.trim();
+      if (!ticker) return;
+      $('summary-box').textContent = 'Thinking… (small local model, ~30 s)';
+      $('summary-btn').disabled = true;
+      const j = await api(`/api/fundamentals/summarize/${encodeURIComponent(ticker)}`);
+      $('summary-btn').disabled = false;
+      if (j.success) {
+        $('summary-box').textContent = j.summary + `\n\n— ${j.model} · ${(j.latencyMs/1000).toFixed(1)}s`;
+      } else {
+        $('summary-box').textContent = 'Error: ' + (j.reason || j.error || 'unknown');
+      }
+    });
+
+    $('add-peer-btn').addEventListener('click', async () => {
+      const url = $('peer-url').value.trim();
+      if (!url) return;
+      $('add-peer-btn').disabled = true;
+      const j = await api('/api/swarm/peers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+      $('add-peer-btn').disabled = false;
+      if (j.success) { $('peer-url').value = ''; loadP2P(); }
+      else { alert('Failed: ' + (j.error || j.reason || 'unknown')); }
+    });
+
+    $('add-backlog-btn').addEventListener('click', async () => {
+      const title = $('bl-title').value.trim();
+      const description = $('bl-description').value.trim();
+      const assigned_to = $('bl-assignee').value;
+      if (!title || !description || !assigned_to) {
+        $('bl-result').textContent = 'Title, description and assignee are required.';
+        return;
+      }
+      const body = {
+        title,
+        description,
+        assigned_to,
+        priority: $('bl-priority').value,
+        estimated_hours: parseFloat($('bl-hours').value) || 1,
+        sprint: $('bl-sprint').value.trim() || 'backlog',
+        subtasks: $('bl-subtasks').value.split(',').map(s => s.trim()).filter(Boolean)
+      };
+      $('add-backlog-btn').disabled = true;
+      $('bl-result').textContent = 'Creating…';
+      const j = await api('/api/backlog/items', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      $('add-backlog-btn').disabled = false;
+      if (j.success) {
+        $('bl-result').textContent = `Created ${j.task?.id || 'backlog item'} for ${assigned_to}.`;
+        $('bl-title').value = ''; $('bl-description').value = ''; $('bl-subtasks').value = ''; $('bl-hours').value = '';
+        await loadBacklog();
+        await loadGlobalActivity();
+      } else {
+        $('bl-result').textContent = 'Error: ' + (j.error || j.reason || 'unknown');
+      }
+    });
+
+    (async () => {
+      await loadModelStatus();
+      await loadAgents();
+      await populateAgentSelect();
+      await loadBacklog();
+      await loadFundamentals();
+      await loadNewsFilings();
+      await loadP2P();
+      await loadGlobalActivity();
+    })();
+  </script>
+</body>
+</html>

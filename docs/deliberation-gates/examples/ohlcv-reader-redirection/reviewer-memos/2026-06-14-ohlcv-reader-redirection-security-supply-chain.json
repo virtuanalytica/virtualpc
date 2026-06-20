@@ -1,0 +1,25 @@
+{
+  "reviewer": "security-supply-chain",
+  "verdict": "approve",
+  "risk_items": [
+    {
+      "id": "RISK-006",
+      "severity": "minor",
+      "category": "security",
+      "finding": "Backfill job may run with write access to both old and new tables; least-privilege is not specified.",
+      "evidence": "No mention of backfill service account permissions.",
+      "why_it_matters": "Overly permissive backfill roles increase blast radius if credentials leak.",
+      "recommended_constraint": "Backfill job should use a dedicated service account with write-only on canonical table and read-only on source.",
+      "required_verification": "IAM/role review of the backfill job.",
+      "route_impact": "codex_ok"
+    }
+  ],
+  "blind_spots": ["Whether the new table inherits encryption and retention policies."],
+  "questions": ["Are row-level security policies needed on the canonical table?"],
+  "recommended_task_graph_constraints": [
+    "Security policy review for the canonical table before production."
+  ],
+  "recommended_verification_gates": [
+    "IAM role definition test for backfill job."
+  ]
+}

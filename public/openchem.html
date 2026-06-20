@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenHydroChem — Open-source AI voor uitloging, elektrolyse en oplossingschemie</title>
+  <meta name="description" content="OpenHydroChem is een open-source process-intelligence layer voor hydrometallurgie, uitloging, elektrolyse, electrowinning en oplossingsmodellen." />
+  <meta name="theme-color" content="#071b1f" />
+  <meta property="og:title" content="OpenHydroChem" />
+  <meta property="og:description" content="Open-source AI-stack voor leaching, elektrochemie, process cards en oplossingsmodellen." />
+  <meta property="og:type" content="website" />
+  <style>
+    :root {
+      --bg: #071b1f;
+      --bg-2: #0b252b;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.105);
+      --line: rgba(255,255,255,.15);
+      --text: #edf8f7;
+      --muted: rgba(237,248,247,.72);
+      --muted-2: rgba(237,248,247,.54);
+      --brand: #39e0b2;
+      --brand-2: #79d7ff;
+      --brand-3: #ffe08a;
+      --danger: #ffb4a5;
+      --ink: #0a191c;
+      --paper: #f6fbfa;
+      --paper-2: #eaf5f3;
+      --shadow: 0 24px 80px rgba(0,0,0,.32);
+      --radius: 24px;
+      --radius-sm: 14px;
+      --max: 1180px;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 7%, rgba(57,224,178,.22), transparent 28rem),
+        radial-gradient(circle at 88% 18%, rgba(121,215,255,.15), transparent 24rem),
+        radial-gradient(circle at 65% 80%, rgba(255,224,138,.11), transparent 22rem),
+        linear-gradient(180deg, #061719 0%, #071b1f 38%, #0b252b 100%);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, textarea, input { font: inherit; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+
+    .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    .skip-link {
+      position: absolute; left: -999px; top: 12px; z-index: 999;
+      background: var(--paper); color: var(--ink); padding: 10px 14px; border-radius: 10px;
+    }
+    .skip-link:focus { left: 12px; }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(7,27,31,.72);
+      border-bottom: 1px solid var(--line);
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 220px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 13px;
+      background:
+        linear-gradient(135deg, rgba(57,224,178,1), rgba(121,215,255,1));
+      box-shadow: 0 14px 32px rgba(57,224,178,.22);
+      position: relative;
+      overflow: hidden;
+    }
+    .logo:before, .logo:after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(7,27,31,.82);
+    }
+    .logo:before { width: 24px; height: 5px; left: 8px; top: 18px; transform: rotate(-28deg); }
+    .logo:after { width: 6px; height: 6px; right: 10px; top: 9px; box-shadow: -14px 18px 0 rgba(7,27,31,.82); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta { display: flex; align-items: center; gap: 10px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: rgba(255,255,255,.065);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,.105); border-color: rgba(255,255,255,.28); }
+    .btn.primary {
+      color: #061719;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-color: transparent;
+      box-shadow: 0 16px 48px rgba(57,224,178,.19);
+    }
+    .btn.primary:hover { background: linear-gradient(135deg, #5bf0c6, #9de2ff); }
+    .btn.light {
+      color: var(--ink);
+      background: var(--paper);
+      border-color: transparent;
+    }
+    .btn.small { padding: 8px 12px; font-size: 13px; }
+
+    .hero { padding: 78px 0 56px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 42px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 12px;
+      border: 1px solid rgba(57,224,178,.28);
+      background: rgba(57,224,178,.08);
+      color: #b9fff0;
+      border-radius: 999px;
+      font-weight: 750;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 999px; background: var(--brand);
+      box-shadow: 0 0 0 6px rgba(57,224,178,.13);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(44px, 7vw, 86px);
+      line-height: .94;
+      letter-spacing: -.065em;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 15%, var(--brand) 50%, var(--brand-2) 84%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero p.lead {
+      margin: 24px 0 0;
+      max-width: 700px;
+      color: var(--muted);
+      font-size: clamp(18px, 2.2vw, 23px);
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+    .mini-note { margin-top: 18px; color: var(--muted-2); font-size: 14px; }
+    .hero-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.105), rgba(255,255,255,.055));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-card:before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: radial-gradient(circle at 38% 8%, rgba(57,224,178,.17), transparent 26rem);
+      pointer-events: none;
+    }
+    .terminal-top {
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 16px;
+      color: var(--muted-2);
+      font-size: 13px;
+      position: relative;
+      z-index: 1;
+    }
+    .dots { display: flex; gap: 7px; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(255,255,255,.24); }
+    .terminal-body { padding: 22px; position: relative; z-index: 1; }
+    .terminal-body pre {
+      margin: 0;
+      white-space: pre-wrap;
+      color: #dffbf7;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .code-k { color: var(--brand-2); }
+    .code-s { color: var(--brand-3); }
+    .code-c { color: rgba(237,248,247,.48); }
+    .code-n { color: var(--brand); }
+
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 30px 0 0;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.065);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -.04em;
+      color: #fff;
+    }
+    .stat span { display: block; margin-top: 8px; color: var(--muted-2); font-size: 13px; }
+
+    section { padding: 82px 0; }
+    .section-head { max-width: 800px; margin-bottom: 34px; }
+    .section-head.center { text-align: center; margin-left: auto; margin-right: auto; }
+    .kicker { color: var(--brand); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; }
+    h2 { margin: 10px 0 0; font-size: clamp(32px, 4.2vw, 54px); line-height: 1.02; letter-spacing: -.05em; }
+    .section-head p { color: var(--muted); font-size: 18px; margin: 16px 0 0; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .card {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.065);
+      border-radius: var(--radius);
+      padding: 24px;
+      min-height: 100%;
+    }
+    .card:hover { background: rgba(255,255,255,.085); }
+    .icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 42px; height: 42px; border-radius: 14px;
+      background: rgba(57,224,178,.1);
+      border: 1px solid rgba(57,224,178,.22);
+      color: var(--brand);
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+    .card h3 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+    .card p { color: var(--muted); margin: 12px 0 0; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .tag {
+      display: inline-flex; align-items: center;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.1);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .paper-section {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(57,224,178,.12), transparent 28rem),
+        linear-gradient(180deg, var(--paper), var(--paper-2));
+      color: var(--ink);
+    }
+    .paper-section .kicker { color: #087b68; }
+    .paper-section h2 { color: #082428; }
+    .paper-section .section-head p { color: rgba(10,25,28,.72); }
+    .paper-card {
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(10,25,28,.09);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 50px rgba(10,25,28,.08);
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .pipe-step {
+      position: relative;
+      padding: 20px;
+      min-height: 152px;
+    }
+    .pipe-step:not(:last-child):after {
+      content: "→";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(10,25,28,.35);
+      font-weight: 900;
+      z-index: 2;
+    }
+    .pipe-step .num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 999px;
+      background: #d9fbf1;
+      color: #066b5b;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+    .pipe-step h3 { margin: 0; font-size: 17px; }
+    .pipe-step p { margin: 8px 0 0; color: rgba(10,25,28,.67); font-size: 14px; }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .demo-box { padding: 18px; }
+    textarea {
+      width: 100%; min-height: 292px; resize: vertical;
+      border: 1px solid rgba(10,25,28,.13);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 18px;
+      padding: 16px;
+      outline: none;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    textarea:focus { border-color: rgba(8,123,104,.45); box-shadow: 0 0 0 4px rgba(57,224,178,.14); }
+    .demo-output {
+      min-height: 292px;
+      margin: 0;
+      border-radius: 18px;
+      padding: 16px;
+      background: #061719;
+      color: #dffbf7;
+      overflow: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .demo-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+
+    .stack-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .stack-item {
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.058);
+      border-radius: 18px;
+    }
+    .stack-item strong { display: block; color: #fff; }
+    .stack-item span { display: block; color: var(--muted-2); margin-top: 5px; font-size: 13px; }
+
+    .code-card {
+      border: 1px solid var(--line);
+      background: #061719;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .code-head {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding: 13px 16px;
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+    .code-card pre { margin: 0; padding: 20px; overflow: auto; color: #e8fffb; font-size: 13px; line-height: 1.7; }
+
+    .split {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .check-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .check-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--muted);
+    }
+    .check-list li:before {
+      content: "✓";
+      flex: 0 0 auto;
+      width: 24px; height: 24px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(57,224,178,.12);
+      color: var(--brand);
+      border: 1px solid rgba(57,224,178,.22);
+      font-weight: 900;
+      font-size: 13px;
+      margin-top: 1px;
+    }
+
+    .roadmap { display: grid; gap: 12px; }
+    .road-item {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 18px;
+    }
+    .road-item .version { color: var(--brand); font-weight: 900; }
+    .road-item h3 { margin: 0; font-size: 18px; }
+    .road-item p { margin: 6px 0 0; color: var(--muted); }
+
+    .warning {
+      border: 1px solid rgba(255,180,165,.35);
+      background: rgba(255,180,165,.09);
+      border-radius: var(--radius);
+      padding: 22px;
+      color: rgba(255,245,242,.88);
+    }
+    .warning strong { color: #fff; }
+
+    .cta {
+      text-align: center;
+      padding: 86px 0;
+    }
+    .cta-box {
+      border: 1px solid rgba(57,224,178,.23);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(57,224,178,.18), transparent 32rem),
+        rgba(255,255,255,.07);
+      border-radius: 32px;
+      padding: 48px 26px;
+      box-shadow: var(--shadow);
+    }
+    .cta h2 { margin-top: 0; }
+    .cta p { margin: 16px auto 0; max-width: 700px; color: var(--muted); font-size: 18px; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 32px 0;
+      color: var(--muted-2);
+    }
+    .footer-grid { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 16px; flex-wrap: wrap; }
+    .footer-links a:hover { color: var(--text); }
+
+    @media (max-width: 980px) {
+      .hero-grid, .demo-grid, .split { grid-template-columns: 1fr; }
+      .stats-strip, .grid-3, .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .pipeline { grid-template-columns: 1fr; }
+      .pipe-step:not(:last-child):after { display: none; }
+      .stack-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+      .brand { min-width: auto; }
+    }
+    @media (max-width: 620px) {
+      .container { width: min(var(--max), calc(100% - 28px)); }
+      .hero { padding-top: 50px; }
+      .stats-strip, .grid-3, .grid-2, .stack-grid { grid-template-columns: 1fr; }
+      .nav-cta .btn:not(.primary) { display: none; }
+      .road-item { grid-template-columns: 1fr; }
+      .hero-card .terminal-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Naar inhoud</a>
+
+  <div class="nav-wrap">
+    <nav class="container" aria-label="Hoofdnavigatie">
+      <a class="brand" href="#top" aria-label="OpenHydroChem home">
+        <span class="logo" aria-hidden="true"></span>
+        <span>OpenHydroChem</span>
+      </a>
+      <div class="nav-links" aria-label="Secties">
+        <a href="#platform">Platform</a>
+        <a href="#process-cards">Process cards</a>
+        <a href="#demo">Demo</a>
+        <a href="#stack">Stack</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+      <div class="nav-cta">
+        <a class="btn small" href="https://huggingface.co/openhydrochem" target="_blank" rel="noreferrer">Hugging Face</a>
+        <a class="btn primary small" href="https://github.com/openhydrochem/openhydrochem" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+    </nav>
+  </div>
+
+  <main id="main">
+    <header class="hero" id="top">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="pulse" aria-hidden="true"></span> Open-source process intelligence voor chemie</div>
+          <h1><span class="gradient-text">AI voor uitloging, elektrolyse en oplossingsmodellen.</span></h1>
+          <p class="lead">
+            OpenHydroChem zet papers, patenten, labrapporten en proceslogs om in gestandaardiseerde process cards, benchmarks en voorspellende modellen voor hydrometallurgie en elektrochemie.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#demo">Bekijk process-card demo</a>
+            <a class="btn" href="#platform">Ontdek de stack</a>
+          </div>
+          <p class="mini-note">Apache-2.0 core. Local-first. Bouwt voort op bestaande chemie-, materiaal- en simulatiepakketten.</p>
+
+          <div class="stats-strip" aria-label="Project highlights">
+            <div class="stat"><strong>v0.1</strong><span>MVP-ready schema, extractor en CLI</span></div>
+            <div class="stat"><strong>3</strong><span>Leaching, electrolysis en electrowinning cards</span></div>
+            <div class="stat"><strong>10+</strong><span>Adapters voor bestaande pakketten</span></div>
+            <div class="stat"><strong>HF + PyPI</strong><span>Distributie voor datasets en package</span></div>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Codevoorbeeld">
+          <div class="terminal-top">
+            <div class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <span>openhydrochem quickstart</span>
+          </div>
+          <div class="terminal-body">
+            <pre><span class="code-c"># PDF, paper, patent of labrapport → process card</span>
+<span class="code-k">from</span> openhydrochem <span class="code-k">import</span> ProcessCardExtractor
+
+extractor = ProcessCardExtractor.from_pretrained(
+    <span class="code-s">"openhydrochem/process-parameter-extractor-v1"</span>
+)
+
+cards = extractor.from_pdf(<span class="code-s">"leaching-paper.pdf"</span>)
+
+cards.normalize_units()
+cards.to_json(<span class="code-s">"process_cards.json"</span>)
+
+<span class="code-c"># train baseline model on LeachBench</span>
+model = cards.train_yield_predictor(
+    target=<span class="code-s">"Li_yield_percent"</span>
+)</pre>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section id="platform">
+      <div class="container">
+        <div class="section-head center">
+          <div class="kicker">Platform</div>
+          <h2>Een dunne AI-laag boven de beste bestaande chemiepakketten.</h2>
+          <p>De eerste versie vervangt RDKit, DeepChem, OpenChemIE, PHREEQC of IDAES niet. OpenHydroChem orchestreert ze rond één bruikbaar object: de process card.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="icon">L</div>
+            <h3>Leaching intelligence</h3>
+            <p>Extractie-opbrengst, selectiviteit, pH, temperatuur, tijd, L/S-ratio, redoxcondities en reagentia in één schema.</p>
+            <div class="tag-row"><span class="tag">LeachBench</span><span class="tag">Yield prediction</span><span class="tag">Hydromet</span></div>
+          </article>
+          <article class="card">
+            <div class="icon">E</div>
+            <h3>Electrochemical intelligence</h3>
+            <p>Elektrolyt, stroomdichtheid, celspanning, Faraday-efficiëntie, kWh/kg en depositiekwaliteit voor elektrolyse en electrowinning.</p>
+            <div class="tag-row"><span class="tag">ElectroBench</span><span class="tag">Faraday efficiency</span><span class="tag">kWh/kg</span></div>
+          </article>
+          <article class="card">
+            <div class="icon">S</div>
+            <h3>Solution model layer</h3>
+            <p>Voorbereid op speciation, activiteit, ionische sterkte, oplosbaarheid en export naar oplossingschemie-backends.</p>
+            <div class="tag-row"><span class="tag">PHREEQC</span><span class="tag">pH/ORP</span><span class="tag">Speciation</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="paper-section" id="process-cards">
+      <div class="container">
+        <div class="section-head center">
+          <div class="kicker">Process cards</div>
+          <h2>Van ongestructureerde chemie naar herbruikbare procesdata.</h2>
+          <p>Het kernproduct is geen losse chatbot, maar een gestandaardiseerde dataflow voor R&D, literatuuronderzoek, benchmarks en modeltraining.</p>
+        </div>
+
+        <div class="pipeline">
+          <div class="paper-card pipe-step"><span class="num">1</span><h3>Input</h3><p>Papers, patenten, labrapporten, CSV’s, tabellen en proceslogs.</p></div>
+          <div class="paper-card pipe-step"><span class="num">2</span><h3>Extract</h3><p>Chemische parameters, units, yields, metalen, reagentia en onzekerheid.</p></div>
+          <div class="paper-card pipe-step"><span class="num">3</span><h3>Normalize</h3><p>°C, min, mol/L, g/L, A/m², mA/cm², kWh/kg en pH/ORP.</p></div>
+          <div class="paper-card pipe-step"><span class="num">4</span><h3>Model</h3><p>Baseline regressors, rankers, embeddings en uncertainty checks.</p></div>
+          <div class="paper-card pipe-step"><span class="num">5</span><h3>Export</h3><p>JSON, CSV, Hugging Face datasets, notebooks en simulator templates.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="paper-section" style="padding-top:0;">
+      <div class="container">
+        <div class="section-head">
+          <div class="kicker">Live browser demo</div>
+          <h2>Procesbeschrijving → JSON process card.</h2>
+          <p>Deze demo is bewust simpel en draait volledig in je browser. In de echte package vervang je dit door ChemDataExtractor/OpenChemIE/LLM-extractie plus validatie.</p>
+        </div>
+
+        <div class="paper-card demo-grid">
+          <div class="demo-box">
+            <label for="rawText" style="display:block;font-weight:800;margin-bottom:10px;">Ruwe tekst</label>
+            <textarea id="rawText">Battery black mass was leached using H2SO4 at 60 C for 2 h. The pH was 2.0 and the L/S ratio was 10. Li yield 93.2%, Ni extraction 86.5%, Co recovery 82.1% were reported.</textarea>
+            <div class="demo-actions">
+              <button class="btn primary" id="extractBtn" type="button">Extraheer kaart</button>
+              <button class="btn" id="sampleElectroBtn" type="button" style="color:#0a191c;background:#fff;border-color:rgba(10,25,28,.12);">Laad elektrolyse voorbeeld</button>
+            </div>
+          </div>
+          <div class="demo-box">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;">
+              <strong>Output</strong>
+              <button class="btn small" id="copyBtn" type="button" style="color:#0a191c;background:#fff;border-color:rgba(10,25,28,.12);">Kopieer JSON</button>
+            </div>
+            <pre class="demo-output" id="jsonOutput" aria-live="polite"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="container split">
+        <div class="section-head">
+          <div class="kicker">Technical stack</div>
+          <h2>Gebruik alles wat al bestaat. Maak alleen de ontbrekende proceslaag.</h2>
+          <p>OpenHydroChem wordt nuttig door adapters: chemische NLP, cheminformatics, materials data, battery modelling, speciation en process systems engineering.</p>
+        </div>
+        <div class="stack-grid">
+          <div class="stack-item"><strong>RDKit</strong><span>Moleculen, descriptors, identifiers</span></div>
+          <div class="stack-item"><strong>DeepChem</strong><span>ML-workflows en datasets</span></div>
+          <div class="stack-item"><strong>ChemDataExtractor</strong><span>Wetenschappelijke tekstextractie</span></div>
+          <div class="stack-item"><strong>OpenChemIE</strong><span>PDF, figuur en tabel-extractie</span></div>
+          <div class="stack-item"><strong>Materials Project</strong><span>Materialenmetadata</span></div>
+          <div class="stack-item"><strong>matminer</strong><span>Material-features</span></div>
+          <div class="stack-item"><strong>PHREEQC</strong><span>Aqueous speciation export</span></div>
+          <div class="stack-item"><strong>PyBaMM</strong><span>Batterijmodellering context</span></div>
+          <div class="stack-item"><strong>Cantera</strong><span>Thermodynamica en kinetiek</span></div>
+          <div class="stack-item"><strong>IDAES</strong><span>Process systems engineering</span></div>
+          <div class="stack-item"><strong>Hugging Face</strong><span>Models, datasets en Spaces</span></div>
+          <div class="stack-item"><strong>scikit-learn</strong><span>Baseline models en metrics</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container grid-2">
+        <div class="code-card">
+          <div class="code-head"><span>installatie</span><button class="btn small" data-copy="#installCode" type="button">Kopieer</button></div>
+          <pre id="installCode">pip install openhydrochem
+
+# optionele adapters
+pip install "openhydrochem[extract,ml,hf,materials]"
+pip install "openhydrochem[rdkit,deepchem,sim,battery]"</pre>
+        </div>
+        <div class="code-card">
+          <div class="code-head"><span>CLI workflow</span><button class="btn small" data-copy="#cliCode" type="button">Kopieer</button></div>
+          <pre id="cliCode">openhydrochem extract paper.pdf \
+  --process-type leaching \
+  --out process_cards.jsonl
+
+openhydrochem normalize process_cards.jsonl \
+  --units si \
+  --out leachbench_ready.csv
+
+openhydrochem train leachbench_ready.csv \
+  --target Li_yield_percent</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container split">
+        <div>
+          <div class="section-head">
+            <div class="kicker">Use cases</div>
+            <h2>Waar dit direct waarde heeft.</h2>
+            <p>De beste eerste markt is niet “alle chemie”, maar data-intensieve proces-R&D met dure experimenten en veel literatuur.</p>
+          </div>
+        </div>
+        <ul class="check-list">
+          <li><span><strong>Batterijrecycling:</strong> black mass, lithium, nikkel, kobalt, mangaan, koper en aluminium uit procesliteratuur structureren.</span></li>
+          <li><span><strong>Kritische metalen:</strong> selectieve uitloging en terugwinning van metalen uit ertsen, slakken, e-waste en residuen.</span></li>
+          <li><span><strong>Electrowinning:</strong> stroomdichtheid, celspanning, depositiekwaliteit en energie-intensiteit vergelijken.</span></li>
+          <li><span><strong>Water en afvalstromen:</strong> metaalverwijdering, pH-vensters, neerslag/complexatie en procesoptimalisatie.</span></li>
+          <li><span><strong>Groene elektrochemie:</strong> elektrolyse, elektrolyten, membraancondities, efficiëntie en schaalbaarheidsindicatoren.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <div class="container">
+        <div class="section-head center">
+          <div class="kicker">Roadmap</div>
+          <h2>Van MVP naar open-source benchmarkplatform.</h2>
+          <p>Begin klein: schema’s, extractor, normalizer en baseline models. Pas daarna leaderboards, Spaces en enterprise-integraties.</p>
+        </div>
+        <div class="roadmap">
+          <div class="road-item"><div class="version">v0.1</div><div><h3>Process-card core</h3><p>LeachingCard, ElectrolysisCard, ElectrowinningCard, regex extractor, unit normalizer, CLI en JSON/CSV export.</p></div></div>
+          <div class="road-item"><div class="version">v0.2</div><div><h3>Extractor adapters</h3><p>ChemDataExtractor/OpenChemIE mapping, table parsing, PDF batches en confidence scores.</p></div></div>
+          <div class="road-item"><div class="version">v0.3</div><div><h3>LeachBench starter</h3><p>Handmatig gevalideerde process cards en baseline yield/selectivity models.</p></div></div>
+          <div class="road-item"><div class="version">v0.4</div><div><h3>ElectroBench starter</h3><p>Faraday-efficiëntie, celspanning, kWh/kg, current density en depositiekwaliteit.</p></div></div>
+          <div class="road-item"><div class="version">v1.0</div><div><h3>Launch</h3><p>PyPI package, Hugging Face datasets/models, Spaces demo’s, docs, tutorials en benchmark leaderboard.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="warning">
+          <strong>Veiligheidsgrens:</strong> OpenHydroChem is bedoeld voor data-extractie, analyse, benchmarking en proces-R&D. Uitkomsten zijn geen gevalideerd labprotocol, veiligheidsadvies of garantie op industriële prestaties. Chemische experimenten vereisen gekwalificeerde beoordeling, geschikte veiligheidsmaatregelen, lokale regelgeving en experimentele validatie.
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-box">
+          <div class="kicker">Open core</div>
+          <h2>Open modellen. Open datasets. Jouw procesdata.</h2>
+          <p>Gebruik de open-source core voor communitygroei en verkoop ChemExtract AI als private/on-prem laag voor labrapporten, patenten, RAG, fine-tuning, audit trails en enterprise support.</p>
+          <div class="hero-actions" style="justify-content:center;">
+            <a class="btn primary" href="https://github.com/openhydrochem/openhydrochem" target="_blank" rel="noreferrer">Star op GitHub</a>
+            <a class="btn" href="https://huggingface.co/openhydrochem" target="_blank" rel="noreferrer">Bekijk Hugging Face</a>
+            <a class="btn" href="mailto:hello@openhydrochem.org">Enterprise gesprek</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div><strong style="color:#fff;">OpenHydroChem</strong><br />Open-source AI voor hydrometallurgie en elektrochemie.</div>
+      <div class="footer-links">
+        <a href="#platform">Platform</a>
+        <a href="#demo">Demo</a>
+        <a href="#stack">Stack</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const rawText = document.getElementById('rawText');
+    const jsonOutput = document.getElementById('jsonOutput');
+    const extractBtn = document.getElementById('extractBtn');
+    const sampleElectroBtn = document.getElementById('sampleElectroBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function pickNumber(regex, text) {
+      const match = text.match(regex);
+      if (!match) return null;
+      const raw = match[1] || match[0];
+      const value = Number(String(raw).replace(',', '.'));
+      return Number.isFinite(value) ? value : null;
+    }
+
+    function detectMetals(text) {
+      const metals = ['Li','Ni','Co','Mn','Cu','Al','Fe','Zn','Mg','REE','Nd','Pr','Dy'];
+      return [...new Set(metals.filter(m => new RegExp('\\b' + m + '\\b', 'i').test(text)))];
+    }
+
+    function detectReagents(text) {
+      const candidates = ['H2SO4','HCl','HNO3','NaOH','NH3','H2O2','citric acid','oxalic acid','NaCl','KOH','Na2SO4'];
+      return candidates.filter(r => text.toLowerCase().includes(r.toLowerCase()));
+    }
+
+    function extractYields(text) {
+      const out = [];
+      const re = /\b(Li|Ni|Co|Mn|Cu|Al|Fe|Zn|Mg|Nd|Pr|Dy)\b\s*(?:yield|extraction|recovery|efficiency)?\s*[:=]?\s*(\d+(?:[\.,]\d+)?)\s*%/gi;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        out.push({ element: m[1], value_percent: Number(m[2].replace(',', '.')) });
+      }
+      return out;
+    }
+
+    function buildCard(text) {
+      const lower = text.toLowerCase();
+      const isElectro = /electro|current density|faradaic|cell voltage|cathode|anode|electrowinning/i.test(text);
+      const processType = isElectro ? (/electrowinning/i.test(text) ? 'electrowinning' : 'electrolysis') : 'leaching';
+      const card = {
+        process_type: processType,
+        source_type: 'browser_demo_text',
+        confidence: 'demo_only',
+        extracted_fields: {}
+      };
+
+      if (processType === 'leaching') {
+        card.feedstock = lower.includes('black mass') ? 'battery_black_mass' : null;
+        card.target_metals = detectMetals(text);
+        card.reagents = detectReagents(text);
+        card.temperature_C = pickNumber(/(\d+(?:[\.,]\d+)?)\s*(?:°\s*)?C\b/i, text);
+        let timeMin = pickNumber(/(\d+(?:[\.,]\d+)?)\s*(?:min|minutes)\b/i, text);
+        const timeHours = pickNumber(/(\d+(?:[\.,]\d+)?)\s*(?:h|hr|hours)\b/i, text);
+        if (timeMin === null && timeHours !== null) timeMin = timeHours * 60;
+        card.time_min = timeMin;
+        card.pH = pickNumber(/pH\s*(?:was|=|:)?\s*(\d+(?:[\.,]\d+)?)/i, text);
+        card.liquid_solid_ratio = pickNumber(/(?:L\/S|liquid\s*\/\s*solid|liquid-solid ratio)\s*(?:ratio)?\s*(?:was|=|:)?\s*(\d+(?:[\.,]\d+)?)/i, text);
+        card.yields = extractYields(text);
+      } else {
+        card.electrolyte = detectReagents(text).join(', ') || null;
+        card.product_metals = detectMetals(text);
+        card.current_density_mA_cm2 = pickNumber(/current density\s*(?:was|=|:)?\s*(\d+(?:[\.,]\d+)?)\s*mA\s*\/\s*cm\s*2/i, text);
+        card.cell_voltage_V = pickNumber(/(?:cell voltage|voltage)\s*(?:was|=|:)?\s*(\d+(?:[\.,]\d+)?)\s*V/i, text);
+        card.faradaic_efficiency_percent = pickNumber(/faradaic efficiency\s*(?:was|=|:)?\s*(\d+(?:[\.,]\d+)?)\s*%/i, text);
+        card.energy_intensity_kWh_kg = pickNumber(/(\d+(?:[\.,]\d+)?)\s*kWh\s*\/\s*kg/i, text);
+        card.temperature_C = pickNumber(/(\d+(?:[\.,]\d+)?)\s*(?:°\s*)?C\b/i, text);
+      }
+
+      card.safety_notice = 'Demo-output: geen labprotocol en niet gevalideerd voor experimenten.';
+      return card;
+    }
+
+    function render() {
+      const card = buildCard(rawText.value);
+      jsonOutput.textContent = JSON.stringify(card, null, 2);
+    }
+
+    extractBtn.addEventListener('click', render);
+    sampleElectroBtn.addEventListener('click', () => {
+      rawText.value = 'Copper electrowinning was performed in H2SO4 electrolyte at 45 C. The current density was 250 mA/cm2, cell voltage was 2.1 V and faradaic efficiency was 91%. Energy consumption was 2.4 kWh/kg Cu.';
+      render();
+    });
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(jsonOutput.textContent);
+        copyBtn.textContent = 'Gekopieerd';
+        setTimeout(() => copyBtn.textContent = 'Kopieer JSON', 1200);
+      } catch (e) {
+        copyBtn.textContent = 'Selecteer handmatig';
+      }
+    });
+    document.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const target = document.querySelector(btn.getAttribute('data-copy'));
+        if (!target) return;
+        try {
+          await navigator.clipboard.writeText(target.textContent);
+          const old = btn.textContent;
+          btn.textContent = 'Gekopieerd';
+          setTimeout(() => btn.textContent = old, 1200);
+        } catch (e) {}
+      });
+    });
+    render();
+  </script>
+</body>
+</html>

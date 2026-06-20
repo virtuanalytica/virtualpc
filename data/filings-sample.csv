@@ -1,0 +1,8 @@
+ticker,formType,filingDate,source,description,url
+AAPL,10-K,2024-11-01,SEC EDGAR,Annual report for fiscal year 2024.,https://example.com/aapl-10k
+AAPL,8-K,2025-01-30,SEC EDGAR,Current report – Q1 2025 earnings release.,https://example.com/aapl-8k
+MSFT,10-K,2024-07-30,SEC EDGAR,Annual report for fiscal year 2024.,https://example.com/msft-10k
+GOOGL,10-Q,2024-10-30,SEC EDGAR,Quarterly report for Q3 2024.,https://example.com/googl-10q
+AMZN,10-K,2025-02-06,SEC EDGAR,Annual report for fiscal year 2024.,https://example.com/amzn-10k
+TSLA,10-K,2025-01-29,SEC EDGAR,Annual report for fiscal year 2024.,https://example.com/tsla-10k
+NVDA,10-Q,2024-11-20,SEC EDGAR,Quarterly report for Q3 FY2025.,https://example.com/nvda-10q

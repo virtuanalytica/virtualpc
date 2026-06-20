@@ -13,9 +13,41 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import logger from './utils/logger';
+import FieldCrypto from './security/fieldCrypto';
 
 const STATE_DIR = process.env.VIRTUALPC_STATE_DIR || '/media/knight2/EDS2/virtualpc-state';
 const CRED_PATH = path.join(STATE_DIR, 'credentials.json');
+
+// Field encryption for api_key at rest. Mirrors AuthSystem's policy: enabled
+// only when FIELD_ENCRYPTION_KEY is present (via .env or the secrets bootstrap)
+// and a no-op otherwise, so the app never breaks for lack of a key. The in-
+// memory `credentials` array always holds *plaintext* keys (so process.env,
+// masking, and listMasked keep working unchanged) — only the on-disk
+// serialization is encrypted.
+//
+// Resolved lazily because this module is imported before dotenv config() runs,
+// so the key may only appear in process.env later; callers (index.ts) re-invoke
+// loadCredentials() once secrets are loaded to pick it up and migrate at rest.
+let _fieldCrypto: FieldCrypto | null = null;
+function getFieldCrypto(): FieldCrypto | null {
+  if (_fieldCrypto) return _fieldCrypto;
+  const key = process.env.FIELD_ENCRYPTION_KEY;
+  if (!key) return null; // not cached — a later call can pick the key up
+  try {
+    _fieldCrypto = new FieldCrypto(key);
+  } catch (e: any) {
+    logger.warn(`credentials: FIELD_ENCRYPTION_KEY present but invalid (${e.message}); storing plaintext`);
+    _fieldCrypto = null;
+  }
+  return _fieldCrypto;
+}
+
+// Standalone token-shape check — independent of any FieldCrypto instance so we
+// can recognise an encrypted value even when no key is available yet (and thus
+// never leak ciphertext into process.env). Must match FieldCrypto's format.
+function looksEncryptedToken(v: unknown): boolean {
+  return typeof v === 'string' && v.startsWith('v1:') && v.split(':').length === 4;
+}
 
 export interface ProviderRecord {
   provider: string;       // anthropic, openai, grok, deepseek, kimi, perplexity
@@ -63,15 +95,41 @@ export function loadCredentials() {
     }
     const raw = fs.readFileSync(CRED_PATH, 'utf8');
     const parsed = JSON.parse(raw);
-    credentials = Array.isArray(parsed.providers) ? parsed.providers : [];
-    // Push every key into process.env using the canonical env var name
+    const stored: ProviderRecord[] = Array.isArray(parsed.providers) ? parsed.providers : [];
+    const fc = getFieldCrypto();
+    // Decrypt api_keys back to plaintext in memory; note any plaintext-at-rest
+    // so we can migrate it. Legacy plaintext (pre-encryption files) is left
+    // as-is here and re-saved encrypted below when a key is available.
+    let plaintextOnDisk = false;
+    for (const rec of stored) {
+      if (!rec.api_key) continue;
+      const wasEncrypted = looksEncryptedToken(rec.api_key);
+      if (!wasEncrypted) plaintextOnDisk = true;
+      if (fc && wasEncrypted) {
+        try {
+          rec.api_key = fc.decrypt(rec.api_key);
+        } catch {
+          logger.warn(`credentials: decrypt failed for ${rec.provider} (wrong FIELD_ENCRYPTION_KEY?); leaving as-is`);
+        }
+      }
+    }
+    credentials = stored;
+    // Push every decrypted key into process.env under its canonical name. Skip
+    // anything still in token form (no key available to decrypt) so ciphertext
+    // never leaks into the environment.
     for (const rec of credentials) {
       const meta = PROVIDER_CATALOG.find(p => p.id === rec.provider);
-      if (meta && rec.api_key) {
+      if (meta && rec.api_key && !looksEncryptedToken(rec.api_key)) {
         process.env[meta.env_var] = rec.api_key;
       }
     }
-    logger.info(`credentials: loaded ${credentials.length} provider records`);
+    logger.info(`credentials: loaded ${credentials.length} provider records${fc ? ' (encrypted-at-rest)' : ''}`);
+    // One-time at-rest migration: encryption is available and the file held a
+    // plaintext key — re-save so every key is encrypted on disk going forward.
+    if (fc && plaintextOnDisk) {
+      saveCredentials();
+      logger.info('credentials: migrated plaintext api_keys to encrypted-at-rest');
+    }
   } catch (e: any) {
     logger.warn(`credentials: load failed: ${e.message}`);
     credentials = [];
@@ -80,8 +138,15 @@ export function loadCredentials() {
 
 function saveCredentials() {
   ensureDir();
+  const fc = getFieldCrypto();
+  // Encrypt api_key for storage when a key is configured; the in-memory array
+  // stays plaintext. encryptField is idempotent (won't double-encrypt) and a
+  // no-op when fc is null, preserving the pre-encryption plaintext behavior.
+  const providers = fc
+    ? credentials.map(rec => ({ ...rec, api_key: fc.encryptField(rec.api_key) }))
+    : credentials;
   const tmp = CRED_PATH + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify({ updated_at: new Date().toISOString(), providers: credentials }, null, 2), { mode: 0o600 });
+  fs.writeFileSync(tmp, JSON.stringify({ updated_at: new Date().toISOString(), providers }, null, 2), { mode: 0o600 });
   fs.renameSync(tmp, CRED_PATH);
   fs.chmodSync(CRED_PATH, 0o600);
 }

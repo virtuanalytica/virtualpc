@@ -1,0 +1,25 @@
+{
+  "reviewer": "ml-leakage-pit",
+  "verdict": "approve",
+  "risk_items": [
+    {
+      "id": "RISK-004",
+      "severity": "minor",
+      "category": "ml_leakage",
+      "finding": "The canonical table changes column names; ML features reference old names through views.",
+      "evidence": "Feature definitions are not explicitly updated in the proposal.",
+      "why_it_matters": "If the compatibility view is dropped before feature code is migrated, training/serving will fail or use stale names.",
+      "recommended_constraint": "Track all ML feature references and add a task to update them before view deprecation.",
+      "required_verification": "Feature pipeline dry-run against new schema.",
+      "route_impact": "codex_ok"
+    }
+  ],
+  "blind_spots": ["Whether any features compute labels from ohlcv columns that may change semantics."],
+  "questions": ["Are labels derived from adjusted vs raw prices?"],
+  "recommended_task_graph_constraints": [
+    "ML feature references must be enumerated before view removal."
+  ],
+  "recommended_verification_gates": [
+    "Feature generation parity test with old and new schemas."
+  ]
+}

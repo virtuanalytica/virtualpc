@@ -1,0 +1,17 @@
+{
+  "gate": "deliberation-task-graph-audit",
+  "slug": "ohlcv-reader-redirection",
+  "verdict": "dispatch_ok",
+  "blocked_tasks": [],
+  "unsafe_parallel_groups": [],
+  "missing_owned_files": [],
+  "missing_tests": [],
+  "weak_verification": [],
+  "bad_agent_routes": [],
+  "required_task_edits": [],
+  "required_index_json_edits": [],
+  "dispatch_order": ["T-001", "T-002", "T-003", "T-004", "T-005", "T-006"],
+  "codex_safe_tasks": ["T-001", "T-002", "T-003", "T-004", "T-006"],
+  "claude_preferred_tasks": ["T-005"],
+  "human_required_tasks": []
+}

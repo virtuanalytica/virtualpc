@@ -1,0 +1,6 @@
+ticker,headline,summary,source,publicationDate,url
+AAPL,Apple announces record Q1 revenue,Apple reports all-time high quarterly revenue driven by iPhone and Services growth.,Bloomberg,2025-01-30,https://example.com/aapl-q1
+MSFT,Microsoft expands Azure AI footprint,Microsoft opens new AI data-center regions to meet enterprise demand.,Reuters,2025-02-12,https://example.com/msft-azure
+GOOGL,Alphabet beats earnings estimates,Alphabet quarterly profit tops Wall Street expectations on search and cloud strength.,CNBC,2025-02-05,https://example.com/googl-earnings
+TSLA,Tesla cuts prices in key markets,Tesla reduces Model Y prices in Europe and China to maintain volume.,Financial Times,2025-02-10,https://example.com/tsla-price
+NVDA,NVIDIA unveils next-gen GPU architecture,NVIDIA introduces Rubin architecture with major efficiency gains for AI workloads.,TechCrunch,2025-03-18,https://example.com/nvda-rubin

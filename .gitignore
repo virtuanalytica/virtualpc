@@ -38,11 +38,18 @@ Thumbs.db
 /data/backlog/*.json
 /data/tasks/*.json
 /data/issues/*.json
+/data/chain-snapshot.json
+/data/demo-screenshot-*.png
+/data/verify-demo-dashboard.png
+/data/external/
 /backlog/
 /backlog-data/
 mock-data/
 test-data/
 test-results/
+.venv-mlx/
+.virtualpc-state/
+data-agents-sidecar/
 
 # Agent-specific files
 /agent-configs/
@@ -66,3 +73,15 @@ temp/
 
 # Tesseract language models (auto-downloaded on first use, 5-22 MB each)
 *.traineddata
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Deliberation gate runtime artifacts
+.ai/tasks/*/T-*.md
+.ai/tasks/*/index.json
+.ai/deliberation/**/*.json
+.ai/deliberation/**/*.md

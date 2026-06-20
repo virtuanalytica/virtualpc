@@ -21,7 +21,7 @@ interface Subtask {
 interface Task {
   id: string;
   title: string;
-  status: 'completed' | 'in-progress' | 'pending';
+  status: 'completed' | 'in-progress' | 'pending' | 'error';
   priority: 'critical' | 'high' | 'medium' | 'low';
   description: string;
   sprint: string;
@@ -146,13 +146,125 @@ const taskPools: { [agent: string]: Array<{ title: string; priority: Task['prior
     { title: 'Real-money gate review', priority: 'critical', description: 'Before flipping PROMO_REAL_MONEY=1, document Stripe customer-record setup, audit-log requirements, and Cleopatra\'s sign-off conditions. No spend until this exists.', estimated_hours: 6, subtasks: ['Stripe customer ref design', 'Audit-log requirements', 'Cleopatra sign-off conditions', 'Document checklist'] },
     { title: 'Daily portfolio rebalance', priority: 'medium', description: 'Each morning: review yesterday\'s executed proposals, measure observed vs predicted ROI, adjust the model, file new proposals within the day\'s remaining cap.', estimated_hours: 3, subtasks: ['Pull executed', 'Compute observed vs predicted', 'Adjust prior', 'Identify candidates', 'File within cap'] },
   ],
+
+  // ─── Ultra-light data agents task pool (added 2026-06-20) ───────────────
+  'Data-Steward': [
+    { title: 'Schema audit: commodity_companies.csv', priority: 'high', description: 'Infer schema, missing values, duplicates, and catalog the commodity companies dataset.', estimated_hours: 2, subtasks: ['Load dataset', 'Infer schema', 'Compute quality metrics', 'Log issues', 'Publish catalog entry'] },
+    { title: 'Schema audit: filings as-reported', priority: 'high', description: 'Validate the standardized as-reported filings table for XBRL tag coverage.', estimated_hours: 2, subtasks: ['Load standardized filings', 'Check tag coverage', 'Flag missing standard fields', 'Publish schema'] },
+    { title: 'Data quality rule: revenue non-negative', priority: 'high', description: 'Add a rule that revenue values must be non-negative across all standardized filings.', estimated_hours: 1, subtasks: ['Define rule', 'Implement check', 'Run on sample', 'Log violations'] },
+    { title: 'Data quality rule: fiscal year consistency', priority: 'high', description: 'Ensure fiscalYear, period, and date fields are mutually consistent.', estimated_hours: 1, subtasks: ['Define consistency rules', 'Implement checks', 'Run on sample', 'Report violations'] },
+    { title: 'Critical-column coverage: filings', priority: 'medium', description: 'Ensure every standardized filing row has symbol, fiscalYear, period, revenue, netIncome, assets.', estimated_hours: 1, subtasks: ['List critical columns', 'Scan dataset', 'Flag gaps', 'Update steward logic'] },
+    { title: 'Duplicate detection: commodity companies', priority: 'medium', description: 'Detect duplicate company-year rows in the commodity dataset.', estimated_hours: 1, subtasks: ['Hash rows', 'Find duplicates', 'Sample suspect rows', 'Log lineage'] },
+    { title: 'Duplicate detection: filings', priority: 'medium', description: 'Detect duplicate symbol-fiscalYear-period rows in standardized filings.', estimated_hours: 1, subtasks: ['Define key', 'Find duplicates', 'Resolve conflicts', 'Log lineage'] },
+    { title: 'Currency standardization check', priority: 'medium', description: 'Verify reportedCurrency is ISO-4217 across all filings.', estimated_hours: 1, subtasks: ['List valid currencies', 'Scan dataset', 'Flag invalid values', 'Report'] },
+    { title: 'Unit standardization check', priority: 'medium', description: 'Ensure all monetary values are in the same unit (e.g., whole dollars) across filings.', estimated_hours: 1, subtasks: ['Inspect sample values', 'Define unit rule', 'Implement check', 'Report outliers'] },
+    { title: 'Catalog entry: Gold sector', priority: 'low', description: 'Create a governance catalog entry for the Gold peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Catalog entry: Silver sector', priority: 'low', description: 'Create a governance catalog entry for the Silver peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Catalog entry: Uranium sector', priority: 'low', description: 'Create a governance catalog entry for the Uranium peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Catalog entry: Rhodium sector', priority: 'low', description: 'Create a governance catalog entry for the Rhodium peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Catalog entry: Vanadium sector', priority: 'low', description: 'Create a governance catalog entry for the Vanadium peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Catalog entry: Si28 sector', priority: 'low', description: 'Create a governance catalog entry for the Si28 peer group.', estimated_hours: 1, subtasks: ['Collect metadata', 'Define owner', 'Document lineage', 'Publish entry'] },
+    { title: 'Quality scorecard: filings', priority: 'medium', description: 'Compute an overall data-quality score for the filings dataset.', estimated_hours: 2, subtasks: ['Define scoring rubric', 'Run checks', 'Compute score', 'Publish scorecard'] },
+    { title: 'Quality scorecard: commodity dataset', priority: 'medium', description: 'Compute an overall data-quality score for the commodity companies dataset.', estimated_hours: 2, subtasks: ['Define scoring rubric', 'Run checks', 'Compute score', 'Publish scorecard'] },
+    { title: 'Steward review: outlier flags', priority: 'low', description: 'Review outlier flags produced by the analyst and confirm they are data-quality issues or genuine anomalies.', estimated_hours: 1, subtasks: ['Load outlier report', 'Classify each flag', 'Update rules', 'Log decisions'] },
+    { title: 'Steward review: peer group assignments', priority: 'low', description: 'Validate that each commodity company is assigned to the correct peer group.', estimated_hours: 1, subtasks: ['Load peer groups', 'Cross-check names', 'Fix misassignments', 'Log changes'] },
+    { title: 'Steward review: API credential registry', priority: 'low', description: 'Document which API tokens are used for which data source and who owns them.', estimated_hours: 1, subtasks: ['List sources', 'Record tokens', 'Set owners', 'Publish registry'] },
+  ],
+  'Data-Engineer': [
+    { title: 'ETL run: as-reported filings → standardized table', priority: 'high', description: 'Run the filings standardizer over the as-reported CSV and write a clean parquet output.', estimated_hours: 3, subtasks: ['Read as-reported CSV', 'Map XBRL tags', 'Write parquet', 'Validate schema', 'Commit artifact'] },
+    { title: 'ETL run: commodity_companies.csv → cleaned CSV', priority: 'high', description: 'Run the data-agent sidecar ETL pipeline over the commodity companies dataset.', estimated_hours: 2, subtasks: ['Load raw data', 'Clean and engineer', 'Write output', 'Validate'] },
+    { title: 'Feature: sector one-hot encoding', priority: 'medium', description: 'Add one-hot encoded sector columns to the commodity dataset.', estimated_hours: 1, subtasks: ['Identify sectors', 'Encode columns', 'Validate', 'Commit'] },
+    { title: 'Feature: revenue per employee', priority: 'medium', description: 'Compute revenue per employee for each company-year in filings.', estimated_hours: 1, subtasks: ['Load income + employees', 'Compute ratio', 'Handle zeros', 'Commit'] },
+    { title: 'Feature: EBITDA margin', priority: 'medium', description: 'Compute EBITDA margin from standardized income statement fields.', estimated_hours: 1, subtasks: ['Load standardized income', 'Compute margin', 'Validate range', 'Commit'] },
+    { title: 'Feature: net debt / EBITDA', priority: 'medium', description: 'Compute net debt to EBITDA ratio from standardized balance sheet and income statement fields.', estimated_hours: 2, subtasks: ['Load balance sheet', 'Load income', 'Compute ratio', 'Validate', 'Commit'] },
+    { title: 'Feature: year-over-year revenue growth', priority: 'medium', description: 'Compute YoY revenue growth per company.', estimated_hours: 1, subtasks: ['Sort by year', 'Compute growth', 'Handle missing', 'Commit'] },
+    { title: 'Feature: market cap to revenue', priority: 'low', description: 'Compute market-cap-to-revenue ratio from market cap and revenue data.', estimated_hours: 1, subtasks: ['Load market cap', 'Load revenue', 'Compute ratio', 'Commit'] },
+    { title: 'Feature: reserve life index', priority: 'low', description: 'Compute reserve life index for commodity companies where reserves data is available.', estimated_hours: 1, subtasks: ['Load reserves', 'Compute index', 'Handle missing', 'Commit'] },
+    { title: 'Feature: production cost curve rank', priority: 'low', description: 'Rank commodity companies by all-in sustaining cost within each sector.', estimated_hours: 2, subtasks: ['Load cost data', 'Rank within sector', 'Assign percentile', 'Commit'] },
+    { title: 'Pipeline idempotency: filings', priority: 'medium', description: 'Verify re-running the filings standardizer yields identical parquet output for identical input.', estimated_hours: 2, subtasks: ['Run twice', 'Diff outputs', 'Document determinism', 'Fix non-idempotent steps'] },
+    { title: 'Pipeline idempotency: commodity ETL', priority: 'low', description: 'Verify re-running the commodity ETL yields identical output.', estimated_hours: 1, subtasks: ['Run twice', 'Diff outputs', 'Document'] },
+    { title: 'Data validation: standardized filings', priority: 'medium', description: 'Validate the standardized filings table against the steward\'s quality rules.', estimated_hours: 1, subtasks: ['Run steward checks', 'Fix issues', 'Re-validate', 'Commit'] },
+    { title: 'Data validation: peer comparison table', priority: 'medium', description: 'Validate the peer comparison table for missing values and outliers.', estimated_hours: 1, subtasks: ['Load peer table', 'Run checks', 'Fix issues', 'Commit'] },
+    { title: 'Normalize: z-score numeric filings metrics', priority: 'low', description: 'Apply z-score normalization to key numeric metrics in the standardized filings table.', estimated_hours: 1, subtasks: ['Select metrics', 'Compute stats', 'Apply z-score', 'Commit'] },
+    { title: 'Partition: filings by sector', priority: 'low', description: 'Write one parquet file per sector for the standardized filings table.', estimated_hours: 1, subtasks: ['Load table', 'Group by sector', 'Write partitions', 'Validate'] },
+    { title: 'Partition: commodity data by year', priority: 'low', description: 'Write one CSV per year for the commodity companies dataset.', estimated_hours: 1, subtasks: ['Load table', 'Group by year', 'Write partitions', 'Validate'] },
+    { title: 'Engineer: combine income + balance + key metrics', priority: 'high', description: 'Join standardized income, balance sheet, and key metrics into a single analytics-ready table.', estimated_hours: 3, subtasks: ['Load tables', 'Define keys', 'Join', 'Validate', 'Commit'] },
+    { title: 'Engineer: build company fundamentals snapshot', priority: 'medium', description: 'Create a latest-fundamentals snapshot per company from the standardized filings.', estimated_hours: 2, subtasks: ['Filter latest fiscal year', 'Aggregate', 'Write snapshot', 'Validate'] },
+    { title: 'Engineer: build sector aggregates', priority: 'medium', description: 'Create sector-level aggregate metrics (total revenue, median margin, etc.).', estimated_hours: 2, subtasks: ['Load fundamentals', 'Group by sector', 'Compute aggregates', 'Commit'] },
+  ],
+  'Data-Analyst': [
+    { title: 'Summary report: commodity companies', priority: 'high', description: 'Generate descriptive statistics and sector breakdowns for the commodity dataset.', estimated_hours: 2, subtasks: ['Load data', 'Compute stats', 'Sector breakdown', 'Publish report'] },
+    { title: 'Summary report: standardized filings', priority: 'high', description: 'Generate descriptive statistics for the standardized filings dataset.', estimated_hours: 2, subtasks: ['Load data', 'Compute stats', 'Publish report'] },
+    { title: 'Correlation heatmap: commodity metrics', priority: 'medium', description: 'Render a correlation heatmap of numeric columns in the commodity dataset.', estimated_hours: 2, subtasks: ['Select numeric columns', 'Compute correlations', 'Render heatmap', 'Commit PNG'] },
+    { title: 'Correlation heatmap: filings fundamentals', priority: 'medium', description: 'Render a correlation heatmap of revenue, net income, EBITDA, assets, and liabilities.', estimated_hours: 2, subtasks: ['Select fundamentals', 'Compute correlations', 'Render heatmap', 'Commit PNG'] },
+    { title: 'Sector distribution chart: commodity companies', priority: 'medium', description: 'Render a bar chart of company counts by sector.', estimated_hours: 1, subtasks: ['Aggregate counts', 'Render chart', 'Commit PNG'] },
+    { title: 'Revenue trend chart: by sector', priority: 'medium', description: 'Render line charts of total revenue by sector over time.', estimated_hours: 2, subtasks: ['Aggregate revenue', 'Render lines', 'Commit PNG'] },
+    { title: 'EBITDA margin distribution', priority: 'medium', description: 'Render a boxplot of EBITDA margin by sector.', estimated_hours: 2, subtasks: ['Compute margins', 'Render boxplot', 'Commit PNG'] },
+    { title: 'Market cap vs revenue scatter', priority: 'medium', description: 'Render a scatter plot of market cap vs revenue colored by sector.', estimated_hours: 2, subtasks: ['Load data', 'Render scatter', 'Commit PNG'] },
+    { title: 'Outlier detection: revenue', priority: 'high', description: 'Detect revenue outliers per sector using IQR and z-score methods.', estimated_hours: 2, subtasks: ['Load data', 'Compute IQR/z-score', 'Flag outliers', 'Publish report'] },
+    { title: 'Outlier detection: EBITDA margin', priority: 'high', description: 'Detect EBITDA margin outliers per sector.', estimated_hours: 2, subtasks: ['Load data', 'Compute IQR/z-score', 'Flag outliers', 'Publish report'] },
+    { title: 'Outlier detection: market cap', priority: 'medium', description: 'Detect market cap outliers per sector.', estimated_hours: 2, subtasks: ['Load data', 'Compute IQR/z-score', 'Flag outliers', 'Publish report'] },
+    { title: 'Outlier detection: net debt / EBITDA', priority: 'medium', description: 'Detect leverage outliers per sector.', estimated_hours: 2, subtasks: ['Load data', 'Compute ratio', 'Flag outliers', 'Publish report'] },
+    { title: 'Peer comparison table: Gold', priority: 'high', description: 'Build a peer comparison table for Gold companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Peer comparison table: Silver', priority: 'high', description: 'Build a peer comparison table for Silver companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Peer comparison table: Uranium', priority: 'high', description: 'Build a peer comparison table for Uranium companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Peer comparison table: Rhodium', priority: 'high', description: 'Build a peer comparison table for Rhodium/ PGM companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Peer comparison table: Vanadium', priority: 'high', description: 'Build a peer comparison table for Vanadium companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Peer comparison table: Si28', priority: 'high', description: 'Build a peer comparison table for Si28 / silicon wafer companies with key metrics.', estimated_hours: 2, subtasks: ['Filter sector', 'Select metrics', 'Compute ratios', 'Write table'] },
+    { title: 'Anomaly report: discount spikes', priority: 'low', description: 'Flag unusual discount values in the sample sales dataset.', estimated_hours: 1, subtasks: ['Compute stats', 'Flag spikes', 'Summarize', 'Publish'] },
+    { title: 'Anomaly report: missing filings by year', priority: 'low', description: 'Flag companies with missing fiscal years in the standardized filings.', estimated_hours: 1, subtasks: ['Compute year coverage', 'Flag gaps', 'Publish'] },
+  ],
+  'Data-Scientist': [
+    { title: 'Baseline regression: predict revenue', priority: 'high', description: 'Train a Linear Regression baseline to predict revenue from engineered features.', estimated_hours: 3, subtasks: ['Select features', 'Train/test split', 'Fit model', 'Evaluate', 'Log experiment'] },
+    { title: 'Baseline regression: predict EBITDA', priority: 'high', description: 'Train a Linear Regression baseline to predict EBITDA.', estimated_hours: 3, subtasks: ['Select features', 'Split', 'Fit', 'Evaluate', 'Log'] },
+    { title: 'Classification: sector from fundamentals', priority: 'medium', description: 'Train a simple classifier to predict sector from financial fundamentals.', estimated_hours: 3, subtasks: ['Prepare features', 'Encode target', 'Train classifier', 'Evaluate', 'Log'] },
+    { title: 'Clustering: peer groups via k-means', priority: 'medium', description: 'Run k-means clustering on standardized fundamentals to discover natural peer groups.', estimated_hours: 3, subtasks: ['Prepare features', 'Choose k', 'Run k-means', 'Interpret clusters', 'Log'] },
+    { title: 'Feature importance: revenue drivers', priority: 'medium', description: 'Rank features by importance for revenue prediction.', estimated_hours: 2, subtasks: ['Train model', 'Extract importance', 'Rank', 'Visualize'] },
+    { title: 'Feature importance: EBITDA drivers', priority: 'medium', description: 'Rank features by importance for EBITDA prediction.', estimated_hours: 2, subtasks: ['Train model', 'Extract importance', 'Rank', 'Visualize'] },
+    { title: 'Model reproducibility: fixed seed', priority: 'medium', description: 'Re-run baseline regression with a fixed random seed and verify metrics match.', estimated_hours: 1, subtasks: ['Set seed', 'Run', 'Compare', 'Document'] },
+    { title: 'Model benchmark: Linear vs Ridge vs Lasso', priority: 'medium', description: 'Compare Linear, Ridge, and Lasso regression for revenue prediction.', estimated_hours: 3, subtasks: ['Train models', 'Compare metrics', 'Select best', 'Log'] },
+    { title: 'Time-series: naive revenue forecast', priority: 'low', description: 'Build a naive revenue forecast per company using the latest growth rate.', estimated_hours: 2, subtasks: ['Compute growth', 'Project forward', 'Evaluate', 'Log'] },
+    { title: 'Outlier model: isolation forest', priority: 'high', description: 'Train an isolation forest model to detect multivariate outliers in fundamentals.', estimated_hours: 3, subtasks: ['Prepare features', 'Train model', 'Score rows', 'Publish outliers'] },
+    { title: 'Outlier model: LOF local outliers', priority: 'medium', description: 'Train a Local Outlier Factor model for fundamentals outlier detection.', estimated_hours: 3, subtasks: ['Prepare features', 'Train LOF', 'Score rows', 'Publish outliers'] },
+    { title: 'Experiment tracking: index.json', priority: 'medium', description: 'Create an index of all model experiments and their metrics.', estimated_hours: 1, subtasks: ['List experiments', 'Build index', 'Write JSON', 'Commit'] },
+    { title: 'Experiment tracking: compare runs', priority: 'medium', description: 'Compare all baseline regression runs and produce a leaderboard.', estimated_hours: 1, subtasks: ['Load experiments', 'Rank by metric', 'Write leaderboard', 'Commit'] },
+    { title: 'Model calibration: probability scores', priority: 'low', description: 'If running classifiers, produce calibrated probability scores.', estimated_hours: 2, subtasks: ['Train classifier', 'Calibrate', 'Evaluate calibration', 'Log'] },
+    { title: 'Cross-validation: sector classifier', priority: 'low', description: 'Run 5-fold cross-validation on the sector classifier.', estimated_hours: 2, subtasks: ['Prepare data', 'Run CV', 'Report scores', 'Log'] },
+    { title: 'Cross-validation: revenue regression', priority: 'low', description: 'Run time-series-aware cross-validation on revenue regression.', estimated_hours: 2, subtasks: ['Prepare data', 'Run CV', 'Report scores', 'Log'] },
+    { title: 'Hyperparameter sweep: Ridge alpha', priority: 'low', description: 'Grid-search Ridge regression alpha values.', estimated_hours: 2, subtasks: ['Define grid', 'Run sweep', 'Pick best', 'Log'] },
+    { title: 'Residual analysis: revenue model', priority: 'low', description: 'Analyze residuals of the revenue regression model.', estimated_hours: 1, subtasks: ['Predict', 'Compute residuals', 'Plot', 'Publish'] },
+    { title: 'Residual analysis: EBITDA model', priority: 'low', description: 'Analyze residuals of the EBITDA regression model.', estimated_hours: 1, subtasks: ['Predict', 'Compute residuals', 'Plot', 'Publish'] },
+    { title: 'Model card: baseline regression', priority: 'low', description: 'Write a model card documenting the baseline regression model.', estimated_hours: 1, subtasks: ['Summarize model', 'Document inputs', 'Document limitations', 'Commit'] },
+  ],
+  'Data-Manager': [
+    { title: 'Snapshot: filings standardization artifacts', priority: 'high', description: 'Version-control the standardized filings parquet and metadata.', estimated_hours: 2, subtasks: ['Identify artifacts', 'Stage files', 'Create commit', 'Record lineage'] },
+    { title: 'Snapshot: peer comparison tables', priority: 'high', description: 'Version-control all peer comparison CSV/parquet files.', estimated_hours: 2, subtasks: ['Identify artifacts', 'Stage files', 'Create commit', 'Record lineage'] },
+    { title: 'Snapshot: analysis plots', priority: 'medium', description: 'Version-control all PNG plots produced by the analyst.', estimated_hours: 1, subtasks: ['Identify plots', 'Stage files', 'Create commit', 'Record lineage'] },
+    { title: 'Snapshot: model experiments', priority: 'medium', description: 'Version-control model experiment JSON files.', estimated_hours: 1, subtasks: ['Identify experiments', 'Stage files', 'Create commit', 'Record lineage'] },
+    { title: 'Lineage report: filings pipeline', priority: 'high', description: 'Compile lineage from raw as-reported CSV → standardized table → features.', estimated_hours: 2, subtasks: ['Collect events', 'Order pipeline', 'Map artifacts', 'Publish'] },
+    { title: 'Lineage report: peer comparison pipeline', priority: 'high', description: 'Compile lineage from standardized filings → peer comparison tables.', estimated_hours: 2, subtasks: ['Collect events', 'Order pipeline', 'Map artifacts', 'Publish'] },
+    { title: 'Lineage report: model experiments', priority: 'medium', description: 'Compile lineage from engineer features → scientist experiments.', estimated_hours: 1, subtasks: ['Collect events', 'Map artifacts', 'Publish'] },
+    { title: 'Workspace status: data-agents-sidecar', priority: 'medium', description: 'Report git status, artifact count, and knowledge-graph stats.', estimated_hours: 1, subtasks: ['Run git status', 'Count artifacts', 'Query KG stats', 'Publish status'] },
+    { title: 'Data catalog refresh: filings', priority: 'medium', description: 'Update the governance registry with standardized filings metadata.', estimated_hours: 2, subtasks: ['Read catalog', 'Update registry', 'Validate JSON', 'Commit'] },
+    { title: 'Data catalog refresh: peer groups', priority: 'medium', description: 'Update the governance registry with peer group definitions.', estimated_hours: 1, subtasks: ['Read peer groups', 'Update registry', 'Validate', 'Commit'] },
+    { title: 'Governance report: access tokens', priority: 'medium', description: 'Review and document which API tokens are configured and their rate limits.', estimated_hours: 1, subtasks: ['List tokens', 'Record limits', 'Publish report'] },
+    { title: 'Governance report: data retention', priority: 'low', description: 'Document retention policy for raw downloads vs. cleaned artifacts.', estimated_hours: 1, subtasks: ['Define policy', 'Map files', 'Publish'] },
+    { title: 'Audit: download rate-limit compliance', priority: 'medium', description: 'Verify that download scripts respect free-tier rate limits.', estimated_hours: 1, subtasks: ['Review code', 'Check sleep/throttle', 'Report compliance'] },
+    { title: 'Audit: PII scan', priority: 'low', description: 'Scan datasets for potential PII / sensitive fields.', estimated_hours: 1, subtasks: ['Define PII patterns', 'Scan', 'Report findings'] },
+    { title: 'Dashboard publish: HTML index', priority: 'high', description: 'Generate and version-control the HTML dashboard index.', estimated_hours: 2, subtasks: ['Generate dashboard', 'Stage files', 'Create commit', 'Publish link'] },
+    { title: 'Dashboard publish: sector drill-down', priority: 'medium', description: 'Generate per-sector HTML dashboard pages.', estimated_hours: 2, subtasks: ['Generate pages', 'Link from index', 'Stage', 'Commit'] },
+    { title: 'Backlog grooming: data-agent tasks', priority: 'medium', description: 'Review the 100+ data-agent backlog tasks and remove duplicates.', estimated_hours: 1, subtasks: ['List tasks', 'Identify duplicates', 'Propose removals'] },
+    { title: 'Backlog grooming: prioritize next sprint', priority: 'medium', description: 'Rank the top 10 data-agent tasks for the next sprint.', estimated_hours: 1, subtasks: ['Score tasks', 'Rank', 'Publish'] },
+    { title: 'Metrics: artifact count trend', priority: 'low', description: 'Track the number of artifacts produced per data-agent run.', estimated_hours: 1, subtasks: ['Count artifacts', 'Compare to prior', 'Plot trend'] },
+    { title: 'Metrics: task completion trend', priority: 'low', description: 'Track simulated task completion rates for the data agents.', estimated_hours: 1, subtasks: ['Count completions', 'Compare to prior', 'Plot trend'] },
+  ],
 };
 
 // Track which pool index each agent is at
 // Start at index 10 so the newly-added tasks (from the 2026-04-23 chat backlog:
 // Cleopatra/MoneyGod, GPU symbiosis, RTS factory, agent social profiles, testplay,
 // Gemma chat, 3D equipment alignment, timeseries analysis, etc.) seed first.
-const poolIndex: { [agent: string]: number } = { Fill: 10, Kai: 10, Zip: 10, Mira: 10, Luna: 10, Cleopatra: 0, Alexander: 0, MoneyGod: 0, Analyst: 0, VideoProducer: 0, Vice: 0, Atlas: 0, Kimi: 0, Croesus: 0 };
+const poolIndex: { [agent: string]: number } = { Fill: 10, Kai: 10, Zip: 10, Mira: 10, Luna: 10, Cleopatra: 0, Alexander: 0, MoneyGod: 0, Analyst: 0, VideoProducer: 0, Vice: 0, Atlas: 0, Kimi: 0, Croesus: 0, 'Data-Steward': 0, 'Data-Engineer': 0, 'Data-Analyst': 0, 'Data-Scientist': 0, 'Data-Manager': 0 };
 let taskIdCounter = 100;
 let sprintCounter = 1;
 
@@ -445,19 +557,42 @@ export function tickEngine() {
       task.progress = Math.round((doneCount / task.subtasks.length) * 100);
 
       if (doneCount === task.subtasks.length) {
-        task.status = 'completed';
-        task.completed_at = new Date().toISOString();
-        task.progress = 100;
         dirty = true;
         logWork(agent, task.id, task.title, '', 'task_completed', 0);
-        logger.info(`✅ ${agent} completed: ${task.title}`);
+        logger.info(`✅ ${agent} completed subtasks: ${task.title}`);
         // Fire-and-forget LM Studio generation of a real artifact for this task.
-        // Agents actually think when they finish work.
-        generateArtifactForCompletedTask(agent, task).catch(err => {
-          logger.warn(`artifact gen failed for ${agent}/${task.id}: ${err.message}`);
-          // Publish to task.failed Kafka topic so the audit consumer + the
-          // dashboard's Kafka Spine page show artifact-generation failures
-          // alongside other task lifecycle events. Best-effort.
+        // Agents actually think when they finish work. If the inference layer
+        // fails, mark the task as error so the agent is not shown as working.
+        generateArtifactForCompletedTask(agent, task).then(result => {
+          if (!result.ok) {
+            task.status = 'error';
+            task.completed_at = new Date().toISOString();
+            task.progress = 99;
+            dirty = true;
+            logger.warn(`❌ ${agent} task ${task.id} errored: ${result.reason}`);
+            try {
+              const { bestEffortPublish } = require('./integrations/kafka/shared');
+              bestEffortPublish((p: any) => p.publishTaskFailed({
+                task_id: task.id,
+                agent,
+                title: task.title,
+                failure_stage: 'artifact-gen',
+                error: result.reason,
+                ts: new Date().toISOString(),
+              }));
+            } catch { /* shared.ts not loadable in test envs */ }
+            return;
+          }
+          task.status = 'completed';
+          task.completed_at = new Date().toISOString();
+          task.progress = 100;
+          dirty = true;
+        }).catch(err => {
+          task.status = 'error';
+          task.completed_at = new Date().toISOString();
+          task.progress = 99;
+          dirty = true;
+          logger.warn(`❌ ${agent} task ${task.id} errored: ${err.message}`);
           try {
             const { bestEffortPublish } = require('./integrations/kafka/shared');
             bestEffortPublish((p: any) => p.publishTaskFailed({
@@ -774,6 +909,12 @@ interface WorkLogEntry {
 }
 
 const workLog: WorkLogEntry[] = [];
+// Hard cap on retained work-log entries. The array had no bound, which grew
+// task-state.json to 196 MB — every 5s save tick then serialized the whole
+// file and blocked the event loop, and startup loaded the entire blob into
+// memory. Keep only the most recent MAX_WORKLOG entries; analytics here only
+// look at recent windows / last-N slices, so older entries carry no value.
+const MAX_WORKLOG = 10000;
 // Replay any work-log entries that were restored from the persisted state.
 // Use a manual loop instead of `push(...arr)` because the persisted log can
 // be 100k+ entries and V8's variadic-call argument limit (~125k) blows the
@@ -781,7 +922,10 @@ const workLog: WorkLogEntry[] = [];
 // at startup when the log grew past the threshold.
 if ((globalThis as any).__virtualpcPersistedWorkLog) {
   const persisted = (globalThis as any).__virtualpcPersistedWorkLog as WorkLogEntry[];
-  for (let i = 0; i < persisted.length; i++) workLog.push(persisted[i]);
+  // Only replay the tail — a previously-unbounded log on disk could hold
+  // hundreds of thousands of entries; keep the newest MAX_WORKLOG.
+  const start = Math.max(0, persisted.length - MAX_WORKLOG);
+  for (let i = start; i < persisted.length; i++) workLog.push(persisted[i]);
   delete (globalThis as any).__virtualpcPersistedWorkLog;
 }
 const PROJECT_NAME = 'VirtualPC platform';
@@ -801,6 +945,11 @@ export function logWork(agent: string, taskId: string, taskTitle: string, subtas
     project: PROJECT_NAME,
     registeredFor: REGISTERED_FOR,
   });
+  // Rolling eviction — never let the in-memory log (and therefore the persisted
+  // snapshot) grow without bound. Splice the oldest overflow in one shot.
+  if (workLog.length > MAX_WORKLOG) {
+    workLog.splice(0, workLog.length - MAX_WORKLOG);
+  }
 }
 
 export function getWorkLog(agent?: string, limit?: number): WorkLogEntry[] {
@@ -860,7 +1009,10 @@ Produce a concise post-completion artifact:
 Keep it under 150 words. Plain text.`;
 }
 
-async function generateArtifactForCompletedTask(agent: string, task: Task): Promise<void> {
+async function generateArtifactForCompletedTask(agent: string, task: Task): Promise<
+  { ok: true; model: string; latencyMs: number; usage: any; content: string }
+  | { ok: false; reason: string }
+> {
   // Lazy import to avoid circular dep with the lmstudio module
   const lms = await import('./lmstudio');
   const prompt = artifactPromptFor(agent, task);
@@ -874,7 +1026,7 @@ async function generateArtifactForCompletedTask(agent: string, task: Task): Prom
   );
   if (!result.ok) {
     logger.warn(`artifact skipped (${agent}/${task.id}): ${result.reason}`);
-    return;
+    return { ok: false, reason: result.reason };
   }
   const art: Artifact = {
     id: `art-${task.id}-${Date.now()}`,
@@ -892,6 +1044,7 @@ async function generateArtifactForCompletedTask(agent: string, task: Task): Prom
   if (artifacts.length > MAX_ARTIFACTS) artifacts.splice(0, artifacts.length - MAX_ARTIFACTS);
   logger.info(`📄 artifact saved for ${agent}/${task.id} (${art.tokens} tokens, ${art.latencyMs}ms via ${art.model})`);
   dirty = true;
+  return { ok: true, model: result.model, latencyMs: result.latencyMs, usage: result.usage, content: result.content };
 }
 
 export function getAgentArtifacts(agent: string, limit = 10): Artifact[] {

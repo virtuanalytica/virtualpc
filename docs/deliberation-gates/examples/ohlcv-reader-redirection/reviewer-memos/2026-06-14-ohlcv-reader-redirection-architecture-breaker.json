@@ -1,0 +1,27 @@
+{
+  "reviewer": "architecture-breaker",
+  "verdict": "revise",
+  "risk_items": [
+    {
+      "id": "RISK-001",
+      "severity": "major",
+      "category": "architecture",
+      "finding": "The plan mixes canonical table creation, writer migration, and reader redirection in a single implicit phase.",
+      "evidence": "Proposal says 'migrate ohlcv to canonical table and redirect readers' without explicit phase boundaries.",
+      "why_it_matters": "Without phase boundaries, a partial failure could leave writers on the old table while readers point to the new table.",
+      "recommended_constraint": "Split into explicit phases: (1) canonical table + backfill, (2) compatibility view, (3) writer cutover, (4) reader redirection after validation.",
+      "required_verification": "Integration test that fails if any phase is skipped.",
+      "route_impact": "claude_preferred"
+    }
+  ],
+  "blind_spots": ["Impact on downstream aggregation jobs that read ohlcv."],
+  "questions": ["Is there an ADR documenting the canonical table strategy?"],
+  "recommended_task_graph_constraints": [
+    "Reader redirection tasks must depend on canonical table validation.",
+    "Writer cutover must be a separate task from reader redirection."
+  ],
+  "recommended_verification_gates": [
+    "Row-count parity check between old and canonical tables.",
+    "Integration test with L1 writer and L2/L3 readers."
+  ]
+}

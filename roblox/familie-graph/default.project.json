@@ -1,0 +1,22 @@
+{
+  "name": "familie-graph",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "FamilieGraphData": {
+        "$path": "src/ReplicatedStorage/FamilieGraphData.luau"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "FamilieGraphBuilder": {
+        "$path": "src/ServerScriptService/FamilieGraphBuilder.server.luau"
+      }
+    },
+    "Workspace": {
+      "$className": "Workspace",
+      "$properties": { "Gravity": 0 }
+    }
+  }
+}

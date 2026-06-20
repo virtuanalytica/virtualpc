@@ -82,11 +82,11 @@ export const INDEXES = {
   contextProject: `CREATE INDEX IF NOT EXISTS FOR (c:Context) ON (c.project)`,
 
   // Full-text search indexes
-  fullTextDecision: `CREATE FULLTEXT INDEX IF NOT EXISTS decision_search FOR (d:Decision) ON EACH [d.what, d.why]`,
-  fullTextRisk: `CREATE FULLTEXT INDEX IF NOT EXISTS risk_search FOR (r:Risk) ON EACH [r.description, r.mitigation]`,
-  fullTextPrecedent: `CREATE FULLTEXT INDEX IF NOT EXISTS precedent_search FOR (p:Precedent) ON EACH [p.context, p.outcome]`,
+  fullTextDecision: `CREATE FULLTEXT INDEX decision_search IF NOT EXISTS FOR (d:Decision) ON EACH [d.what, d.why]`,
+  fullTextRisk: `CREATE FULLTEXT INDEX risk_search IF NOT EXISTS FOR (r:Risk) ON EACH [r.description, r.mitigation]`,
+  fullTextPrecedent: `CREATE FULLTEXT INDEX precedent_search IF NOT EXISTS FOR (p:Precedent) ON EACH [p.context, p.outcome]`,
   // Cross-label full-text index used by LightRAGClient.query() fallback path
-  fullTextAllNodes: `CREATE FULLTEXT INDEX IF NOT EXISTS node_search FOR (n:Node|Decision|Risk|Precedent|Context) ON EACH [n.content]`,
+  fullTextAllNodes: `CREATE FULLTEXT INDEX node_search IF NOT EXISTS FOR (n:Node|Decision|Risk|Precedent|Context) ON EACH [n.content]`,
 };
 
 /**

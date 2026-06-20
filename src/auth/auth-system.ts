@@ -179,13 +179,31 @@ export class AuthSystem {
    * Initialize default users (demo)
    */
   private initializeDefaultUsers(): void {
+    // The well-known demo passwords (ceo123, kai123, …) are an auth-bypass risk
+    // in any real deployment. They are only used when explicitly allowed — the
+    // test suite (NODE_ENV=test) or a local opt-in (ALLOW_DEMO_PASSWORDS=1).
+    // Otherwise each seed user is provisioned from SEED_<ROLE>_PASSWORD, or a
+    // strong random password that is surfaced once via the log so an operator
+    // can capture and rotate it.
+    const allowDemo =
+      process.env.NODE_ENV === 'test' || process.env.ALLOW_DEMO_PASSWORDS === '1';
+    const generated: Array<{ username: string; password: string }> = [];
+    const seedPassword = (envKey: string, demo: string, username: string): string => {
+      const fromEnv = process.env[envKey];
+      if (fromEnv && fromEnv.length > 0) return fromEnv;
+      if (allowDemo) return demo;
+      const pw = randomBytes(12).toString('base64url');
+      generated.push({ username, password: pw });
+      return pw;
+    };
+
     const defaults: User[] = [
       {
         id: 'user_ceo_001',
         username: 'ceo',
         email: 'ceo@virtualpc.local',
         role: 'ceo',
-        passwordHash: this.hashPassword('ceo123'), // Demo password
+        passwordHash: this.hashPassword(seedPassword('SEED_CEO_PASSWORD', 'ceo123', 'ceo')),
         createdAt: new Date(),
         status: 'active'
       },
@@ -194,7 +212,7 @@ export class AuthSystem {
         username: 'kai',
         email: 'kai@virtualpc.local',
         role: 'cto',
-        passwordHash: this.hashPassword('kai123'),
+        passwordHash: this.hashPassword(seedPassword('SEED_CTO_PASSWORD', 'kai123', 'kai')),
         createdAt: new Date(),
         status: 'active'
       },
@@ -203,7 +221,7 @@ export class AuthSystem {
         username: 'zip',
         email: 'zip@virtualpc.local',
         role: 'developer',
-        passwordHash: this.hashPassword('zip123'),
+        passwordHash: this.hashPassword(seedPassword('SEED_DEV_PASSWORD', 'zip123', 'zip')),
         createdAt: new Date(),
         status: 'active'
       },
@@ -212,7 +230,7 @@ export class AuthSystem {
         username: 'mira',
         email: 'mira@virtualpc.local',
         role: 'artist',
-        passwordHash: this.hashPassword('mira123'),
+        passwordHash: this.hashPassword(seedPassword('SEED_ARTIST_PASSWORD', 'mira123', 'mira')),
         createdAt: new Date(),
         status: 'active'
       },
@@ -221,7 +239,7 @@ export class AuthSystem {
         username: 'luna',
         email: 'luna@virtualpc.local',
         role: 'tech_artist',
-        passwordHash: this.hashPassword('luna123'),
+        passwordHash: this.hashPassword(seedPassword('SEED_TECH_ARTIST_PASSWORD', 'luna123', 'luna')),
         createdAt: new Date(),
         status: 'active'
       }
@@ -231,6 +249,13 @@ export class AuthSystem {
       this.users.set(user.id, user);
     });
 
+    if (generated.length > 0) {
+      logger.warn(
+        `🔐 Generated ${generated.length} random seed password(s). Set SEED_<ROLE>_PASSWORD (or ALLOW_DEMO_PASSWORDS=1 for local dev) to control these. Shown once:`
+      );
+      for (const g of generated) logger.warn(`   • ${g.username}: ${g.password}`);
+      logger.warn('   Capture them now or rotate via the auth API — they are not logged again.');
+    }
     logger.info(`✓ Auth system initialized with ${defaults.length} default users`);
   }
 

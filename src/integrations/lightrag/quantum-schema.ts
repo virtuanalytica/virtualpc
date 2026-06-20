@@ -134,7 +134,7 @@ export const QUANTUM_INDEXES: Record<string, string> = {
   entanglementPairByState:
     `CREATE INDEX IF NOT EXISTS FOR (e:EntanglementPair) ON (e.state_label)`,
   fullTextQuantum:
-    `CREATE FULLTEXT INDEX IF NOT EXISTS quantum_search FOR (n:QuantumCircuit|QuantumAlgorithm|QuantumGate) ON EACH [n.name, n.description]`,
+    `CREATE FULLTEXT INDEX quantum_search IF NOT EXISTS FOR (n:QuantumCircuit|QuantumAlgorithm|QuantumGate) ON EACH [n.name, n.description]`,
 };
 
 // ── Cypher query helpers ───────────────────────────────────────────────────────

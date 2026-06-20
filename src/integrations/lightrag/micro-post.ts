@@ -18,7 +18,9 @@
  */
 
 import * as crypto from 'node:crypto';
+import { join } from 'node:path';
 import type { Express, Request, Response } from 'express';
+import { FileSnapshotStorage, type SnapshotStorage } from './storage-port';
 import logger from '../../utils/logger';
 
 // ── Schema tag ────────────────────────────────────────────────────────────────
@@ -123,14 +125,36 @@ export function validatePost(post: MicroPost, params: DaoParams = DEFAULT_DAO_PA
 
 // ── Content-addressed store with TTL eviction ─────────────────────────────────
 
+export const STORE_SNAPSHOT_VERSION = 1;
+
+export interface StoreSnapshot {
+  version: typeof STORE_SNAPSHOT_VERSION;
+  savedAt: string;
+  posts: MicroPost[];
+}
+
 export class MicroPostStore {
   private readonly posts = new Map<string, MicroPost>();
   private readonly order: string[] = [];   // insertion order for LRU
   private gcTimer: ReturnType<typeof setInterval> | null = null;
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private _params: DaoParams;
+  private readonly storage: SnapshotStorage | null;
+  private readonly debounceMs: number;
 
-  constructor(params: DaoParams = DEFAULT_DAO_PARAMS) {
+  constructor(
+    params: DaoParams = DEFAULT_DAO_PARAMS,
+    opts: { storage?: string | SnapshotStorage; debounceMs?: number } = {},
+  ) {
     this._params = { ...params };
+    this.debounceMs = opts.debounceMs ?? 2_000;
+    if (opts.storage === undefined) {
+      this.storage = null;
+    } else {
+      this.storage = typeof opts.storage === 'string'
+        ? new FileSnapshotStorage(opts.storage)
+        : opts.storage;
+    }
   }
 
   get params(): Readonly<DaoParams> { return this._params; }
@@ -152,6 +176,7 @@ export class MicroPostStore {
 
     this.posts.set(post.id, post);
     this.order.push(post.id);
+    this._scheduleSave();
     return { ok: true };
   }
 
@@ -210,6 +235,64 @@ export class MicroPostStore {
 
   stopGc(): void {
     if (this.gcTimer) { clearInterval(this.gcTimer); this.gcTimer = null; }
+  }
+
+  // ── Persistence ─────────────────────────────────────────────────────────────
+
+  private _scheduleSave(): void {
+    if (!this.storage || this.saveTimer) return;
+    this.saveTimer = setTimeout(() => {
+      this.saveTimer = null;
+      this.saveNow();
+    }, this.debounceMs);
+    (this.saveTimer as any).unref?.();
+  }
+
+  saveNow(): void {
+    if (!this.storage) return;
+    try {
+      const snapshot: StoreSnapshot = {
+        version: STORE_SNAPSHOT_VERSION,
+        savedAt: new Date().toISOString(),
+        posts: [...this.posts.values()],
+      };
+      this.storage.write(JSON.stringify(snapshot));
+    } catch (e: any) {
+      logger.warn(`micro-post store: save failed — ${e.message}`);
+    }
+  }
+
+  flush(): void {
+    if (this.saveTimer) { clearTimeout(this.saveTimer); this.saveTimer = null; }
+    this.saveNow();
+  }
+
+  /** Load from snapshot. Call before startGc() and before wiring routes. */
+  load(): { loaded: number; skipped: number } | null {
+    if (!this.storage) return null;
+    let raw: string | null;
+    try { raw = this.storage.read(); } catch { return null; }
+    if (!raw) return null;
+
+    let snap: StoreSnapshot;
+    try { snap = JSON.parse(raw); } catch (e: any) {
+      logger.error(`micro-post store: snapshot corrupt — ${e.message}`);
+      return null;
+    }
+    if (snap.version !== STORE_SNAPSHOT_VERSION) {
+      logger.error(`micro-post store: unsupported snapshot version ${snap.version}`);
+      return null;
+    }
+
+    let loaded = 0; let skipped = 0;
+    const now = new Date();
+    for (const post of snap.posts ?? []) {
+      if (post.ttl && new Date(post.ttl.expiresAt) <= now) { skipped++; continue; }
+      const r = this.add(post);
+      if (r.ok) loaded++; else skipped++;
+    }
+    logger.info(`micro-post store: loaded ${loaded} posts (${skipped} expired/invalid)`);
+    return { loaded, skipped };
   }
 }
 

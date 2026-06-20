@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Familie — Portaal (3D · categorie-filters · bewerken · VR)</title>
+  <style>
+    :root { --bg:#0b0e14; --panel:rgba(18,24,38,.93); --ink:#e6edf3; --muted:#8b98ad; --accent:#5b8cff; --ok:#41d18f; --hidden:#ff6b6b; --warn:#ff9f5b; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; background:var(--bg); color:var(--ink); font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif; overflow:hidden; }
+    #graph { position:fixed; inset:0; }
+    .panel { position:fixed; z-index:10; background:var(--panel); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.08); border-radius:14px; box-shadow:0 12px 40px rgba(0,0,0,.45); }
+    #left { top:14px; left:14px; width:300px; max-width:calc(100vw - 28px); padding:14px 16px; max-height:calc(100vh - 28px); overflow:auto; }
+    #right { top:14px; right:14px; width:300px; max-width:calc(100vw - 28px); padding:14px 16px; max-height:calc(100vh - 28px); overflow:auto; }
+    h1 { margin:0 0 2px; font-size:17px; } .sub { color:var(--muted); font-size:11px; margin-bottom:12px; }
+    h2 { font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin:14px 0 8px; border-top:1px solid rgba(255,255,255,.08); padding-top:12px; }
+    h2:first-of-type { border-top:0; padding-top:0; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:7px 0; }
+    .stat { color:var(--muted); font-size:12px; } .stat b { color:var(--ink); }
+    button { cursor:pointer; border:0; border-radius:9px; padding:9px 12px; font-size:12.5px; font-weight:600; color:#fff; background:var(--accent); transition:filter .15s; }
+    button:hover { filter:brightness(1.1); } button.sec { background:#2a3550; } button.danger { background:var(--hidden); } button.full { width:100%; }
+    button.hidden-state { background:var(--hidden); }
+    .lng { background:#1a2336; padding:5px 9px; font-size:11px; opacity:.6; }
+    .lng.on { background:var(--accent); opacity:1; }
+    input,select { width:100%; background:#0f1626; border:1px solid #2a3550; color:var(--ink); border-radius:8px; padding:8px 9px; font-size:12.5px; margin:4px 0; }
+    label.f { font-size:11px; color:var(--muted); display:block; margin-top:6px; }
+    .cat { display:flex; align-items:center; gap:8px; font-size:12px; padding:4px 0; cursor:pointer; user-select:none; }
+    .cat input { width:auto; margin:0; } .dot { width:11px; height:11px; border-radius:50%; flex:0 0 auto; }
+    .cat .ct { margin-left:auto; color:var(--muted); font-size:11px; }
+    .catbtns { display:flex; gap:6px; margin:6px 0 2px; } .catbtns button { flex:1; padding:5px; font-size:11px; }
+    .badge { display:inline-flex; align-items:center; gap:6px; font-size:11px; padding:3px 8px; border-radius:999px; }
+    .badge.vis { background:rgba(65,209,143,.16); color:var(--ok); } .badge.hid { background:rgba(255,107,107,.16); color:var(--hidden); }
+    #toast { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:30; background:var(--panel); border:1px solid rgba(255,255,255,.12); padding:10px 16px; border-radius:10px; font-size:13px; opacity:0; transition:opacity .25s; pointer-events:none; max-width:90vw; }
+    #toast.show { opacity:1; } .ok { color:var(--ok); } .err { color:var(--hidden); }
+    a.lnk { color:var(--accent); text-decoration:none; } .hide { display:none; }
+    #vrbtn { position:fixed; bottom:16px; right:16px; z-index:20; }
+    details { margin:6px 0; } summary { cursor:pointer; font-size:12.5px; color:var(--ink); }
+  </style>
+</head>
+<body>
+  <div id="graph"></div>
+
+  <!-- LEFT: status + category toggles -->
+  <div id="left" class="panel">
+    <h1>Familie <span style="opacity:.5;font-weight:400">— portaal</span></h1>
+    <div class="sub">3D · categorie-filters · bewerken · VR (Quest)</div>
+    <div class="row" style="margin:2px 0 8px"><div id="langToggle" style="display:flex;gap:5px">
+      <button class="lng on" data-l="nl" onclick="setLang('nl')">NL</button>
+      <button class="lng" data-l="en" onclick="setLang('en')">EN</button>
+      <button class="lng" data-l="cn" onclick="setLang('cn')">中文 (粵)</button>
+    </div></div>
+    <div class="row"><span class="stat">Graaf</span><span id="visBadge" class="badge vis">● zichtbaar</span></div>
+    <div class="row"><span class="stat">Zichtbaar</span><span class="stat"><b id="shownCount">–</b> / <span id="totalCount">–</span> objecten</span></div>
+    <div class="row"><button id="toggleBtn" class="sec" style="flex:1" onclick="toggleWholeGraph()">Hele graaf verbergen</button></div>
+
+    <h2 id="catsHdr">Categorieën aan/uit</h2>
+    <div class="catbtns">
+      <button class="sec" id="allOnBtn" onclick="allCats(true)">Alles aan</button>
+      <button class="sec" id="allOffBtn" onclick="allCats(false)">Alles uit</button>
+    </div>
+    <div id="cats"></div>
+  </div>
+
+  <!-- RIGHT: edit -->
+  <div id="right" class="panel">
+    <h2 style="margin-top:0;border-top:0;padding-top:0">Bewerken (privé)</h2>
+    <label class="f">Portal-token (eenmalig)</label>
+    <input id="token" type="password" placeholder="x-family-token" oninput="saveToken()" />
+    <div class="stat" id="tokState" style="font-size:11px">token niet ingesteld</div>
+
+    <details open>
+      <summary>➕ Object toevoegen</summary>
+      <input id="nName" placeholder="naam (bv. 'Heraeus CL-G oven')" />
+      <select id="nCat"></select>
+      <input id="nNote" placeholder="notitie (optioneel)" />
+      <button class="full" onclick="addNode()">Object opslaan</button>
+    </details>
+
+    <details>
+      <summary>🔗 Relatie toevoegen</summary>
+      <input id="eFrom" placeholder="van (exacte objectnaam)" list="nodeList" />
+      <input id="eRel" placeholder="relatie (bv. BEZIT, WERKT_AAN)" />
+      <input id="eTo" placeholder="naar (exacte objectnaam)" list="nodeList" />
+      <input id="eEv" placeholder="bewijs/bron (optioneel)" />
+      <button class="full" onclick="addEdge()">Relatie opslaan</button>
+    </details>
+
+    <details>
+      <summary>🗑️ Verwijderen</summary>
+      <input id="dName" placeholder="object verwijderen (naam)" list="nodeList" />
+      <button class="full danger" onclick="delNode()">Object verwijderen</button>
+    </details>
+    <datalist id="nodeList"></datalist>
+  </div>
+
+  <button id="vrbtn" class="panel" style="padding:10px 14px" onclick="location.href='/family-vr.html'">🥽 VR (Quest)</button>
+  <div id="toast"></div>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/3d-force-graph@1.73.4/dist/3d-force-graph.min.js"></script>
+  <script>
+    const GROUP_COLORS = {1:'#ff8fab',2:'#5b8cff',3:'#ffd166',4:'#06d6a0',5:'#9b8cff',6:'#ff9f5b',7:'#4dd2ff',8:'#c0e34d',9:'#ff6b9d',10:'#7ee787',11:'#36c5f0',12:'#f5a623',13:'#b07cff',14:'#8899aa',17:'#e07a5f',18:'#81b29a',19:'#f2cc8f',20:'#e06c9f',21:'#6db5c4',22:'#b8b8d1',0:'#cfd8e3'};
+    let RAW = { nodes: [], links: [] };       // full graph from API
+    const enabledCats = {};                    // category label -> bool
+    let tokenVal = localStorage.getItem('familyToken') || '';
+    // i18n: NL/EN/CN (Kantonees = 繁體). Grouping stays on the NL category label;
+    // only the display is translated.
+    let LANG = localStorage.getItem('familyLang') || 'nl';
+    let I18N = { categories:{}, relations:{}, ui:{} };
+    const dispName = n => (n.i18n && n.i18n[LANG]) || n.name;
+    const catLabel = c => (I18N.categories[c] && I18N.categories[c][LANG]) || c;
+    const relLabel = r => (I18N.relations[r] && I18N.relations[r][LANG]) || r;
+
+    const Graph = ForceGraph3D()(document.getElementById('graph'))
+      .backgroundColor('#0b0e14')
+      .nodeLabel(n => `<div style="padding:4px 8px;background:#11182b;border:1px solid #2a3550;border-radius:6px;font-size:12px"><b>${dispName(n)}</b><br/><span style="color:#8b98ad">${catLabel(n.category||n.type)}${n.note?' · '+n.note:''}</span></div>`)
+      .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
+      .nodeVal(n => n.val || 2)
+      .linkColor(l => l.inferred ? 'rgba(255,209,102,.35)' : 'rgba(120,150,220,.55)')
+      .linkWidth(l => l.inferred ? .6 : 1.1)
+      .linkDirectionalArrowLength(3).linkDirectionalArrowRelPos(1)
+      .linkLabel(l => `${relLabel(l.type)}${l.share?' <b>'+l.share+'</b>':''}${l.evidence?'<br/><i style="color:#8b98ad">"'+l.evidence+'"</i>':''}`)
+      .onNodeClick(n => { const d=70, r=1+d/Math.hypot(n.x||1,n.y||1,n.z||1); Graph.cameraPosition({x:(n.x||0)*r,y:(n.y||0)*r,z:(n.z||0)*r}, n, 800); });
+
+    function toast(msg, cls) { const t=document.getElementById('toast'); t.innerHTML=cls?`<span class="${cls}">${msg}</span>`:msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600); }
+    function saveToken() { tokenVal=document.getElementById('token').value.trim(); localStorage.setItem('familyToken',tokenVal); document.getElementById('tokState').textContent = tokenVal?'token ingesteld ✓':'token niet ingesteld'; }
+    function headers() { return tokenVal ? {'content-type':'application/json','x-family-token':tokenVal} : {'content-type':'application/json'}; }
+
+    function applyVisUI(hidden) {
+      const u=(I18N.ui&&I18N.ui[LANG])||{};
+      const b=document.getElementById('visBadge'), btn=document.getElementById('toggleBtn');
+      if (hidden) { b.className='badge hid'; b.textContent='● '+(u.hidden||'verborgen'); btn.textContent=u.showGraph||'Hele graaf tonen'; btn.classList.add('hidden-state'); }
+      else { b.className='badge vis'; b.textContent='● '+(u.visible||'zichtbaar'); btn.textContent=u.hideGraph||'Hele graaf verbergen'; btn.classList.remove('hidden-state'); }
+    }
+
+    function rebuildCats() {
+      // Distinct categories from the loaded data → checkbox each (auto-adapts to
+      // new tags like locations/chats/activities added later).
+      const counts = {};
+      for (const n of RAW.nodes) { const c=n.category||n.type||'overig'; counts[c]=(counts[c]||0)+1; if(!(c in enabledCats)) enabledCats[c]=true; }
+      const box=document.getElementById('cats'); box.innerHTML='';
+      Object.keys(counts).sort().forEach(c => {
+        const sample = RAW.nodes.find(n => (n.category||n.type)===c);
+        const color = GROUP_COLORS[sample?sample.group:0] || '#cfd8e3';
+        const id='cat_'+c.replace(/\W/g,'_');
+        const row=document.createElement('label'); row.className='cat';
+        row.innerHTML = `<input type="checkbox" id="${id}" ${enabledCats[c]?'checked':''}/><span class="dot" style="background:${color}"></span>${catLabel(c)}<span class="ct">${counts[c]}</span>`;
+        row.querySelector('input').addEventListener('change', e=>{ enabledCats[c]=e.target.checked; render(); });
+        box.appendChild(row);
+      });
+    }
+
+    function render() {
+      // Client-side category filter: keep nodes whose category is enabled, and
+      // links whose both endpoints survive.
+      const keep = new Set();
+      const nodes = RAW.nodes.filter(n => { const c=n.category||n.type||'overig'; if(enabledCats[c]){keep.add(n.id);return true;} return false; });
+      const links = RAW.links.filter(l => keep.has(typeof l.source==='object'?l.source.id:l.source) && keep.has(typeof l.target==='object'?l.target.id:l.target));
+      Graph.graphData({ nodes, links });
+      document.getElementById('shownCount').textContent = nodes.length;
+      document.getElementById('totalCount').textContent = RAW.nodes.length;
+      // node datalist for edit autocomplete
+      document.getElementById('nodeList').innerHTML = RAW.nodes.filter(n=>n.kind==='entity').map(n=>`<option value="${n.name}">`).join('');
+    }
+    function allCats(v){ Object.keys(enabledCats).forEach(c=>enabledCats[c]=v); document.querySelectorAll('#cats input').forEach(i=>i.checked=v); render(); }
+    function applyUiText(){
+      const u=(I18N.ui&&I18N.ui[LANG])||{};
+      document.querySelectorAll('.lng').forEach(b=>b.classList.toggle('on', b.dataset.l===LANG));
+      const set=(id,t)=>{const el=document.getElementById(id); if(el&&t) el.textContent=t;};
+      set('catsHdr',u.categories); set('allOnBtn',u.allOn); set('allOffBtn',u.allOff); set('editHdr',u.edit);
+      applyVisUI(document.getElementById('visBadge').className.includes('hid'));
+    }
+    function setLang(l){ LANG=l; localStorage.setItem('familyLang',l); applyUiText(); rebuildCats(); render(); }
+    async function loadI18n(){ try{ const d=await (await fetch('/api/family/i18n')).json(); I18N={categories:d.categories||{},relations:d.relations||{},ui:d.ui||{}}; applyUiText(); }catch(e){} }
+
+    async function load() {
+      try {
+        const d = await (await fetch('/api/family/graph')).json();
+        applyVisUI(!!d.hidden);
+        RAW = { nodes: d.nodes||[], links: d.links||[] };
+        rebuildCats(); render();
+        if (d.hidden) toast('Hele graaf staat op verborgen','err');
+      } catch(e){ toast('Laden mislukt: '+e.message,'err'); }
+    }
+    async function loadCats() {
+      try { const d=await (await fetch('/api/family/categories')).json();
+        document.getElementById('nCat').innerHTML = (d.categories||[]).map(c=>`<option value="${c.key}">${c.label}</option>`).join('');
+      } catch(e){}
+    }
+    async function toggleWholeGraph() {
+      try { const v=await (await fetch('/api/family/toggle',{method:'POST'})).json(); applyVisUI(!!v.hidden); await load(); toast(v.hidden?'Graaf verborgen':'Graaf zichtbaar','ok'); }
+      catch(e){ toast('Toggle mislukt: '+e.message,'err'); }
+    }
+    async function post(url, body) {
+      const r = await fetch(url,{method:'POST',headers:headers(),body:JSON.stringify(body)});
+      const j = await r.json(); if(!j.success) throw new Error(j.error||('HTTP '+r.status)); return j;
+    }
+    async function addNode() {
+      try { const name=document.getElementById('nName').value.trim(); if(!name)return toast('naam verplicht','err');
+        await post('/api/family/node',{name,cat:document.getElementById('nCat').value,note:document.getElementById('nNote').value.trim()});
+        document.getElementById('nName').value=''; document.getElementById('nNote').value=''; toast('Object opgeslagen ✓','ok'); await load();
+      } catch(e){ toast(e.message,'err'); }
+    }
+    async function addEdge() {
+      try { await post('/api/family/edge',{from:document.getElementById('eFrom').value.trim(),to:document.getElementById('eTo').value.trim(),rel:document.getElementById('eRel').value.trim(),evidence:document.getElementById('eEv').value.trim()});
+        document.getElementById('eEv').value=''; toast('Relatie opgeslagen ✓','ok'); await load();
+      } catch(e){ toast(e.message,'err'); }
+    }
+    async function delNode() {
+      try { const name=document.getElementById('dName').value.trim(); if(!name)return; if(!confirm('Verwijder object "'+name+'"?'))return;
+        const r=await fetch('/api/family/node/'+encodeURIComponent(name),{method:'DELETE',headers:headers()}); const j=await r.json(); if(!j.success)throw new Error(j.error);
+        document.getElementById('dName').value=''; toast('Verwijderd ✓','ok'); await load();
+      } catch(e){ toast(e.message,'err'); }
+    }
+
+    document.getElementById('token').value = tokenVal; saveToken();
+    loadI18n(); loadCats(); load();
+    window.addEventListener('resize', ()=>Graph.width(window.innerWidth).height(window.innerHeight));
+  </script>
+</body>
+</html>

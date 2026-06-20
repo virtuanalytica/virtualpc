@@ -1,0 +1,47 @@
+[
+  {
+    "id": "news-1781950532426-uf1mp1",
+    "ticker": "AAPL",
+    "headline": "Apple announces record Q1 revenue",
+    "summary": "Apple reports all-time high quarterly revenue driven by iPhone and Services growth.",
+    "source": "Bloomberg",
+    "publicationDate": "2025-01-30",
+    "url": "https://example.com/aapl-q1"
+  },
+  {
+    "id": "news-1781950532426-dn39oa",
+    "ticker": "MSFT",
+    "headline": "Microsoft expands Azure AI footprint",
+    "summary": "Microsoft opens new AI data-center regions to meet enterprise demand.",
+    "source": "Reuters",
+    "publicationDate": "2025-02-12",
+    "url": "https://example.com/msft-azure"
+  },
+  {
+    "id": "news-1781950532426-8zs4l2",
+    "ticker": "GOOGL",
+    "headline": "Alphabet beats earnings estimates",
+    "summary": "Alphabet quarterly profit tops Wall Street expectations on search and cloud strength.",
+    "source": "CNBC",
+    "publicationDate": "2025-02-05",
+    "url": "https://example.com/googl-earnings"
+  },
+  {
+    "id": "news-1781950532426-33xwa9",
+    "ticker": "TSLA",
+    "headline": "Tesla cuts prices in key markets",
+    "summary": "Tesla reduces Model Y prices in Europe and China to maintain volume.",
+    "source": "Financial Times",
+    "publicationDate": "2025-02-10",
+    "url": "https://example.com/tsla-price"
+  },
+  {
+    "id": "news-1781950532426-ty07js",
+    "ticker": "NVDA",
+    "headline": "NVIDIA unveils next-gen GPU architecture",
+    "summary": "NVIDIA introduces Rubin architecture with major efficiency gains for AI workloads.",
+    "source": "TechCrunch",
+    "publicationDate": "2025-03-18",
+    "url": "https://example.com/nvda-rubin"
+  }
+]

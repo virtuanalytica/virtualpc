@@ -19,49 +19,47 @@ interface TokenEvent {
   action: string;     // what the agent was doing
 }
 
-import { AGENT_NAMES } from './agent-registry';
+import { AGENT_NAMES, AGENT_MODELS as REGISTRY_AGENT_MODELS } from './agent-registry';
 
 // Cost per 1K tokens.
 // All-local Gemma / Phi / Qwen / Devstral / DeepSeek (LM Studio on EDS2 RTX 3090) are
 // tier-1 free. Paid fallbacks kept for when a cloud call is genuinely needed.
 export const MODEL_COSTS: { [model: string]: { prompt: number; completion: number; tier: 1|2|3 } } = {
-  'gemma-4-26b':    { prompt: 0, completion: 0, tier: 1 },
-  'qwen3.5-27b':    { prompt: 0, completion: 0, tier: 1 },
-  'devstral':       { prompt: 0, completion: 0, tier: 1 },
-  'deepseek-r1-8b': { prompt: 0, completion: 0, tier: 1 },
-  'phi-4':          { prompt: 0, completion: 0, tier: 1 },
-  'nomic-embed':    { prompt: 0, completion: 0, tier: 1 },
-  // Moonshot Kimi via the paid CLI subscription (kimi --quiet -p).
-  // User has a flat-fee plan, so per-token cost is $0 from our accounting
-  // perspective. Marked tier 1 so it shows alongside the local roster.
-  'kimi-k2.6':      { prompt: 0, completion: 0, tier: 1 },
-  // Cloud fallbacks (used only when local is unreachable or context exceeds local ctx)
-  'mistral-7b':     { prompt: 0.0001, completion: 0.0003, tier: 2 },
-  'llama-70b':      { prompt: 0.0003, completion: 0.0008, tier: 2 },
-  'claude-sonnet':  { prompt: 0.003, completion: 0.015, tier: 3 },
-  'claude-opus':    { prompt: 0.015, completion: 0.075, tier: 3 },
+  // Featherweight / lightweight local models (tier 1, free on-device)
+  'smollm-135m':         { prompt: 0, completion: 0, tier: 1 },
+  'smollm2-135m':        { prompt: 0, completion: 0, tier: 1 },
+  'qwen2.5-0.5b':        { prompt: 0, completion: 0, tier: 1 },
+  'qwen2.5-coder-0.5b':  { prompt: 0, completion: 0, tier: 1 },
+  'tinyllama-1.1b':      { prompt: 0, completion: 0, tier: 1 },
+  'stablelm-2-zephyr-1.6b': { prompt: 0, completion: 0, tier: 1 },
+  'nomic-embed-text-v1.5': { prompt: 0, completion: 0, tier: 1 },
+  // Middleweight local models
+  'qwen2.5-7b':          { prompt: 0, completion: 0, tier: 1 },
+  'qwen2.5-coder-7b':    { prompt: 0, completion: 0, tier: 1 },
+  'gemma-3-4b':          { prompt: 0, completion: 0, tier: 1 },
+  'phi-4-mini':          { prompt: 0, completion: 0, tier: 1 },
+  // Heavyweight local models (opt-in)
+  'phi-4':               { prompt: 0, completion: 0, tier: 1 },
+  'devstral':            { prompt: 0, completion: 0, tier: 1 },
+  'gemma-4-26b':         { prompt: 0, completion: 0, tier: 1 },
+  'qwen3.5-27b':         { prompt: 0, completion: 0, tier: 1 },
+  'glm-latest':          { prompt: 0, completion: 0, tier: 1 },
+  'deepseek-r1-671b':    { prompt: 0, completion: 0, tier: 1 },
+  'glm-4-plus-latest':   { prompt: 0, completion: 0, tier: 1 },
+  // Paid / cloud fallbacks
+  'kimi-k2.6':           { prompt: 0, completion: 0, tier: 1 }, // flat-fee subscription
+  'claude-sonnet':       { prompt: 0.003, completion: 0.015, tier: 3 },
+  'claude-opus':         { prompt: 0.015, completion: 0.075, tier: 3 },
+  'gpt-5.5':             { prompt: 0.01, completion: 0.03, tier: 3 },
+  'mistral-7b':          { prompt: 0.0001, completion: 0.0003, tier: 2 },
+  'llama-70b':           { prompt: 0.0003, completion: 0.0008, tier: 2 },
+  // Simulation fallback
+  'simulated':           { prompt: 0, completion: 0, tier: 1 },
 };
 
 // Per-agent model preference (drives the simulated usage mix on the dashboard).
-// Policy: default to local Gemma / Phi / Qwen / Devstral / DeepSeek — cloud
-// models only appear for overflow scenarios. This matches the real LM Studio
-// routing in src/lmstudio.ts.
-const AGENT_MODELS: { [agent: string]: string[] } = {
-  Fill:          ['phi-4', 'gemma-4-26b'],
-  Kai:           ['devstral', 'phi-4', 'qwen3.5-27b'],
-  Zip:           ['devstral', 'phi-4'],
-  Mira:          ['claude-sonnet', 'phi-4', 'gemma-4-26b'],   // designer agent, primary on Anthropic for taskType:'design'
-  Luna:          ['claude-sonnet', 'devstral', 'phi-4', 'deepseek-r1-8b'],
-  Cleopatra:     ['deepseek-r1-8b', 'qwen3.5-27b'],
-  Alexander:     ['deepseek-r1-8b', 'qwen3.5-27b'],
-  MoneyGod:      ['deepseek-r1-8b', 'qwen3.5-27b'],
-  Analyst:       ['phi-4', 'gemma-4-26b'],
-  VideoProducer: ['phi-4', 'gemma-4-26b'],
-  Vice:          ['phi-4', 'gemma-4-26b'],
-  Atlas:         ['devstral', 'deepseek-r1-8b'],
-  Kimi:          ['kimi-k2.6', 'phi-4', 'gemma-4-26b', 'qwen3.5-27b'],  // primary: Moonshot Kimi via paid CLI (~/.local/bin/kimi); local fallbacks if CLI missing
-  Croesus:       ['phi-4', 'deepseek-r1-8b'],              // local fallbacks; routes to Kimi/DeepSeek for commercial reasoning
-};
+// Imported from the agent registry so the dashboard never drifts from the roster.
+const AGENT_MODELS: { [agent: string]: string[] } = REGISTRY_AGENT_MODELS;
 
 // Per-agent model preference by kind (for tier simulation on the dashboard).
 // 85% tier-1 (local), 10% tier-2, 5% tier-3 — reflects the push toward local-first.
@@ -114,6 +112,11 @@ export function recordAgentTokens() {
         Zip:  ['feature coding', 'bug fixing', 'game logic', 'API design', 'test writing'],
         Mira: ['UI design', 'asset creation', 'layout review', 'color tuning', 'icon design'],
         Luna: ['perf profiling', 'shader coding', 'render optimization', 'device testing', 'VFX design'],
+        'Data-Steward':   ['schema validation', 'quality check', 'lineage update', 'governance audit', 'null scan'],
+        'Data-Engineer':  ['ETL step', 'feature extraction', 'rate-limit scheduling', 'pipeline build', 'data download'],
+        'Data-Analyst':   ['summary table', 'ratio compute', 'peer comparison', 'visualization data', 'dashboard update'],
+        'Data-Scientist': ['outlier detection', 'experiment log', 'validation split', 'model score', 'feature refinement'],
+        'Data-Manager':   ['lineage snapshot', 'versioning tag', 'catalog refresh', 'audit trail', 'registry update'],
       };
 
       events.push({

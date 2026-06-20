@@ -1,0 +1,1458 @@
+{
+  "generatedAt": "2026-06-05T12:05:46.246Z",
+  "source": "molgang-tester-panel workflow (25 agents, adversarially verified)",
+  "scorecard": {
+    "avg_asset_realism": 2.9,
+    "assets_evaluated": 49,
+    "p0_p1_assets": 30,
+    "averageAssetRealism": 2.89,
+    "scale": "0-5",
+    "assetsScored": 48,
+    "glbCount": 48,
+    "fbxCount": 48,
+    "pbrTextureMaps": 0,
+    "totalMaterials": 225,
+    "transmissionMaterials": 0,
+    "bands": {
+      "critical_le_2_0": 13,
+      "weak_2_5_to_3_0": 23,
+      "acceptable_3_5": 4,
+      "strong_ge_4_0": 8
+    },
+    "criticalAssets": [
+      "cooling_pit (1.0)",
+      "leaching_tank_500L (1.5)",
+      "beaker_1L (2.0)",
+      "centrifuge (2.0)",
+      "distillation_column (2.0)",
+      "drill_rig (2.0)",
+      "excavator (2.0)",
+      "haul_truck (2.0)",
+      "jaw_crusher (2.0)",
+      "pipe_section (2.0)",
+      "race_checkpoint (2.0)",
+      "solar_panel (2.0)",
+      "cyclone_separator (2.0)"
+    ],
+    "strongAssets": [
+      "quantum_tunnel_ring (5.0)",
+      "villain_pedestal (5.0)",
+      "speed_boost_pad (5.0)",
+      "warning_beacon (5.0)",
+      "slag_chunk (4.0)",
+      "safety_fence_post (4.0)",
+      "teleport_pad (4.0)",
+      "combat_arena_floor (4.0)"
+    ],
+    "biggestSystemicGaps": [
+      "Zero PBR texture maps across entire 48-asset / 225-material library (file-verified)",
+      "Three simulations (chemistry/airsim/steel) decoupled - no shared world-state bus",
+      "Audio SoundManager exists but is dead code with zero call sites",
+      "Near-zero juice on the core atom-pickup verb",
+      "Art-direction split: industrial vs neon-arcade with no shared palette/poly budget",
+      "No bevels, no baked AO, no wear layer - geometry catches no light",
+      "Inverted detail budget (434KB boba cup vs 11.5KB hero excavator)"
+    ],
+    "stackNote": "Real client is Roblox/Luau + Go gameserver + molgang-web shared sims; Phaser/Next.js stack is documented legacy. Phaser-specific UX findings were rejected.",
+    "rejectedFluffCount": 5,
+    "deDluffedCorrections": [
+      "victory_trophy gold PBR already exists",
+      "bof_converter geometry already built",
+      "edits go in .py builders not .png renders"
+    ]
+  },
+  "top10": [
+    {
+      "item": "SD-1: Author a shared PBR master-material library (8-10 sets: steel/iron/glass/ceramic/rubber/copper/concrete/plastic with albedo+normal+roughness+metalness+AO) and assign by slot across all 48 GLBs; bake into Roblox SurfaceAppearance + sync MESH_REGISTRY. Closes most of the flat-plastic look by itself.",
+      "track": "3d-designers",
+      "severity": "critical"
+    },
+    {
+      "item": "DEV-1: Build a shared world-state bus (zone temp, wind, air composition, CO2/pollution ledger, market prices) so chemistry pushes heat+fumes, steel pushes off-gas+CO2+slag, airsim writes back breathability, and economy prices externalities - turning three siloed slices into one reactive world.",
+      "track": "developers",
+      "severity": "critical"
+    },
+    {
+      "item": "DEV-5: Wire up the EXISTING but dead SoundManager (frontend/lib/audio.ts + shared/audio-tracks.json): first-pointerdown ambient unlock, ui_click/atom_pickup SFX, add coin_gain/hazard_alarm/ppe_chime slots, HUD mute control, drop real Sandrom files. Do NOT build a new Phaser audio layer.",
+      "track": "developers",
+      "severity": "critical"
+    },
+    {
+      "item": "SD-2: Write a one-page art bible (grounded-stylized PBR target, master industrial palette + reserved accent colors, tiered poly budgets) and re-skin the 5 neon outliers (quantum_dot, boba_tea_cup, victory_trophy, villain_pedestal, teleport_pad) so only accent saturation separates them; enforce via centralized palette constants + CI lint.",
+      "track": "3d-designers",
+      "severity": "high"
+    },
+    {
+      "item": "DEV-2: Replace the boolean exact-stoichiometry gate in api/routes/chemistry.py with Arrhenius condition-driven yields using existing activation_energy + optimal; extend reactions.json with produces/equilibriumK/yieldCurve/sideReactions so same atoms at different T/P give different product mixtures; catalyst lowers effective Ea.",
+      "track": "developers",
+      "severity": "high"
+    },
+    {
+      "item": "DEV-3: Upgrade shared/hazard/airsim.ts from static Vec2 radial point-sources to advection-diffusion: sqrt(t) cloud growth + smooth falloff (kill the binary edge), per-zone wind, Vec3 buoyancy, per-room ventilation/air-exchange + enclosed accumulation, and per-gas toxicology with collapse states driving the tracked exposure accumulator. Commit airsim.ts+tests first.",
+      "track": "developers",
+      "severity": "high"
+    },
+    {
+      "item": "SD-5: Remodel the 13 critical assets (<=2.0), prioritizing cooling_pit (flat plane->recessed basin), leaching_tank_500L (discard failed photogrammetry blob, rebuild from source photo), excavator/haul_truck (full silhouette + tracks/cab/round-tires), jaw_crusher (V-throat+jaws), and beaker/erlenmeyer (glass transmission + inner liquid mesh). Edit the .py builders, re-export, re-render.",
+      "track": "3d-designers",
+      "severity": "high"
+    },
+    {
+      "item": "DEV-6: Close the core loop - feed Arena-collected atoms into the chem-lab inventory via shared backend, add a per-session objective/quota + results screen and a HUD portal into chem-lab/steel, and add pickup juice (particle burst, floating +score, HUD scale-pop, camera flash on rare elements); replace leak-prone setTimeout respawn.",
+      "track": "developers",
+      "severity": "high"
+    },
+    {
+      "item": "SD-3: Run a silhouette QA gate (add --silhouette mode to render_single.py + blob proxy in asset_validator.py) and add read-defining geometry (motor housings, valves, hoppers, ladder rungs, flanges) to the ~30-40% of props that fail the squint test (centrifuge, magnetic_separator, screw_conveyor, pumps, valves).",
+      "track": "3d-designers",
+      "severity": "high"
+    },
+    {
+      "item": "SD-4: Global edge-bevel (1-2px support-loop chamfers on all hard-surface edges) + baked/vertex AO pass across every asset - near-zero runtime cost, large perceived-material lift, because razor-sharp un-beveled geometry currently catches no light and nothing grounds in contact areas.",
+      "track": "3d-designers",
+      "severity": "high"
+    }
+  ],
+  "developerTrack": [
+    {
+      "item": "Lobby rendering / viewport framing",
+      "action": "Set scale.mode to Phaser.Scale.RESIZE (or ENVELOP) and drive width/height from the container's clientWidth/clientHeight with a resize listener, or at minimum give #game-container and body a black background so letterbox bars match backgroundColor. Recompute camera/layout on resize instead of hard-coding 1920x1080. Verify on a 16:10 and ultrawide window.",
+      "severity": "critical"
+    },
+    {
+      "item": "Audio / sound design",
+      "action": "Add a minimal SFX layer via this.load.audio in BootScene: button hover/click, atom pickup (pitch-varied), coin/MC gain, hazard alarm, PPE purchase chime, plus a low-volume looping ambient bed per zone. Gate on a mute toggle and the browser autoplay-unlock (first pointerdown).",
+      "severity": "critical"
+    },
+    {
+      "item": "Visual fidelity / placeholder art",
+      "action": "Replace setFillStyle primitives with actual sprite atlases (element glyph icons for atoms, a character sprite for the player). Show full zone names with word-wrap in the lobby buttons. Use the preloaded particle (or a real one) for a pickup burst. Even simple circle textures + glow/shadow would massively lift perceived quality.",
+      "severity": "high"
+    },
+    {
+      "item": "Juice / feedback on core actions",
+      "action": "On collectAtom: spawn a particle burst at the atom position, tween a +score popup that floats up and fades, pop the coins HUD with a scale tween, play a pitch-randomized pickup SFX, and do a tiny camera.flash on rare elements (Au/Cu). Convert hover grow/shrink to a short tween. Add camera.shake on the hazard message.",
+      "severity": "high"
+    },
+    {
+      "item": "Core gameplay loop depth",
+      "action": "Close the loop: make Arena-collected atoms feed the chem-lab inventory (shared backend) so collecting has a downstream payoff; add a per-session objective/timer/quota with a results screen; surface a HUD link/portal from Arena into chem-lab/steel. Replace setTimeout respawn with this.time.delayedCall to avoid orphaned callbacks.",
+      "severity": "high"
+    },
+    {
+      "item": "Movement & camera",
+      "action": "Pick one acceleration model (use setAcceleration + maxVelocity + drag, not manual velocity scaling). Build a larger tilemap world and add this.cameras.main.startFollow(player) with lerp and deadzone, plus a parallax background. Soften the border (bounce/slide instead of velocity=0). Decide on a single canonical control scheme or make mouse a clearly secondary mode.",
+      "severity": "medium"
+    },
+    {
+      "item": "Offline / connection UX",
+      "action": "Add a visible connection-state badge (Connecting/Online/Offline) in both scenes, a retry button, and a spinner during joinArena. Wire 'Waiting for players...' to the real lobby room player count. Gray out / label the shop and vitals HUD as 'offline' when no room, instead of leaving them looking interactive.",
+      "severity": "medium"
+    },
+    {
+      "item": "Lobby UX polish & affordance",
+      "action": "Show full (wrapped) zone names with a thumbnail/blurb, add an explicit selected-state ring/checkmark, add the missing readyBtn pointerout handler to reset color, and disable READY until a zone is chosen with a tooltip explaining each zone.",
+      "severity": "medium"
+    },
+    {
+      "item": "HUD consistency Arena vs DOM activities",
+      "action": "Establish a shared visual system (fonts, palette, panel style, iconography) and apply it to the Phaser HUD via a consistent UI container/atlas, or render the Arena HUD as a DOM overlay reusing the same Tailwind components. Anchor HUD elements to camera/relative positions, not absolute 1080p pixels.",
+      "severity": "medium"
+    },
+    {
+      "item": "Lobby visual richness (first impression)",
+      "action": "Add an animated/parallax background or subtle particle field, a tweened logo intro, idle pulse on the READY button, and ambient lobby music. This is the highest-leverage 'feels like a real game' upgrade per hour of work.",
+      "severity": "medium"
+    },
+    {
+      "item": "Chemistry / reactions.json — recipe breadth",
+      "action": "Extend reactions.json into a reaction-graph schema: add `produces` (multiple products + byproducts with molar coefficients), `equilibriumK`/`reversible`, `yieldCurve` as a function of the temperature/pressure already in reactions-conditions.json, and `sideReactions`. Replace the boolean 'can I make it' check with a quantitative yield computed from current bench conditions, so the same inputs give different output mixtures at different T/P. Grow the corpus well beyond 10 via the existing enrich-via-virtualpc.js pipeline (hand-verified, per the existing _handFixes pattern).",
+      "severity": "high"
+    },
+    {
+      "item": "Chemistry conditions coupling — reactions-conditions.json is decorative gating, not physics",
+      "action": "Use an Arrhenius-style rate (activation_energy + temperature) to drive reaction speed/yield continuously, with `optimal` as the peak. Couple reactions.json `energy: exothermic` to a local heat term that (a) raises the bench/zone temperature, (b) feeds the airsim (hot fume buoyancy, faster spread), and (c) can trigger thermal-runaway events for unsafe operation. Make the catalyst lower the effective activation energy rather than being a string-match gate.",
+      "severity": "high"
+    },
+    {
+      "item": "Toxic-fume / breathing model (airsim.ts) — transport physics",
+      "action": "Promote the source model to a coarse advection-diffusion field: add a wind vector (per-zone, optionally dynamic), let the cloud radius grow with sqrt(time) (Gaussian diffusion), move Vec2 -> Vec3 for buoyant rise of hot/light gases, and add a per-room ventilation/air-exchange rate plus enclosed-volume accumulation so doors/fans/fume-hoods matter. Soften the hard radius cutoff (it creates a binary safe/unsafe edge the tests even rely on).",
+      "severity": "high"
+    },
+    {
+      "item": "Health / physiology model (airsim.ts) — toxicology realism",
+      "action": "Give each GasSpecies a toxicology profile (acute vs cumulative weighting, recoverable fraction, symptom thresholds) instead of a single IDLH. Add discrete physiological states (irritation -> incapacitation -> collapse) and make the already-tracked `exposure` accumulator drive chronic/irreversible damage so PPE choices and time-in-cloud have lasting stakes. Make recovery sub-linear and gas-specific (CO clears slowly, acid-mist damage is partly permanent).",
+      "severity": "high"
+    },
+    {
+      "item": "Emission table coverage (airsim DEFAULT_EMISSIONS) vs chemistry corpus",
+      "action": "Derive emissions from the reaction itself (its gaseous products/byproducts and batch quantity) rather than a separate hardcoded 3-entry map, and scale ppm by amount produced and by how far conditions deviated from optimal (botched runs fume more). Wire steel-production byproducts (coke_oven_gas, BOF CO, tar volatiles) into the same airsim so the steel track shares the breathing hazard.",
+      "severity": "medium"
+    },
+    {
+      "item": "Steel/slag economy (steel-production.json) — slag is generated but not balanced",
+      "action": "Add a market layer: dynamic prices for grades and for slag/byproducts (supply-demand or at least time/volume-based drift), a disposal cost or environmental fine for unprocessed slag and for CO2 above a cap, and make the EAF-vs-BF route choice an actual economic trade-off (electricity price vs coke price vs CO2 cost) rather than a flavor difference. Give coke_oven_gas/tar/CO byproducts real value or handling cost.",
+      "severity": "medium"
+    },
+    {
+      "item": "Steel alloy/grade simulation — chemistry of the heat is not modeled",
+      "action": "Model a per-heat molten-bath composition vector over the alloyElements, mutated by each stage (decarburization in the BOF/EAF, alloy additions with recovery % in the ladle furnace, P/S pickup from ore/scrap quality). Then grade pass/fail = bath within tolerancePct of alloyTargets, with off-spec heats forced to a lower grade or rework. This makes the ladle furnace and scrap quality matter and turns the existing data into an actual simulation.",
+      "severity": "medium"
+    },
+    {
+      "item": "Cross-system coupling — three sims run in parallel, not as one world",
+      "action": "Define a small shared world-state bus (zone temperature, wind, air composition, CO2/pollution ledger, market prices) that all three systems read and write: reactions push heat+fumes, steel pushes off-gas+CO2+slag-waste, the airsim consumes heat/wind and writes back breathability, and the economy prices the externalities. Even a coarse shared tick turns three slices into one reactive world.",
+      "severity": "high"
+    }
+  ],
+  "designerTrack": [
+    {
+      "item": "Materials / PBR (whole library)",
+      "action": "Adopt a shared PBR material library as the #1 priority: author ~8-10 master materials (brushed/painted steel, cast iron, glass, ceramic, rubber, copper, concrete, plastic) with metallic+roughness+normal+AO and assign by slot across all 48 assets. Even a single tiling normal/roughness set plus correct metallic flags would close most of the gap. Glass/liquid assets (beaker, erlenmeyer, quantum_dot, boba) additionally need transmission/refraction materials.",
+      "severity": "critical"
+    },
+    {
+      "item": "Art-direction consistency / scale cohesion",
+      "action": "Write and enforce a one-page art bible: lock a single stylization target (recommend grounded-stylized PBR, not photoreal and not toy), a master palette (industrial grays/steel/rust + 2-3 saturated accent colors reserved only for interactive/UI props), and a consistent poly/detail budget per object class. Re-skin the outlier arcade props (quantum_dot, boba, trophy, pedestal, teleport_pad) so accent saturation is the only thing that separates them, not a whole different rendering style.",
+      "severity": "high"
+    },
+    {
+      "item": "Silhouettes / form readability",
+      "action": "Run a silhouette pass on every asset (render solid-black against white) and flag any that aren't identifiable in <1s. Add primary read-defining geometry — clear functional features (motor housings, valves, hoppers, ladder rungs, flanges) — to the blob assets. Tie this to a consistent edge-detail policy (next item).",
+      "severity": "high"
+    },
+    {
+      "item": "Edge treatment / lighting response",
+      "action": "Add a 1-2px-equivalent chamfer/bevel to all primary hard-surface edges (or rely on normal maps to fake it once materials land), and bake AO/cavity into every asset (vertex AO is acceptable given the untextured pipeline). This single change dramatically improves perceived material quality at near-zero runtime cost.",
+      "severity": "high"
+    },
+    {
+      "item": "Color / value palette discipline",
+      "action": "Define and apply a master palette with controlled saturation: desaturate the neon accents ~20-30%, and inject subtle hue/value variation (warm rust, cool steel, painted-safety-yellow) into the gray cluster so functionally different machines are distinguishable. Reserve true high-saturation only for gameplay-signal props.",
+      "severity": "medium"
+    },
+    {
+      "item": "Detail-density budget balance",
+      "action": "Re-allocate detail by gameplay prominence: add secondary mechanical detail (bolts, hoses, control panels, wear) to the under-built hero machines (excavator, jaw_crusher, drill_rig, centrifuge), and consider decimating the over-built decorative props. Establish a tiered poly budget (hero / standard / background) and bring outliers into band.",
+      "severity": "medium"
+    },
+    {
+      "item": "Wear / surface storytelling",
+      "action": "Once PBR materials exist, add a curated wear layer (edge-wear masks, rust/dirt in cavities driven by AO, oil/scorch on hot equipment like the kiln/BOF converter/slag ladle). A reusable smart-material wear stack applied per object class gives the biggest realism-per-hour return after base materials.",
+      "severity": "medium"
+    },
+    {
+      "item": "Glass / liquid / emissive treatment",
+      "action": "Build a small special-materials kit: transmissive glass (with thickness/IOR), depth-tinted translucent liquid for beakers/tanks/boba, and proper emissive materials with bloom and light-emission for the quantum/hero/teleport FX props. These are few assets but high-visibility, so the payoff is outsized.",
+      "severity": "medium"
+    },
+    {
+      "item": "beaker 1L",
+      "action": "Rebuild as a single thin-walled glass mesh with a separate fluid volume inside; author a transparent glass shader (IOR ~1.47, transmission, roughness ~0.05) plus a colored absorbing liquid with a meniscus ring, add pour spout and embossed graduation marks",
+      "severity": "critical",
+      "score": 2
+    },
+    {
+      "item": "haul truck",
+      "action": "Model a proper cab + raised dump bed + chassis and replace the hex prisms with high-segment round tires (tread normal map), then author painted-metal body PBR with mud/dust accumulation in the lower thirds.",
+      "severity": "critical",
+      "score": 2
+    },
+    {
+      "item": "bof converter",
+      "action": "Rebuild as a pear-shaped converter vessel with a trunnion ring + pivot pins and a tilted pour mouth, then author a PBR steel-shell map (weathered painted steel) plus a separate scorched/slag-crusted refractory-mouth map with emissive heat glow at the lip.",
+      "severity": "critical",
+      "score": 2.5
+    },
+    {
+      "item": "hero shield generator",
+      "action": "Rebuild as a multi-part hero: armored metal housing + ring emitters with authored PBR metal/scratch maps, and drive the dome with an emissive+fresnel glass shader (animated noise) plus a point light so the shield actually glows and refracts.",
+      "severity": "critical",
+      "score": 2.5
+    },
+    {
+      "item": "boba tea cup",
+      "action": "Author a clear-glossy plastic PBR set (high spec, low roughness, slight transmission) for the cup, model an inset liquid surface with a separate pearl scatter, and bevel the lid rim + cut an actual straw hole.",
+      "severity": "critical",
+      "score": 3
+    },
+    {
+      "item": "erlenmeyer flask",
+      "action": "Convert the body to a thin-walled glass shader (transmission + IOR 1.5, low roughness) with a separate inner liquid mesh that has a flat horizontal meniscus, model the lip flange, and add subtle volume graduation lines.",
+      "severity": "critical",
+      "score": 3
+    },
+    {
+      "item": "quantum dot",
+      "action": "Author an emissive HDR core shader with bloom + a thin animated particle nucleus, and remodel the rings as beveled iridescent-metal tori with a PBR thin-film/iridescence map so they catch colored highlights.",
+      "severity": "critical",
+      "score": 3.5
+    },
+    {
+      "item": "victory trophy",
+      "action": "Assign a proper PBR gold (high metalness, low roughness, gold tint with anisotropic highlight), bevel all edges, add an engraved nameplate and a marble/wood base, and reframe the render to show full silhouette.",
+      "severity": "critical",
+      "score": 3.5
+    },
+    {
+      "item": "teleport pad",
+      "action": "Author a polished gold-metal PBR (high reflectivity + subtle scratches) on the ring, raise subdivision on the crystals, and make the core orb emissive with bloom and colored light-spill plus glowing rune decals on the dish floor",
+      "severity": "critical",
+      "score": 4
+    },
+    {
+      "item": "quantum tunnel ring",
+      "action": "Add a subtle recessed energy-well (concentric beveled rings receding inward) with layered emissive rings and a bloom/light-spill onto the floor; clean the mirrored brush seam and add fine machined panel-line detail + a faint metal bezel PBR to the outer ring",
+      "severity": "critical",
+      "score": 5
+    },
+    {
+      "item": "villain pedestal",
+      "action": "Bevel the octagon edges and author a dark obsidian/blackened-metal PBR with engraved glowing sigils; add real emissive bloom + red light-spill from the rim and spikes onto the base, and raise subdivision on the spikes",
+      "severity": "critical",
+      "score": 5
+    },
+    {
+      "item": "cooling pit",
+      "action": "Model an actual recessed basin (extruded inward with thickness and a rim lip), add a coolant water plane with the transmissive/wet shader, line walls with concrete+stained-metal PBR, and add edge grating plus hazard-stripe trim for scale",
+      "severity": "high",
+      "score": 1
+    },
+    {
+      "item": "leaching tank 500L from photo",
+      "action": "Discard and rebuild from the source photo as a cylindrical 500L tank: vertical body + dished bottom on legs, top-mounted agitator motor + shaft + impeller, side inlet/outlet ports; then author PBR maps for poly/stainless tank wall (slight gloss, water stains) and a translucent liquid surface.",
+      "severity": "high",
+      "score": 1.5
+    },
+    {
+      "item": "excavator",
+      "action": "This needs a full remodel: build the canonical excavator silhouette (tracked undercarriage, rotating house/cab, articulated boom-stick-bucket with hydraulic rams) then author PBR maps for CAT-yellow painted steel with chipped-edge wear, dirt accumulation on the tracks/bucket, and a glass cab material.",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "distillation column",
+      "action": "Remodel as a tall slender insulated column: high-segment cylinder with banded insulation, flange rings, side manways, an external ladder/cage and feed/reflux piping, then author brushed-steel PBR with weld seams and rust streaks.",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "centrifuge",
+      "action": "Author a closed clamshell housing with a domed transparent lid showing the rotor inside; assign brushed-metal PBR to the rotor, glossy plastic to the housing, and a glass shader to the lid window; add a control panel decal and rubber feet",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "drill rig",
+      "action": "Build a proper lattice/box mast with a travelling head and a tri-cone drill bit at the base; add hydraulic cylinders and hoses, then author worn safety-yellow paint + greasy steel PBR with chipping along edges",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "jaw crusher",
+      "action": "Cut an open V-shaped feed throat into the top and model the moving + fixed jaw plates with corrugated faces; add a proper round flywheel with belt guard, then author abraded manganese-steel jaws + chipped painted-steel frame PBR with rock-dust grime",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "cyclone separator",
+      "action": "Rebuild as one coherent welded vessel: merge cone-into-cylinder with a beveled transition, add tangential inlet + overflow/underflow pipes and support legs, then author a brushed-steel PBR set with rust streaks and flange bolts.",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "race checkpoint",
+      "action": "Re-frame the render and model the actual gate arch + emissive crossbar with a glowing checkpoint ring, then author striped safety-paint PBR on the posts and add a strong emissive material for the marker.",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "cyclone separator",
+      "action": "See cyclone_separator action above — rebuild as a single welded vessel with inlet/outlet pipes and steel PBR.",
+      "severity": "high",
+      "score": 2
+    },
+    {
+      "item": "anvil hammer",
+      "action": "Remodel the anvil with its defining silhouette (horn, heel, face step, hardy hole) and author PBR cast-iron maps (dark metal base color, mid roughness, edge-wear metallic chips on the face); give the hammer a separate hot-rolled steel head map and a procedural wood-grain handle.",
+      "severity": "high",
+      "score": 2.5
+    },
+    {
+      "item": "ball mill",
+      "action": "Close the drum with end caps + trunnions, add a girth gear ring, motor and support saddles, model some grinding-ball charge inside, and author worn cast-iron PBR (rough metal + abrasion + ore dust) - remove or texture the stray green cube.",
+      "severity": "high",
+      "score": 2.5
+    },
+    {
+      "item": "leaching tank",
+      "action": "Add a proper top-drive motor + gearbox and submerged impeller blades on the shaft, flange the launder pipes, and author a coated-steel PBR tank with a slurry liquid surface and acid-stain wear maps around overflow points.",
+      "severity": "high",
+      "score": 3
+    },
+    {
+      "item": "roasting kiln",
+      "action": "Model riding rings + drive gear on an inclined rotary tube, add an emissive heat-graded interior/discharge (HDR orange falloff), and author a sooty refractory-steel PBR with scorch and dust accumulation; replace flat-orange blocks with emissive hot-charge material.",
+      "severity": "high",
+      "score": 3
+    },
+    {
+      "item": "screw conveyor",
+      "action": "Wrap the auger in a half-pipe U-trough housing, raise the helix segment count and add a continuous beveled center shaft, then model a real drive motor + gearbox and author painted-steel PBR with wear on the flight edges.",
+      "severity": "high",
+      "score": 3
+    },
+    {
+      "item": "thickener tank",
+      "action": "Model the center drive column + feedwell + peripheral overflow launder, replace the loose yellow rods with a proper handrail bridge, and author a concrete-and-steel PBR with a settled-slurry liquid surface.",
+      "severity": "high",
+      "score": 3
+    },
+    {
+      "item": "slag ladle",
+      "action": "Drive the molten pool with an emissive HDR gradient (white-hot center to deep red crust) plus a strong area light that spills orange onto the rim, add the second trunnion + lifting yoke, and author a scorched steel-shell PBR with slag crust and heat-tint maps.",
+      "severity": "high",
+      "score": 3.5
+    },
+    {
+      "item": "combat arena floor",
+      "action": "Add a tiled PBR arena-floor material (metal grating or scuffed concrete with normal map), recess the ring into a beveled channel, and drive real emissive bloom + light bounce so the neon spills onto the deck.",
+      "severity": "high",
+      "score": 4
+    },
+    {
+      "item": "speed boost pad",
+      "action": "Model crisp inset chevron arrows with a separate brighter emissive, add a beveled dark housing ring around the pad, and drive bloom + a directional color gradient on the emission.",
+      "severity": "high",
+      "score": 5
+    },
+    {
+      "item": "solar panel",
+      "action": "Fix the camera framing, then author a PV glass shader (high-gloss with cell-grid + busbar normal/albedo maps and a faint sky reflection) on a beveled aluminium frame; add a tilt bracket and junction box to the pole",
+      "severity": "medium",
+      "score": 2
+    },
+    {
+      "item": "pipe section",
+      "action": "Hollow the cylinder to show wall thickness, add beveled flanges with bolt rings at both ends, and author a galvanized-steel PBR with rust streaks and a weld seam.",
+      "severity": "medium",
+      "score": 2
+    },
+    {
+      "item": "heat exchanger",
+      "action": "Remodel as a horizontal shell-and-tube unit on saddle supports with bolted flange channel heads and inlet/outlet nozzles, then author PBR maps: an insulated aluminum-clad jacket OR bare carbon-steel shell with rust-streaked flanges and a painted nameplate.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "pressure vessel",
+      "action": "Assemble the vessel as one capsule (cylinder + welded hemispherical heads) on a support skirt or saddles, add nozzles + a manway + a relief valve, and author PBR painted carbon-steel maps with visible weld seams, flange bolts, and rust-bleed streaks under the nozzles.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "spray dryer",
+      "action": "Remodel as a tall vertical drying chamber with an integral steep conical bottom, a top atomizer head, and side hot-air ducts/cyclone, then author PBR brushed-stainless maps with light powder residue on the lower cone and a few flange/nameplate details.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "vibrating screen",
+      "action": "Add the inclined screen deck with a perforated/wire-mesh material between the side plates, mount the assembly on coil springs with a side-mounted exciter motor, and author PBR maps: painted-steel frame with abrasion wear plus a separate metallic wire-mesh map clogged with fine dust.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "centrifugal pump",
+      "action": "Remodel a recognizable volute casing with flanged suction/discharge nozzles coupled to a finned motor on a common baseplate, then author cast-iron + painted-motor PBR with bolt detail, oil stains and rust at flanges.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "storage silo",
+      "action": "Add a conical discharge hopper on support legs, a roof with vent + ladder/cage, and panel-seam geometry; author galvanized-steel PBR with bolt-line rust streaks and enclose the auger conveyor in a proper tube/housing.",
+      "severity": "medium",
+      "score": 2.5
+    },
+    {
+      "item": "cone crusher",
+      "action": "Increase subdivision on the mantle/bowl cones and add a feed hopper + bolted base flange, then author PBR painted-steel maps (industrial yellow/grey body) with grease streaks and rock-abrasion wear on the crushing surfaces; replace the floating yellow torus with a modeled hydraulic hose.",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "rail cart",
+      "action": "Mount the wheels on a visible axle/chassis with flanged rail-wheel profiles, add plank+rivet detail and a tipper hinge to the body, then author PBR maps: weathered rusty-steel cart, oiled wheels, and a chunky textured ore-pile (rock normal map) for the load; also lift the key light so the materials read.",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "filtration press",
+      "action": "Model discrete recessed filter plates with cloth and corner ports, add a hydraulic closing ram + tie bars + drip tray, and author a painted-steel PBR frame with filter-cake residue and wet streaking down the plates.",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "gate valve",
+      "action": "Replace the solid disc with a spoked handwheel + rising stem and gland, add bolted flanges where the red pipe meets the body, then author cast-iron PBR (rough metal base coat, chipped industrial paint, rust streaks down from bolts)",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "magnetic separator",
+      "action": "Add a cylindrical magnetic drum with a wrapping belt and idler rollers, weld the colored bins onto the frame at a common datum, then author painted-steel frame + stainless drum + plastic hopper PBR with iron-fines grime around the discharge",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "lab bench",
+      "action": "Thicken the worktop with a beveled edge, add an apron and proper foot pads, then author a wood-grain PBR for the top and brushed-steel for the frame; brighten key light to reveal form.",
+      "severity": "medium",
+      "score": 3
+    },
+    {
+      "item": "warning beacon",
+      "action": "Add fresnel-ribbed transparent dome geometry with an internal emissive bulb, model a mounting bracket + cage on the base, and drive real bloom + pulsing light spill onto the surroundings.",
+      "severity": "medium",
+      "score": 5
+    },
+    {
+      "item": "conveyor belt",
+      "action": "Model a continuous rubber belt over head/tail pulleys with idler rollers and a leg-supported truss frame, then author rubber-belt PBR (rough, scuffed) vs painted-steel frame, and add some ore/material load to sell function.",
+      "severity": "low",
+      "score": 3
+    },
+    {
+      "item": "diploma frame",
+      "action": "Model a proper picture-frame profile (beveled outer molding + inner mat recess + a glass pane plane), drop in a certificate texture (parchment color + seal + ruled text), and author a PBR glossy-glass material with a subtle wood-grain frame map.",
+      "severity": "low",
+      "score": 3.5
+    },
+    {
+      "item": "slag chunk",
+      "action": "Add a high-frequency rock/vesicle normal+roughness map and a multi-hue slag base color (dark base with iridescent oxide patches and a few glassy high-spec spots), and use a fractal displacement to break up the uniform low-poly facets.",
+      "severity": "low",
+      "score": 4
+    },
+    {
+      "item": "safety fence post",
+      "action": "Author powder-coated safety-yellow PBR (semi-gloss with edge scuffs and base grime) and add reflective hazard-stripe bands + chain/tape eyelets; give the base a beveled steel plate with anchor bolts",
+      "severity": "low",
+      "score": 4
+    }
+  ],
+  "reportMarkdown": "# MOLGANG GTA6-Realism Playtest Report — Tester-Panel Lead Synthesis\n\n**Verdict in one line:** The geometry foundation and simulation breadth are genuinely good, but the library is stuck at a *gray-box / untextured-viewport* stage. This is a **finishing problem, not a rebuild.** Two systemic gaps dominate everything else: (1) **zero PBR texture maps** anywhere (file-verified: 48 GLBs, 225 materials, **0 images / 0 textures**), and (2) **three good simulations that don't talk to each other** (chemistry heat never reaches the air, steel off-gas never reaches breathing, CO2 never reaches the economy).\n\nGround-truth verified this session:\n- `/home/knight2/molgang-roblox/assets/gltf/` → **48 GLBs, 225 materials, 0 embedded images, 0 textures**. Every surface (steel, glass, ceramic, rubber, liquid) renders as the same matte plastic.\n- **Average asset realism: 2.89 / 5** across 48 scored assets. **13 assets are critical (≤2.0).**\n- Client is **Roblox/Luau + Go gameserver + `molgang-web` shared sims** — NOT Phaser/Next.js (that stack is documented legacy in `docs/ENGINE_MIGRATION_PLAN.md`). Several GAMEPLAY/UX findings were written against the dead Phaser stack and were rejected by the adversarial pass (see \"Dropped as fluff\").\n\n---\n\n## REALISM SCORECARD\n\n| Metric | Value |\n|---|---|\n| **Average asset realism** | **2.89 / 5** |\n| Assets scored | 48 |\n| PBR texture maps in library | **0** (225 materials, all flat baseColorFactor) |\n| Transmission/glass materials | **0** (`KHR_materials_transmission` absent on all 225) |\n| Critical assets (≤2.0) | **13** — cooling_pit (1.0, worst as a class), leaching_tank_500L (1.5, failed mesh export), beaker_1L, centrifuge, distillation_column, drill_rig, excavator, haul_truck, jaw_crusher, pipe_section, race_checkpoint, solar_panel, cyclone_separator |\n| Weak assets (2.5–3.0) | 23 |\n| Acceptable (3.5) | 4 |\n| Strong (≥4.0) | 8 — quantum_tunnel_ring (5), villain_pedestal (5), speed_boost_pad (5), warning_beacon (5), slag_chunk (4), safety_fence_post (4), teleport_pad (4), combat_arena_floor (4) |\n\n### Biggest systemic gaps (root causes, ranked)\n1. **No PBR material layer at all.** Single highest realism-per-hour move. Closes most of the \"looks unfinished\" impression by itself.\n2. **No cross-system coupling.** Chemistry/airsim/steel are three vertical slices sharing only a currency. The world doesn't feel alive because a chemistry choice doesn't propagate into air, heat, or economy.\n3. **No audio wired up.** A complete `SoundManager` (`frontend/lib/audio.ts`) and manifest (`shared/audio-tracks.json`) already exist but are **dead code** — zero call sites. The gap is wiring, not building.\n4. **No juice on the core verb.** Atom pickup has near-zero kinetic payoff.\n5. **Art-direction split.** Grounded industrial gear vs. neon arcade props with no shared palette/stylization/poly-budget — looks like three asset packs merged.\n6. **No wear, no bevels, no baked AO.** Razor-sharp edges catch no light; pristine CAD look on a theme screaming for grime.\n7. **Inverted detail budget.** 434 KB on a boba cup vs 11.5 KB on the hero excavator.\n\n---\n\n## TRACK A — 3D DESIGNERS (asset / material / art)\n\nOrdered by severity. Per-asset remodel actions are summarized; the asset-finding JSON carries full per-asset specs and the **adversarial-sharpened** versions name the exact builder functions (e.g. `create_excavator()`, `create_trophy()`, `create_shield_gen()` in `assets/blender/generate_*_models.py`).\n\n### CRITICAL — systemic, do first\n- **[SD-1] Author a shared PBR master-material library and assign by slot across all 48 GLBs.** ~8–10 master sets (brushed/painted steel, cast iron, glass, ceramic, rubber, copper, concrete, plastic) with albedo+normal+roughness+metalness+AO. GLBs already expose named slots (`Glass`,`Liquid`,`Mark`) with varied metallicFactor, so slot assignment is wired. **Engine plumbing the source finding omitted:** bake into Roblox `SurfaceAppearance` (Color/Normal/Roughness/Metalness maps), upload via the alex upload-asset path, sync `MESH_REGISTRY.json` — no `SurfaceAppearance` wiring exists in `game/` yet. *Minimal viable first step:* one tiling normal+roughness set + corrected metallic flags across all slots closes most of the flat-plastic look. Subsumes backlog W021/I102/I105/SD007.\n\n### HIGH\n- **[SD-2] One-page art bible + re-skin the 5 arcade outliers.** Lock grounded-stylized PBR (not photoreal, not toy), a master palette (industrial grays/steel/rust + 2–3 accent colors reserved only for interactive/UI props), and tiered poly budgets keyed to `MESH_REGISTRY.json` category. Re-skin `quantum_dot.fbx`, `boba_tea_cup.fbx`, `victory_trophy.fbx`, `villain_pedestal.fbx`, `teleport_pad.fbx` so accent saturation is the *only* thing separating them. Enforcement hook: centralize palette constants + a CI lint (`tests/MeshLookup_test.lua`) that fails on off-palette accents.\n- **[SD-3] Silhouette-readability QA gate.** Add `--silhouette` mode to `assets/blender/render_single.py` (black-on-white, 3 angles), flag blob assets via fill-ratio/protrusion proxy in `tools/asset_validator.py`, then add read-defining geometry (motor housings, valves, hoppers, ladder rungs, flanges) to failures. ~30–40% of props fail the squint test today (centrifuge, magnetic_separator, screw_conveyor, pumps, valves).\n- **[SD-4] Global edge-bevel + baked-AO pass.** 1–2px support-loop chamfers on all hard-surface edges + vertex AO. Near-zero runtime cost, large perceived-quality lift; geometry currently catches no light.\n- **[SD-5] Critical-asset remodels (13 assets ≤2.0).** Highest-priority individual rebuilds: **cooling_pit** (flat plane → recessed basin w/ coolant + grating + hazard trim), **leaching_tank_500L** (discard failed 716-vert photogrammetry blob, rebuild cylindrical tank from source photo `test_tank.png`), **excavator** (box+cone → tracked undercarriage + rotating house + articulated boom-stick-bucket w/ rams in `create_excavator()`), **haul_truck** (add cab+dump bed+round tires), **jaw_crusher** (cut V-throat + jaw plates + flywheel), **beaker_1L / erlenmeyer_flask** (glass transmission + inner liquid mesh w/ meniscus), **distillation_column** (squat cylinder → tall slender insulated column w/ trays/flanges/ladder), **drill_rig / centrifuge / cyclone_separator / pipe_section / race_checkpoint / solar_panel**.\n\n### MEDIUM\n- **[SD-6] Layered wear pass.** Edge-wear masks, AO-driven rust/dirt in cavities, oil/scorch on hot equipment (kiln, BOF converter, slag ladle). Biggest realism-per-hour return *after* base materials. (Do not prescribe \"texture maps\" inside the Blender pipeline that authors none — use Principled-BSDF Metallic/Roughness/Emission values for in-pipeline assets, e.g. make the BOF `MoltenGlow` actually emissive by porting the richer material fn from `generate_new_models.py`.)\n- **[SD-7] Special-materials kit** for the high-visibility lab/FX props: transmissive glass (IOR/thickness), depth-tinted liquid (beaker/tank/boba), emissive+bloom for quantum/hero/teleport. Note: in-engine these are Roblox `Neon`/`Glass`/`BloomEffect`/animated-hue, NOT custom HDR shaders.\n- **[SD-8] Color/value discipline + detail-budget rebalance.** Desaturate neon accents ~20–30%, inject warm-rust/cool-steel hue variation into the gray cluster; re-allocate poly budget toward hero machines, decimate over-built trinkets.\n\n---\n\n## TRACK B — DEVELOPERS (gameplay, systems, UX)\n\nOrdered by severity. **Findings written against the dead Phaser stack were dropped** (see below). Surviving items are re-anchored to the real stack.\n\n### CRITICAL — systemic\n- **[DEV-1] Shared world-state bus coupling all three sims.** Define a small shared tick (zone temperature, wind, air composition, CO2/pollution ledger, market prices) that chemistry/airsim/steel all read+write. Reactions push heat+fumes; steel pushes off-gas+CO2+slag-waste; airsim consumes heat/wind and writes back breathability; economy prices the externalities. *This is the single biggest \"feels alive\" move on the systems side.*\n\n### HIGH\n- **[DEV-2] Quantitative, condition-driven chemistry yields.** Replace the boolean exact-stoichiometry gate in `api/routes/chemistry.py` (`_normalize(r[\"consumes\"]) == want`, lines ~145–203) with an Arrhenius rate using the already-present `activation_energy_kJ_mol` + `temperature_C.optimal`. Catalyst lowers effective Ea (not a string-match gate). Extend `shared/reactions.json` schema with `produces` (multi-product + byproducts w/ molar coefficients), `equilibriumK`/`reversible`, `yieldCurve`, `sideReactions`. Grow corpus >10 via `scripts/enrich-via-virtualpc.js` using the `_handFixes` convention. *Acceptance: same atoms at different T/P return different product mixtures.*\n- **[DEV-3] Advection-diffusion + ventilation + per-gas toxicology in `shared/hazard/airsim.ts`.** Current model is static Vec2 radial point-sources with a hard radius cutoff. Add: cloud radius growth as sqrt(D·t) + smooth falloff (kills the binary safe/unsafe edge the tests rely on), per-zone wind vector, Vec2→Vec3 buoyancy for hot/light gases, per-room air-exchange (ACH) + enclosed-volume accumulation (so fume hoods/doors matter). Give each `GasSpecies` a toxicology profile (acute vs cumulative, recoverable fraction, symptom thresholds) + discrete states (irritation→incapacitation→collapse); make the already-tracked `exposure` accumulator drive chronic/irreversible damage; CO clears slowly, acid-mist partly permanent. **Commit `airsim.ts`+tests first** (currently only referenced in backlog docs, absent from git). Dedupe scope vs planned HZ002/HZ003/HZ007.\n- **[DEV-4] Exothermic heat coupling.** Wire `reactions.json energy:\"exothermic\"` to a local heat term that raises bench/zone temperature, feeds airsim (hot-fume buoyancy/faster spread), and can trigger thermal-runaway events for unsafe operation. Closes the loop with DEV-2 and DEV-3.\n- **[DEV-5] Wire up the EXISTING audio system.** `frontend/lib/audio.ts` `SoundManager` + `shared/audio-tracks.json` already implement one-shot SFX, per-zone ambient loops, persisted mute, and autoplay-unlock — but have **zero call sites**. Add: first-pointerdown `sound.ambient(zone)` unlock, `ui_click` on buttons, `atom_pickup` on collect, 3 new manifest slots (`coin_gain`, `hazard_alarm`, `ppe_chime`), a HUD mute/volume control, and drop real Sandrom files over the PLACEHOLDER titles. *(Do NOT build a Phaser `this.load.audio` layer — wrong stack and duplicates a working system.)*\n- **[DEV-6] Close the core gameplay loop + add juice.** Make Arena-collected atoms feed the chem-lab inventory (shared backend) so collecting has downstream payoff; add a per-session objective/quota + results screen; surface a HUD portal Arena→chem-lab/steel. Add pickup juice (particle burst, floating +score, HUD scale-pop, camera flash on rare elements). Replace leak-prone raw `setTimeout` respawn with engine-managed delayed calls.\n\n### MEDIUM\n- **[DEV-7] Steel market + molten-bath simulation.** Add dynamic prices for grades + slag/byproducts, disposal cost/fine for unprocessed slag, a real CO2 cost/cap (currently a vanity stat), making EAF-vs-BF a true economic trade-off. Model a per-heat molten-bath composition vector over `alloyElements` mutated by each stage (BOF/EAF decarb, ladle additions w/ recovery %, P/S pickup from ore/scrap), so grade pass/fail = bath within `tolerancePct` and off-spec heats rework. Turns the rich-but-inert `alloyTargets` data into a live sim.\n- **[DEV-8] Emission table coverage.** Derive airsim emissions from each reaction's gaseous products + batch quantity (not the disconnected 3-entry hardcoded map covering only H2SO4/NH3/FeO); scale ppm by amount + condition deviation; wire steel off-gas (coke_oven_gas, BOF CO, tar) into the same airsim.\n- **[DEV-9] Connection-state UX + HUD unification + lobby richness.** Visible Connecting/Online/Offline badge + retry + spinner; wire \"Waiting for players…\" to real lobby count; gray out shop/vitals when offline. Establish one shared visual system (fonts/palette/panel style) across the primitive in-game HUD and polished DOM labs. Add lobby atmosphere (parallax/particle bg, tweened logo, ambient music). Anchor HUD to camera-relative positions, not absolute 1080p pixels. *(Re-target to the chosen client per `ENGINE_MIGRATION_PLAN.md`, not the dead Phaser canvas.)*\n\n---\n\n## DROPPED AS FLUFF (rejected by adversarial pass)\n- **Phaser `Scale.RESIZE` / white-letterbox fix** — wrong stack; no Phaser/`#game-container` exists. Re-file against the chosen UE5/Godot/Roblox client's UI-scaling spec once scaffolded.\n- **\"Add audio via `this.load.audio` in BootScene\"** — wrong mechanism; a complete `SoundManager` already exists. Replaced by DEV-5 (wire it up).\n- **\"Replace `setFillStyle` sprite primitives\"** — references a non-existent Phaser client; no `setFillStyle` anywhere in source.\n- **quantum_dot \"HDR core shader + PBR thin-film/iridescence map\"** — engine-fiction for Roblox (no custom shaders, no thin-film map type). Replaced with engine-correct animated-hue Metal rings + global `BloomEffect`.\n- **bof_converter \"PBR texture maps\"** — the pear vessel, trunnion ring, and MoltenGlow already exist; the Blender pipeline authors no UV/image maps. Real fix is porting the emissive material fn + adding pivot pins + tilted pour mouth (folded into SD-6).\n\n## NOTABLE CORRECTIONS (kept but de-fluffed)\n- **victory_trophy \"assign proper PBR gold\"** — gold PBR already exists (metallic 0.95 / roughness 0.15 in `create_trophy()`); the render only looks dull from lighting. Real gaps are bevels, anisotropy, nameplate mesh, marble base, and re-framing the cropped camera.\n- **distillation_column / excavator / shield_generator / leaching_tank_500L / anvil** — all verified as genuine buildable gaps against named `generate_*_models.py` builder functions; edits go in the `.py` source + re-export, not the `.png`.",
+  "raw": {
+    "designAssets": [
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/anvil_hammer_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Anvil reads as a featureless tan cylinder/drum, not a horned anvil — no horn, no hardy/pritchel holes, no waist taper, no step",
+          "Hammer head and handle are flat grey/wood primitives with zero forged-metal response, no specular hotspot, no bevels on edges",
+          "Wood handle is a uniform flat brown box with no grain texture, no cylindrical cross-section",
+          "All parts share the same matte clay shader — no metal vs wood material contrast",
+          "No anvil base/stump, parts float on a reflective black void plane with no scale reference"
+        ],
+        "action": "Remodel the anvil with its defining silhouette (horn, heel, face step, hardy hole) and author PBR cast-iron maps (dark metal base color, mid roughness, edge-wear metallic chips on the face); give the hammer a separate hot-rolled steel head map and a procedural wood-grain handle.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/bof_converter_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Basic Oxygen Furnace converter reads as a plain open-top grey can — missing the iconic pear/barrel vessel profile, trunnion ring, and tilting trunnion pins",
+          "No refractory lining, no tap hole, no lance, no support structure",
+          "Flat grey shader with faint specular — no steel-mill grime, scorch, slag splash, or heat discoloration that defines this hero prop",
+          "Loose grey half-dome and bar primitives scattered nearby look like unassembled parts, not a coherent assembly",
+          "Rim is a sharp un-beveled cylinder edge, obvious low-poly facets on the curved wall"
+        ],
+        "action": "Rebuild as a pear-shaped converter vessel with a trunnion ring + pivot pins and a tilted pour mouth, then author a PBR steel-shell map (weathered painted steel) plus a separate scorched/slag-crusted refractory-mouth map with emissive heat glow at the lip.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/cone_crusher_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Overall stacked-cone silhouette is roughly readable but very soft/blobby — the mantle and bowl lack the distinct conical crushing chamber and feed hopper",
+          "Heavy low-poly faceting visible on every curved surface (the cone and the base disc)",
+          "Single flat grey shader; the lone yellow torus (drive/hydraulic line?) is the only color and reads as a floating cable",
+          "No bolts, flanges, drive housing, or hopper rim — zero mechanical detail",
+          "No texture, no cast-iron/painted-steel material differentiation, no oil/dust grime"
+        ],
+        "action": "Increase subdivision on the mantle/bowl cones and add a feed hopper + bolted base flange, then author PBR painted-steel maps (industrial yellow/grey body) with grease streaks and rock-abrasion wear on the crushing surfaces; replace the floating yellow torus with a modeled hydraulic hose.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/diploma_frame_preview.png",
+        "realismScore": 3.5,
+        "gaps": [
+          "Simplest asset — a flat brown rectangular slab (frame) with a thin striped strip in front; certificate/paper inside the frame is missing entirely",
+          "Frame is a single flat brown box: no molding profile, no inner mat, no glass, no corner miters",
+          "No specular/glass response — a framed diploma needs a glossy glass pane reflection to read as real",
+          "The grey ribbed strip in front is ambiguous (stand? base?) and lacks purpose",
+          "No texture: no wood grain on the frame, no printed certificate text/seal"
+        ],
+        "action": "Model a proper picture-frame profile (beveled outer molding + inner mat recess + a glass pane plane), drop in a certificate texture (parchment color + seal + ruled text), and author a PBR glossy-glass material with a subtle wood-grain frame map.",
+        "priority": "P3"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/excavator_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Does not read as an excavator at all — it's a grey box + yellow box + two thin sticks; no boom, stick, bucket, cab, or tracks",
+          "No articulated arm geometry, no hydraulic cylinders, no undercarriage",
+          "Flat yellow/grey clay shaders with no construction-equipment livery, decals, or paint scratches",
+          "Sharp un-beveled box edges, zero mechanical detail (no rivets, hoses, glass cab)",
+          "Scale is unreadable — looks toy-sized against the void plane"
+        ],
+        "action": "This needs a full remodel: build the canonical excavator silhouette (tracked undercarriage, rotating house/cab, articulated boom-stick-bucket with hydraulic rams) then author PBR maps for CAT-yellow painted steel with chipped-edge wear, dirt accumulation on the tracks/bucket, and a glass cab material.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/heat_exchanger_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Shell-and-tube heat exchanger reads as a plain grey cylinder with two tiny wooden pegs on top — missing the horizontal shell orientation, channel heads, and nozzle connections",
+          "No tube bundle, no flange bolt circles, no saddle supports, no piping nozzles",
+          "The two wood-colored pegs and scattered grey half-domes/discs are ambiguous and break material consistency",
+          "Flat grey matte shader; no insulated-jacket or bare-steel material, no rust at flanges, no thermal lagging",
+          "Low-poly facets on the cylinder body, sharp un-chamfered rims"
+        ],
+        "action": "Remodel as a horizontal shell-and-tube unit on saddle supports with bolted flange channel heads and inlet/outlet nozzles, then author PBR maps: an insulated aluminum-clad jacket OR bare carbon-steel shell with rust-streaked flanges and a painted nameplate.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/leaching_tank_500L_from_photo_preview.png",
+        "realismScore": 1.5,
+        "gaps": [
+          "Worst of the batch — a single smooth grey teardrop/pebble blob; no tank, no walls, no agitator, no inlet/outlet, nothing reads as a 500L leaching tank",
+          "Despite the 'from_photo' name there is zero photo-derived detail — it's an undefined organic lump",
+          "No cylindrical vessel silhouette, no top rim, no support legs, no fluid volume",
+          "Completely flat grey shader, no texture, no liquid/wet response, no scale reference",
+          "Appears to be a failed/incomplete mesh export"
+        ],
+        "action": "Discard and rebuild from the source photo as a cylindrical 500L tank: vertical body + dished bottom on legs, top-mounted agitator motor + shaft + impeller, side inlet/outlet ports; then author PBR maps for poly/stainless tank wall (slight gloss, water stains) and a translucent liquid surface.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/pressure_vessel_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Pressure vessel reads as a short grey can with two detached hemispherical domes lying beside it instead of an assembled capsule with welded heads",
+          "Missing the integral 2:1 elliptical/hemispherical end caps, manway, nozzles, and saddle/skirt support",
+          "Single tiny nub on the side is the only 'detail'; no flanges, no relief valve, no ladder/platform",
+          "Flat grey shader, low-poly faceting on the cylinder and domes, sharp seams",
+          "No ASME-style nameplate, no painted-steel material, no weld-seam or rust texture"
+        ],
+        "action": "Assemble the vessel as one capsule (cylinder + welded hemispherical heads) on a support skirt or saddles, add nozzles + a manway + a relief valve, and author PBR painted carbon-steel maps with visible weld seams, flange bolts, and rust-bleed streaks under the nozzles.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/rail_cart_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Silhouette is the most readable of the set (box body + 4 wheels + an ore lump) but it's still primitive — wheels are detached floating discs not mounted on axles",
+          "No axle, no chassis frame, no coupling, no rail/flanged wheel profile (these are plain discs, not rail wheels)",
+          "Cart body is a flat dark box with no plank/rivet detail, no tipper hinge",
+          "The ore load is a smooth brown ellipsoid with no rock facets or material variation",
+          "Very dark/underlit — material response is invisible; everything is near-black matte"
+        ],
+        "action": "Mount the wheels on a visible axle/chassis with flanged rail-wheel profiles, add plank+rivet detail and a tipper hinge to the body, then author PBR maps: weathered rusty-steel cart, oiled wheels, and a chunky textured ore-pile (rock normal map) for the load; also lift the key light so the materials read.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/slag_chunk_preview.png",
+        "realismScore": 4,
+        "gaps": [
+          "Best-suited to its placeholder form — irregular faceted rock chunks are an acceptable low-poly base for slag, so the silhouette mostly works",
+          "But it's still flat matte dark-grey clay with no slag character: no vitreous/glassy sheen, no porous vesicular holes, no color variation (slag has blues/greens/rusty oxides)",
+          "Facets are large and uniform — looks geometric, not naturally fractured",
+          "No micro-surface texture, no fine debris/gravel around the chunks",
+          "No subsurface or specular cue that this is cooled molten material"
+        ],
+        "action": "Add a high-frequency rock/vesicle normal+roughness map and a multi-hue slag base color (dark base with iridescent oxide patches and a few glassy high-spec spots), and use a fractal displacement to break up the uniform low-poly facets.",
+        "priority": "P3"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/spray_dryer_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Spray dryer reads as a short open grey cylinder with a separate cone lying on its side — missing the tall drying chamber with a conical hopper bottom, which is the defining shape",
+          "No atomizer/nozzle assembly at top, no cyclone, no inlet/outlet ducting",
+          "Scattered loose primitives (bars, cone, small cylinder) look like disassembled parts, not a unit",
+          "Flat grey matte shader, low-poly facets on the cylinder, sharp rim",
+          "No stainless/painted-steel material, no product residue/powder coating, no insulation"
+        ],
+        "action": "Remodel as a tall vertical drying chamber with an integral steep conical bottom, a top atomizer head, and side hot-air ducts/cyclone, then author PBR brushed-stainless maps with light powder residue on the lower cone and a few flange/nameplate details.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/vibrating_screen_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Vibrating screen reads as two grey walls (side plates) with small yellow cylinders between them — missing the actual mesh/screen deck, which is the whole point",
+          "No woven-wire or perforated screen surface, no inclined deck angle, no spring mounts or exciter/vibrator motor",
+          "No feed box or discharge chute; the green box in the background is an unexplained stray primitive",
+          "Flat grey side plates with no stiffener ribs, bolts, or wear plates",
+          "Single flat shader, no material story (painted steel frame vs steel wire mesh vs rubber springs)"
+        ],
+        "action": "Add the inclined screen deck with a perforated/wire-mesh material between the side plates, mount the assembly on coil springs with a side-mounted exciter motor, and author PBR maps: painted-steel frame with abrasion wear plus a separate metallic wire-mesh map clogged with fine dust.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/hero_shield_generator_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Hero prop reduced to a single flat-shaded pale-blue sphere; faceted low-poly seams visible around the equator silhouette",
+          "No PBR emissive/glass response - reads as matte clay, not energy/forcefield; no fresnel rim, no inner glow, no refraction",
+          "No supporting geometry: no base, emitters, coils, vents, or housing that would sell a 'generator'",
+          "Zero surface detail, panel lines, or material breakup; lighting is flat with no specular highlight"
+        ],
+        "action": "Rebuild as a multi-part hero: armored metal housing + ring emitters with authored PBR metal/scratch maps, and drive the dome with an emissive+fresnel glass shader (animated noise) plus a point light so the shield actually glows and refracts.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/quantum_dot_preview.png",
+        "realismScore": 3.5,
+        "gaps": [
+          "Concept reads (glowing core + two orbital rings) but execution is placeholder: rings are flat untextured bands, core is a faceted hemisphere/sphere with visible low-poly facets",
+          "Emissive core has no bloom/halo, no volumetric glow - just a pale flat fill, no PBR emission strength",
+          "Rings lack metal/iridescent material, bevels, or thickness variation; intersection with core is a hard non-blended seam",
+          "No depth - missing inner particle/nucleus detail expected of a 'quantum dot' hero VFX prop"
+        ],
+        "action": "Author an emissive HDR core shader with bloom + a thin animated particle nucleus, and remodel the rings as beveled iridescent-metal tori with a PBR thin-film/iridescence map so they catch colored highlights.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/victory_trophy_preview.png",
+        "realismScore": 3.5,
+        "gaps": [
+          "Gold material is flat single-color yellow with no metallic roughness map - looks like plastic, not polished/award gold",
+          "Camera is cropped/too close so the silhouette and proportion can't be read; cup, handles and stem feel chunky and low-poly",
+          "Handles are simple tubes with no bevels; stem-to-base and cup-to-stem joints are hard unblended unions",
+          "Base is a flat dark disc with no engraving, nameplate, bevel, or material contrast (no marble/wood)"
+        ],
+        "action": "Assign a proper PBR gold (high metalness, low roughness, gold tint with anisotropic highlight), bevel all edges, add an engraved nameplate and a marble/wood base, and reframe the render to show full silhouette.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/distillation_column_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Column is a single short faceted grey cylinder lying near blob-like grey lumps - silhouette does not read as a tall fractionating column",
+          "No PBR steel material, no reflectivity, flat grey shading only; visible cylinder facets (low segment count)",
+          "Missing all signature detail: trays/plates, flanges, ladders, insulation bands, piping, reboiler/condenser",
+          "Proportion is wrong - distillation columns are tall and slender; this is squat with amorphous attached masses"
+        ],
+        "action": "Remodel as a tall slender insulated column: high-segment cylinder with banded insulation, flange rings, side manways, an external ladder/cage and feed/reflux piping, then author brushed-steel PBR with weld seams and rust streaks.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/ball_mill_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Drum is a faceted open grey cylinder (visible flat facets on the curve) with no end caps, trunnions, or charge",
+          "No PBR cast-iron/steel material - flat grey, no specular; loose green cube nearby reads as an unrelated placeholder marker",
+          "Missing drive train: girth gear, motor, bearing housings, support saddles, feed/discharge chutes",
+          "Scattered detached primitives (slab, green box) have no material identity and break scene cohesion"
+        ],
+        "action": "Close the drum with end caps + trunnions, add a girth gear ring, motor and support saddles, model some grinding-ball charge inside, and author worn cast-iron PBR (rough metal + abrasion + ore dust) - remove or texture the stray green cube.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/leaching_tank_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Decent silhouette (tank + central agitator shaft + side launders) but all surfaces are flat color blocks: yellow band, white body, no PBR",
+          "Faceted cylinder body; agitator is a bare thin rod with no impeller blades, motor, or drive at top",
+          "Side pipes are plain grey tubes with no flanges; small red/green discs read as untextured indicator placeholders",
+          "No liquid surface, slurry stain, corrosion or wear; lighting flat with no metallic specular"
+        ],
+        "action": "Add a proper top-drive motor + gearbox and submerged impeller blades on the shaft, flange the launder pipes, and author a coated-steel PBR tank with a slurry liquid surface and acid-stain wear maps around overflow points.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/roasting_kiln_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Tube/kiln body is faceted grey cylinder with no riding rings, drive gear, or incline; surrounding blocks are amorphous primitives",
+          "Orange discs/blocks hint at hot material but use flat orange color, not emissive heat-glow PBR",
+          "No refractory texture, no scorch/soot, no heat haze or glowing interior expected of a roasting kiln",
+          "Connecting duct is a plain grey box; scale relationship between parts is unclear"
+        ],
+        "action": "Model riding rings + drive gear on an inclined rotary tube, add an emissive heat-graded interior/discharge (HDR orange falloff), and author a sooty refractory-steel PBR with scorch and dust accumulation; replace flat-orange blocks with emissive hot-charge material.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/slag_ladle_preview.png",
+        "realismScore": 3.5,
+        "gaps": [
+          "Best-composed shot but still placeholder: ladle body is flat near-black with no PBR, just a single rim bevel catching light",
+          "Molten top surface is a flat peach fill - no emissive HDR glow, no gradient, no bubbling/crust, no light cast onto rim",
+          "Only one trunnion/spout stub modeled; missing the second trunnion, lifting bail/yoke, and pour lip detail",
+          "No refractory lining, no slag splatter, scorch, or heat discoloration on the exterior steel shell"
+        ],
+        "action": "Drive the molten pool with an emissive HDR gradient (white-hot center to deep red crust) plus a strong area light that spills orange onto the rim, add the second trunnion + lifting yoke, and author a scorched steel-shell PBR with slag crust and heat-tint maps.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/centrifugal_pump_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Reads as a loose pile of grey primitives with one green faceted cylinder; volute/casing scroll shape not recognizable as a pump",
+          "No PBR cast-metal material; green motor is flat color with visible low-poly facets",
+          "Missing signature parts: spiral volute casing, suction/discharge flanged nozzles, baseplate, coupling guard, foot bolts",
+          "Parts float without a unifying baseplate; scale and assembly logic unclear"
+        ],
+        "action": "Remodel a recognizable volute casing with flanged suction/discharge nozzles coupled to a finned motor on a common baseplate, then author cast-iron + painted-motor PBR with bolt detail, oil stains and rust at flanges.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/filtration_press_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Plate-stack silhouette reads, but plates are a uniform pale ribbed block with no individual filter-plate relief, frames, or cloth",
+          "Flat untextured blue-grey side frame and base; no PBR metal, no hydraulic ram, no tie bars",
+          "No filter-cake, slurry drip, or moisture/grime that defines a working filter press",
+          "Ribbing is geometric and clean - no bevels, no wear, reads CAD-grey"
+        ],
+        "action": "Model discrete recessed filter plates with cloth and corner ports, add a hydraulic closing ram + tie bars + drip tray, and author a painted-steel PBR frame with filter-cake residue and wet streaking down the plates.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/storage_silo_preview.png",
+        "realismScore": 2.5,
+        "gaps": [
+          "Silo is a plain faceted grey cylinder with a flat cap - no conical hopper bottom, support legs, ladder, or roof vent",
+          "Conveyor/auger beside it is a thin segmented grey strip with no housing or material; small grey cones read as undefined piles",
+          "No PBR galvanized/painted-metal material, no panel seams, no rust streaks at bolt lines",
+          "Single red speck appears to be a stray indicator with no context"
+        ],
+        "action": "Add a conical discharge hopper on support legs, a roof with vent + ladder/cage, and panel-seam geometry; author galvanized-steel PBR with bolt-line rust streaks and enclose the auger conveyor in a proper tube/housing.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/conveyor_belt_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Frame and stepped blocks read as a conveyor but the belt surface itself is missing - no continuous belt, rollers, or idlers visible",
+          "Uniform near-black flat material with no PBR rubber/steel distinction; very dark, almost silhouette-only",
+          "No drive pulley, motor, support legs, or material/cargo on the belt",
+          "Hard-edged boxy geometry with no bevels; the stepped shapes look like placeholder cargo rather than belt mechanism"
+        ],
+        "action": "Model a continuous rubber belt over head/tail pulleys with idler rollers and a leg-supported truss frame, then author rubber-belt PBR (rough, scuffed) vs painted-steel frame, and add some ore/material load to sell function.",
+        "priority": "P3"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/beaker_1L_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Reads as two stacked opaque cylinders (grey lid + mustard-yellow body), not a transparent 1L borosilicate beaker — zero glass transmission/refraction or fluid meniscus",
+          "Hard low-poly cylinder facets visible on both rim and wall; no spout, no graduation markings, no rolled lip",
+          "Material is flat diffuse with no specular highlight, no Fresnel edge brightening, no thickness/double-sided glass shading",
+          "The yellow 'liquid' is a separate floating cylinder that clips/floats above the disc base rather than sitting inside glass"
+        ],
+        "action": "Rebuild as a single thin-walled glass mesh with a separate fluid volume inside; author a transparent glass shader (IOR ~1.47, transmission, roughness ~0.05) plus a colored absorbing liquid with a meniscus ring, add pour spout and embossed graduation marks",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/centrifuge_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Silhouette is unreadable as a centrifuge — looks like a flat grey disc with a green block and two grey bars scattered beside it; no lid dome, no rotor bowl, no control panel",
+          "Faceted cylinder edges on the disc; everything is flat untextured grey except an unexplained green slab",
+          "No material differentiation between housing (painted steel), lid (glass/plastic window) and rotor (machined aluminium)",
+          "Parts appear disassembled/floating on the floor rather than an assembled appliance with a footprint"
+        ],
+        "action": "Author a closed clamshell housing with a domed transparent lid showing the rotor inside; assign brushed-metal PBR to the rotor, glossy plastic to the housing, and a glass shader to the lid window; add a control panel decal and rubber feet",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/cooling_pit_preview.png",
+        "realismScore": 1,
+        "gaps": [
+          "Currently just a single flat bronze-tinted rectangular plane standing in a corner — no 'pit', no depth, no coolant volume, no grating or pipework",
+          "Completely flat shaded with one broad specular gradient; no normal detail, no rust, no concrete or liner texture",
+          "No scale cues (ladder, rim lip, hazard markings) so the object reads as an abstract panel, not industrial infrastructure",
+          "No interior — a pit needs recessed geometry, walls and a fluid/floor at the bottom"
+        ],
+        "action": "Model an actual recessed basin (extruded inward with thickness and a rim lip), add a coolant water plane with the transmissive/wet shader, line walls with concrete+stained-metal PBR, and add edge grating plus hazard-stripe trim for scale",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/drill_rig_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Drill rig reads as a low grey concrete block with a single yellow horizontal bar and a thin grey pole beside it — the defining vertical mast/derrick and drill string are essentially absent or paper-thin",
+          "No drill bit, no motor housing, no hoses, no tracks/base outriggers; proportions don't convey a heavy machine",
+          "Flat untextured grey with no painted-steel, no grease, no rust, no hydraulic detailing",
+          "The reddish vertical element at right looks like stray scene geometry/lighting, not part of the rig, hurting silhouette clarity"
+        ],
+        "action": "Build a proper lattice/box mast with a travelling head and a tri-cone drill bit at the base; add hydraulic cylinders and hoses, then author worn safety-yellow paint + greasy steel PBR with chipping along edges",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/gate_valve_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Overall valve gesture is faintly readable (body block, bonnet cylinder, handwheel disc, red bent pipe) but everything is dim, soft and flat grey with no metal response",
+          "Handwheel is a solid faceted disc, not a spoked wheel; no stem, no gland nut, no flange bolt holes",
+          "Red pipe is a thin tube with no flanges or fittings and floats relative to the body",
+          "No cast-iron texture, no paint, no rust streaks, no scale markings — and the render is underlit, hiding what detail exists"
+        ],
+        "action": "Replace the solid disc with a spoked handwheel + rising stem and gland, add bolted flanges where the red pipe meets the body, then author cast-iron PBR (rough metal base coat, chipped industrial paint, rust streaks down from bolts)",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/jaw_crusher_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Reads as a grey box with two small grey tabs, a yellow bar on top and a yellow half-disc (flywheel) on the side — the crushing chamber/jaw throat and feed hopper are not legible",
+          "Faceted half-cylinder flywheel; no V-belt guard, no toggle plate, no eccentric shaft, no feed opening",
+          "Single flat grey material across the whole body; no cast-steel, no paint, no ore dust/abrasion on the jaw faces",
+          "No structural feet/skid so it floats; proportions feel like a generic appliance, not a heavy crusher"
+        ],
+        "action": "Cut an open V-shaped feed throat into the top and model the moving + fixed jaw plates with corrugated faces; add a proper round flywheel with belt guard, then author abraded manganese-steel jaws + chipped painted-steel frame PBR with rock-dust grime",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/magnetic_separator_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Has more structure than most (frame rails, red end-boxes, green collection bin, red posts) so the conveyor/separator idea partly reads, but it's a kit of flat primary-colored blocks",
+          "No drum/belt surface, no magnet housing detail, no rollers; the red and green boxes are untextured saturated cubes with hard low-poly edges",
+          "Zero PBR — everything is flat matte; no painted-metal sheen, no rust, no magnetic-drum stainless look, no ore residue",
+          "Bins float at slightly inconsistent heights, weakening the assembled-machine read and scale consistency"
+        ],
+        "action": "Add a cylindrical magnetic drum with a wrapping belt and idler rollers, weld the colored bins onto the frame at a common datum, then author painted-steel frame + stainless drum + plastic hopper PBR with iron-fines grime around the discharge",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/quantum_tunnel_ring_preview.png",
+        "realismScore": 5,
+        "gaps": [
+          "Best of the batch: clean disc, brushed/anisotropic radial sheen on the inner surface and a soft emissive cyan rim halo read as a believable stylized sci-fi portal",
+          "Inner disc still shows faint faceting and a visible quad-seam where the radial brush map mirrors; rim glow is a flat band with no bloom falloff or volumetric light spill onto the floor",
+          "No depth/parallax in the tunnel — it's a flat disc, so it lacks the recessed energy-well feel; no animated or layered glow rings",
+          "Ring bezel is smooth but undetailed (no panel lines, bolts, or material wear) — pristine to the point of looking untextured plastic rather than machined alloy"
+        ],
+        "action": "Add a subtle recessed energy-well (concentric beveled rings receding inward) with layered emissive rings and a bloom/light-spill onto the floor; clean the mirrored brush seam and add fine machined panel-line detail + a faint metal bezel PBR to the outer ring",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/safety_fence_post_preview.png",
+        "realismScore": 4,
+        "gaps": [
+          "Simple object so silhouette is correct and believable (capped bollard post on a round base) — passes as a decent stylized prop, which is why it scores higher",
+          "Single flat saturated yellow with no PBR — no plastic/powder-coat sheen, no scuffs, no dirt at the base, no chain/tape eyelets that a real safety post has",
+          "Base plate is a plain thin grey disc with no anchor bolts or bevel, and it reads as a different untextured material with a hard low-poly edge",
+          "Spherical cap and shaft meet with no seam/collar detail; whole thing is geometrically clean but inert"
+        ],
+        "action": "Author powder-coated safety-yellow PBR (semi-gloss with edge scuffs and base grime) and add reflective hazard-stripe bands + chain/tape eyelets; give the base a beveled steel plate with anchor bolts",
+        "priority": "P3"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/solar_panel_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Framing is broken — only a corner of the panel is in frame on a tall thin pole, so the render barely shows the asset; the panel itself is a flat dark-blue slab",
+          "No PV cell grid, no busbars, no anti-reflective glass with sky reflection — the signature solar texture is entirely missing",
+          "Mounting pole is a plain faceted cylinder with no bracket, tilt frame, or junction box",
+          "Flat shading with one weak specular streak; no glass gloss, no aluminium frame highlight"
+        ],
+        "action": "Fix the camera framing, then author a PV glass shader (high-gloss with cell-grid + busbar normal/albedo maps and a faint sky reflection) on a beveled aluminium frame; add a tilt bracket and junction box to the pole",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/teleport_pad_preview.png",
+        "realismScore": 4,
+        "gaps": [
+          "Pleasant stylized read: gold beveled ring, dark dish, four small crystal/spike emitters and a glowing green core orb — silhouette and color story work as a game prop",
+          "Gold ring is flat matte gold with no metal reflectivity, anisotropy or wear; looks like painted plastic rather than PBR metal",
+          "Central green orb and crystals are simple low-poly diffuse shapes with weak emission — no inner glow gradient, no bloom, no light spill onto the dish",
+          "Dish interior is a plain dark gradient with no rune/circuit detailing or energy texture; crystals show faceting from low subdivision"
+        ],
+        "action": "Author a polished gold-metal PBR (high reflectivity + subtle scratches) on the ring, raise subdivision on the crystals, and make the core orb emissive with bloom and colored light-spill plus glowing rune decals on the dish floor",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/villain_pedestal_preview.png",
+        "realismScore": 5,
+        "gaps": [
+          "Strong stylized mood — octagonal black plinth with a glowing crimson rim torus and red emissive spikes reads clearly as a 'villain' altar, best lit of the batch",
+          "Black base is a flat near-matte slab with no material identity (obsidian? metal? stone?) and shows hard low-poly octagon edges with no bevel",
+          "Emissive spikes/rim glow are flat-bright with no bloom, no gradient falloff and no red light cast onto the base top — emission isn't lighting the scene",
+          "No surface detail anywhere: no engraved sigils, panel lines, cracks or grime; spikes are smooth low-subdiv cones"
+        ],
+        "action": "Bevel the octagon edges and author a dark obsidian/blackened-metal PBR with engraved glowing sigils; add real emissive bloom + red light-spill from the rim and spikes onto the base, and raise subdivision on the spikes",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/boba_tea_cup_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Cup body is a flat grey diffuse cone with zero translucency or PBR plastic response; reads as matte clay, not a glossy PET/paper boba cup",
+          "Domed lid has a hard 90-degree intersection with the cup rim and no bevel, so the seam looks like two booleaned primitives rather than a snap-fit lid",
+          "Straw is a single flat-green cylinder with no specular highlight, no thickness at the tip, and clips straight through the lid with no hole geometry or grommet",
+          "No liquid, no tapioca pearls, no condensation/wet sheen, no brand sleeve — the hero readable detail that makes boba recognizable is entirely absent",
+          "Scale ambiguous in empty void; no contact shadow grounding so it floats"
+        ],
+        "action": "Author a clear-glossy plastic PBR set (high spec, low roughness, slight transmission) for the cup, model an inset liquid surface with a separate pearl scatter, and bevel the lid rim + cut an actual straw hole.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/combat_arena_floor_preview.png",
+        "realismScore": 4,
+        "gaps": [
+          "Octagon slab is a single flat dark plane with no surface texture — no panel seams, grating, scuffs or arena-floor material, so it reads as a vinyl coaster",
+          "The neon ring is a clean emissive torus with no bloom, no light spill onto the surrounding floor, and no inner glow falloff — the emission does not illuminate anything",
+          "Edge chamfer of the octagon is a single hard 45-degree cut with no thickness detail or trim, looks like a CAD extrude",
+          "No height/normal variation; the central ring just sits on a flat surface with no recessed channel or raised lip"
+        ],
+        "action": "Add a tiled PBR arena-floor material (metal grating or scuffed concrete with normal map), recess the ring into a beveled channel, and drive real emissive bloom + light bounce so the neon spills onto the deck.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/cyclone_separator_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Entire unit is a stack of bare grey primitives — a cylinder, a tall cone, a tiny cone and a slab box — with no joining geometry, so it does not read as a cyclone separator at all",
+          "Missing the defining tangential inlet pipe, vortex finder, dust outlet and support legs/skirt; silhouette is unrecognizable as the intended equipment",
+          "No metal PBR, no weld seams, no flanges, no bolts — flat clay shading throughout",
+          "Components float as separate disconnected pieces rather than a single welded assembly"
+        ],
+        "action": "Rebuild as one coherent welded vessel: merge cone-into-cylinder with a beveled transition, add tangential inlet + overflow/underflow pipes and support legs, then author a brushed-steel PBR set with rust streaks and flange bolts.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/erlenmeyer_flask_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Flask body is opaque grey with a flat green painted patch faking liquid; no glass transmission, refraction, or specular rim — it reads as a solid cone, not borosilicate glass",
+          "The 'liquid' is a vertical-cut flat color decal, not a horizontal meniscus surface, so it ignores gravity and looks painted on",
+          "Cone-to-neck transition is a single hard edge with no shoulder curve; missing the lip/flange and graduation marks of real lab glassware",
+          "Detached small cylinder beside it (cork/cap?) is an unrelated grey disc with no relation to the flask"
+        ],
+        "action": "Convert the body to a thin-walled glass shader (transmission + IOR 1.5, low roughness) with a separate inner liquid mesh that has a flat horizontal meniscus, model the lip flange, and add subtle volume graduation lines.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/haul_truck_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Truck is a grey box + yellow box with three identical dark hexagonal-prism 'wheels' — wheels are low-poly hex cylinders, not round tires, and there are only three visible, mounted at the wrong height",
+          "No cab, no dump bed cavity, no chassis frame, no headlights — the defining silhouette of a mining haul truck is completely missing",
+          "Flat untextured plastic; no tire tread, no painted-metal body with grime, no glass for windows",
+          "Proportions wrong: body is a featureless rectangular slab, wheels too small and too few for a haul truck"
+        ],
+        "action": "Model a proper cab + raised dump bed + chassis and replace the hex prisms with high-segment round tires (tread normal map), then author painted-metal body PBR with mud/dust accumulation in the lower thirds.",
+        "priority": "P0"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/lab_bench_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Bench is a thin tan plank balanced on stick legs with no apron, no thickness, and no worktop overhang — reads as a flat board on toothpicks, not a sturdy lab bench",
+          "Legs are bare grey prisms with hard edges and no feet, no cross-bracing detail beyond a single stretcher; joinery intersections are ungrouped boolean overlaps",
+          "No PBR wood grain on the top, no brushed-metal on the frame; the dark scene crushes all surface read",
+          "Missing lab-bench signature features: reagent shelf, sink cutout, drawers, edge trim"
+        ],
+        "action": "Thicken the worktop with a beveled edge, add an apron and proper foot pads, then author a wood-grain PBR for the top and brushed-steel for the frame; brighten key light to reveal form.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/pipe_section_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Just a short grey cylinder standing upright with two flat grey discs lying beside it — no bore/hollow, no wall thickness, so it reads as a solid rod not a pipe",
+          "No flanges, no bolt holes, no threading, no gaskets — none of the connection detail that defines a pipe section",
+          "Flat matte grey, no metal PBR, no rust at seams, no weld bead",
+          "The two loose discs are unexplained and disconnected, breaking the single-object read"
+        ],
+        "action": "Hollow the cylinder to show wall thickness, add beveled flanges with bolt rings at both ends, and author a galvanized-steel PBR with rust streaks and a weld seam.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/race_checkpoint_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Render is almost entirely dark void with two dim cylindrical posts barely visible — the checkpoint gate/arch and any banner or emissive ring are not visible or not present",
+          "No emissive glow, no checkpoint number/arrow signage, no PBR on the posts; they read as featureless dark columns",
+          "Framing is broken — camera is too low/close and the lighting is so dark the asset cannot be evaluated, suggesting the hero geometry is off-frame",
+          "No ground contact, no banding/striped paint, no scale reference"
+        ],
+        "action": "Re-frame the render and model the actual gate arch + emissive crossbar with a glowing checkpoint ring, then author striped safety-paint PBR on the posts and add a strong emissive material for the marker.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/screw_conveyor_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Helical flight is modeled (good intent) but the auger spiral is coarse/low-segment with faceted blades and no central shaft continuity — the helix reads chunky and jagged",
+          "No U-trough or tubular housing around the screw; the flighting floats exposed so it does not read as a conveyor",
+          "Vertical cylinder at the rear (drive/motor?) is a plain grey can with no motor housing, gearbox, or coupling detail",
+          "The green hopper at the end is a single flat-color box with no thickness or chute; flat untextured metal throughout"
+        ],
+        "action": "Wrap the auger in a half-pipe U-trough housing, raise the helix segment count and add a continuous beveled center shaft, then model a real drive motor + gearbox and author painted-steel PBR with wear on the flight edges.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/speed_boost_pad_preview.png",
+        "realismScore": 5,
+        "gaps": [
+          "Emissive disc glows pleasantly but is a flat featureless ellipse — the three chevron/arrow bumps are soft blurry lumps, not crisp directional arrows, so the boost direction is ambiguous",
+          "No surface detail, bezel, or housing frame around the glowing pad; it sits as a bare lit oval with no contact shadow",
+          "Single flat emissive color with no animated gradient, no bloom falloff, no rim trim",
+          "Reads acceptable as stylized but lacks the hard-edged tech-trim that sells a sci-fi boost pad"
+        ],
+        "action": "Model crisp inset chevron arrows with a separate brighter emissive, add a beveled dark housing ring around the pad, and drive bloom + a directional color gradient on the emission.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/thickener_tank_preview.png",
+        "realismScore": 3,
+        "gaps": [
+          "Tank is a low translucent-grey drum with a faint internal rake bridge — the central drive cage, feedwell and launder/overflow weir are missing or barely suggested",
+          "The two yellow rods on the side are unexplained loose primitives, not modeled walkways/pipes; they float disconnected",
+          "No PBR steel/concrete, no liquid surface inside, no scale; the whole vessel reads soft and undefined under flat lighting",
+          "Rake arms are thin flat blades with no truss structure, hard edges, no thickness"
+        ],
+        "action": "Model the center drive column + feedwell + peripheral overflow launder, replace the loose yellow rods with a proper handrail bridge, and author a concrete-and-steel PBR with a settled-slurry liquid surface.",
+        "priority": "P1"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/warning_beacon_preview.png",
+        "realismScore": 5,
+        "gaps": [
+          "Reads best of the set thanks to the warm emissive dome, but the dome is a smooth plain hemisphere with no internal bulb, no rotating-mirror detail, and no fresnel ribbing of a real warning light",
+          "The black base is a plain beveled cylinder + thin pole with no mounting bracket, screws, or cage guard",
+          "Emission does not bloom or spill light onto the pole/ground; glow is contained to the dome only",
+          "No PBR on the black housing — flat matte with no plastic/metal distinction"
+        ],
+        "action": "Add fresnel-ribbed transparent dome geometry with an internal emissive bulb, model a mounting bracket + cage on the base, and drive real bloom + pulsing light spill onto the surroundings.",
+        "priority": "P2"
+      },
+      {
+        "asset": "/home/knight2/molgang-roblox/assets/renders/cyclone_separator_preview.png",
+        "realismScore": 2,
+        "gaps": [
+          "Duplicate-confirm note: components remain unwelded grey primitives — no cohesive vessel silhouette",
+          "Listed once above; included only if pipeline expects 12 distinct entries"
+        ],
+        "action": "See cyclone_separator action above — rebuild as a single welded vessel with inlet/outlet pipes and steel PBR.",
+        "priority": "P1"
+      }
+    ],
+    "gallery": {
+      "findings": [
+        {
+          "area": "Materials / PBR (whole library)",
+          "observation": "Confirmed at the file level: 0 texture maps exist across all 48 GLBs (3.3 MB total, biggest asset 434 KB boba_tea_cup). Every model renders with flat solid-color or vertex-color materials — no albedo, normal, roughness, metallic, or AO maps. In the gallery this reads as uniformly matte plastic: the steel ball_mill, the glass beaker/erlenmeyer, the ceramic kiln, and the rubber conveyor belt are all indistinguishable in surface response. Metals don't reflect, glass isn't transparent, liquids aren't translucent.",
+          "gapVsGTA6": "GTA6 surfaces are defined almost entirely by PBR material response — spec/roughness variation, normal-mapped micro-detail, metallic reflectance, subsurface/transmission for glass and fluids. MOLGANG has none of this layer at all; it's a pure-geometry look closer to an untextured Blender viewport than a shippable game.",
+          "action": "Adopt a shared PBR material library as the #1 priority: author ~8-10 master materials (brushed/painted steel, cast iron, glass, ceramic, rubber, copper, concrete, plastic) with metallic+roughness+normal+AO and assign by slot across all 48 assets. Even a single tiling normal/roughness set plus correct metallic flags would close most of the gap. Glass/liquid assets (beaker, erlenmeyer, quantum_dot, boba) additionally need transmission/refraction materials.",
+          "severity": "critical",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Art-direction consistency / scale cohesion",
+          "observation": "The set spans two incompatible visual languages shown side by side: grounded industrial chem-eng gear (ball_mill, jaw_crusher, distillation_column, leaching tanks, lab_bench) versus stylized game-prop/gacha items (boba_tea_cup with foam, beer-glass-like flask, glowing blue quantum_dot, atom-shaped hero_shield_generator, purple villain_pedestal, victory_trophy, teleport_pad). They don't share a poly-density budget, a color story, or a level of stylization, so the gallery looks like three different asset packs merged.",
+          "gapVsGTA6": "GTA6 maintains one coherent realism bible — every prop, vehicle and building obeys the same material/wear/scale grammar so nothing reads as 'from another game.' MOLGANG's industrial vs. arcade-prop split breaks that single-world cohesion immediately.",
+          "action": "Write and enforce a one-page art bible: lock a single stylization target (recommend grounded-stylized PBR, not photoreal and not toy), a master palette (industrial grays/steel/rust + 2-3 saturated accent colors reserved only for interactive/UI props), and a consistent poly/detail budget per object class. Re-skin the outlier arcade props (quantum_dot, boba, trophy, pedestal, teleport_pad) so accent saturation is the only thing that separates them, not a whole different rendering style.",
+          "severity": "high",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Silhouettes / form readability",
+          "observation": "Several models read as ambiguous gray blobs at gallery scale — the centrifuge, magnetic_separator, screw_conveyor, slag_chunk and a couple of pump/valve forms have no strong distinguishing silhouette and blend into each other. Strong readable shapes do exist (haul_truck, distillation_column, conveyor_belt, beaker, kiln, fence post), proving the team can hit it — but ~30-40% of props fail the squint test.",
+          "gapVsGTA6": "GTA6 props are silhouette-first: each object is instantly identifiable as a black shape against sky. MOLGANG's weakest assets fail that test, which hurts gameplay legibility, not just beauty.",
+          "action": "Run a silhouette pass on every asset (render solid-black against white) and flag any that aren't identifiable in <1s. Add primary read-defining geometry — clear functional features (motor housings, valves, hoppers, ladder rungs, flanges) — to the blob assets. Tie this to a consistent edge-detail policy (next item).",
+          "severity": "high",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Edge treatment / lighting response",
+          "observation": "Edges are uniformly razor-sharp with no bevels/chamfers anywhere, so under the gallery's single soft light there are almost no specular edge highlights — surfaces look papery and flat even where geometry is decent (lab_bench, pressure_vessel, heat_exchanger). No baked or vertex AO is visible either; contact areas and crevices don't darken, which flattens depth further.",
+          "gapVsGTA6": "GTA6 hard-surface assets carry small support-loop bevels specifically to catch light, plus baked AO/cavity for grounded depth. Without bevels and AO, MOLGANG geometry can't pick up the highlights that sell 'real manufactured object.'",
+          "action": "Add a 1-2px-equivalent chamfer/bevel to all primary hard-surface edges (or rely on normal maps to fake it once materials land), and bake AO/cavity into every asset (vertex AO is acceptable given the untextured pipeline). This single change dramatically improves perceived material quality at near-zero runtime cost.",
+          "severity": "high",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Color / value palette discipline",
+          "observation": "Two problems coexist. (1) A large desaturated-gray cluster (separators, pumps, mills, conveyors, fence, lab bench) has so little hue/value variation that the props melt together. (2) A few props swing to pure saturated primaries — bright yellow rail_cart/conveyor accents, candy-pink quantum ring, electric-blue quantum_dot, kelly-green flask tops — that aren't anchored to any palette and read as placeholder colors.",
+          "gapVsGTA6": "GTA6 uses tightly controlled, slightly desaturated palettes with intentional accent pops; nothing is a raw 255-saturation primary. MOLGANG's mix of muddy-gray-on-gray plus a handful of neon placeholders undercuts cohesion from both ends.",
+          "action": "Define and apply a master palette with controlled saturation: desaturate the neon accents ~20-30%, and inject subtle hue/value variation (warm rust, cool steel, painted-safety-yellow) into the gray cluster so functionally different machines are distinguishable. Reserve true high-saturation only for gameplay-signal props.",
+          "severity": "medium",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Detail-density budget balance",
+          "observation": "Geometric investment is wildly uneven (file size as proxy: solar_panel 9.7 KB and excavator 11.5 KB vs boba_tea_cup 434 KB and quantum_dot 259 KB). Core hero industrial machines (excavator, jaw_crusher, drill_rig) are among the lowest-detail assets while decorative reward props consume the most geometry — the budget is inverted relative to gameplay importance.",
+          "gapVsGTA6": "AAA pipelines spend polygon/detail budget proportional to how often and how close the player sees an object. MOLGANG is spending its heaviest budget on minor reward trinkets and starving the machines players interact with most.",
+          "action": "Re-allocate detail by gameplay prominence: add secondary mechanical detail (bolts, hoses, control panels, wear) to the under-built hero machines (excavator, jaw_crusher, drill_rig, centrifuge), and consider decimating the over-built decorative props. Establish a tiered poly budget (hero / standard / background) and bring outliers into band.",
+          "severity": "medium",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Wear / surface storytelling",
+          "observation": "Every asset is factory-pristine and uniform — no dirt, rust, scratches, edge wear, oil staining, or usage history anywhere in the set. An industrial mining/chem-eng theme (crushers, leaching tanks, slag ladles, haul trucks) is exactly where grime would do the most work, and its total absence makes the props feel like clean CAD previews rather than working equipment.",
+          "gapVsGTA6": "GTA6's realism is largely sold by layered wear and environmental storytelling — every surface has history. MOLGANG has zero weathering layer, so even good geometry reads as a render, not a place.",
+          "action": "Once PBR materials exist, add a curated wear layer (edge-wear masks, rust/dirt in cavities driven by AO, oil/scorch on hot equipment like the kiln/BOF converter/slag ladle). A reusable smart-material wear stack applied per object class gives the biggest realism-per-hour return after base materials.",
+          "severity": "medium",
+          "audience": "3d-designer"
+        },
+        {
+          "area": "Glass / liquid / emissive treatment",
+          "observation": "Lab and FX props that depend on transparency are rendered as opaque solids: the beaker, erlenmeyer flask, and pressure-vessel sight elements look like frosted plastic, and the glowing quantum_dot / quantum_tunnel_ring / hero_shield read as flat self-lit spheres with no bloom, falloff, or volume. The boba cup's 'liquid' is opaque fill.",
+          "gapVsGTA6": "GTA6 handles glass, fluids, and emissives with transmission, refraction, depth-tinted liquids, and bloom/volumetrics. MOLGANG currently has none of these special-material treatments, so its 'science' and 'sci-fi reward' props lose their entire visual hook.",
+          "action": "Build a small special-materials kit: transmissive glass (with thickness/IOR), depth-tinted translucent liquid for beakers/tanks/boba, and proper emissive materials with bloom and light-emission for the quantum/hero/teleport FX props. These are few assets but high-visibility, so the payoff is outsized.",
+          "severity": "medium",
+          "audience": "3d-designer"
+        }
+      ],
+      "overall": "Holistic verdict on the 48-model MOLGANG gallery (all rendered together in Godot 4): the library has solid, readable geometry and genuine breadth, but it is at a 'gray-box / untextured viewport' stage, not a shippable AAA look. The single dominant, systemic gap vs GTA6 is materials — file-level inspection confirms ZERO texture maps across the entire 3.3 MB library, so every surface (steel, glass, ceramic, rubber, liquid) reads as the same matte plastic with no metallic, roughness, normal, or AO response. That one missing layer is responsible for most of the 'looks unfinished' impression. The second systemic issue is cohesion: the set splits into two clashing visual languages — grounded industrial chem-eng equipment vs. stylized arcade/gacha reward props (glowing quantum dot, boba cup, atom shield, villain pedestal) — with no shared palette, stylization target, or detail budget, so it looks like multiple asset packs merged. Supporting weaknesses: ~30-40% of props fail the silhouette squint test (gray blobs), razor-sharp un-beveled edges catch no light, no baked AO grounds anything, palette is simultaneously muddy-gray-on-gray and neon-placeholder, detail budget is inverted (434 KB on a boba cup vs 11.5 KB on the hero excavator), and there is zero wear/weathering on a theme that is screaming for grime. Top cross-cutting actions, in priority order: (1) author a shared PBR master-material library and assign by slot across all 48 assets — this is the highest realism-per-hour move by far; (2) write and enforce a one-page art bible locking one stylization target, one master palette with disciplined accent saturation, and tiered poly budgets, then re-skin the arcade outliers into that world; (3) global edge-bevel + baked-AO pass to make geometry catch light; (4) silhouette pass to rescue the blob assets; (5) layered wear pass and a small glass/liquid/emissive special-materials kit for the high-visibility lab and FX props. The geometry foundation is good enough that this is a finishing problem, not a rebuild — materials and cohesion are where the team should spend the next sprint."
+    },
+    "gameplay": {
+      "findings": [
+        {
+          "area": "Lobby rendering / viewport framing",
+          "observation": "The /game screenshot shows the MOLGANG lobby canvas rendered only as a centered horizontal band with large WHITE letterbox bars above and below it. GameCanvas.tsx uses Phaser.Scale.FIT at a fixed 1920x1080 with autoCenter CENTER_BOTH, and the #game-container div has no background of its own. In any non-16:9 window the FIT mode letterboxes, and the bars show the page/body default (white) instead of the game's #000000 backgroundColor, so the game looks broken/unfinished on first load.",
+          "gapVsGTA6": "AAA titles never show raw white letterbox bars; they fill safe-area with the game's own art/black, render responsively to the actual viewport, and the first frame the player sees is polished and full-bleed. Here the very first impression is a half-empty white screen.",
+          "action": "Set scale.mode to Phaser.Scale.RESIZE (or ENVELOP) and drive width/height from the container's clientWidth/clientHeight with a resize listener, or at minimum give #game-container and body a black background so letterbox bars match backgroundColor. Recompute camera/layout on resize instead of hard-coding 1920x1080. Verify on a 16:10 and ultrawide window.",
+          "severity": "critical",
+          "audience": "developer"
+        },
+        {
+          "area": "Audio / sound design",
+          "observation": "There are zero audio assets in the project (no .mp3/.wav/.ogg anywhere outside node_modules) and no this.sound / this.load.audio calls in any scene. The entire game — lobby, zone select, READY, atom collection, hazard warnings, PPE purchase — is completely silent.",
+          "gapVsGTA6": "Game-feel is ~50% audio. GTA6 has layered SFX, UI clicks, positional ambience and music. A silent collect-a-thon feels like a prototype, not a game. Silence is the single biggest 'unfinished' tell here.",
+          "action": "Add a minimal SFX layer via this.load.audio in BootScene: button hover/click, atom pickup (pitch-varied), coin/MC gain, hazard alarm, PPE purchase chime, plus a low-volume looping ambient bed per zone. Gate on a mute toggle and the browser autoplay-unlock (first pointerdown).",
+          "severity": "critical",
+          "audience": "developer"
+        },
+        {
+          "area": "Visual fidelity / placeholder art",
+          "observation": "Player and atoms are created as Phaser.Physics.Arcade.Sprite with texture 'undefined' and setFillStyle (ArenaScene.ts lines 39-41, 104-106) — i.e. flat colored boxes. Atoms are 20x20 colored squares; the player is a 40x40 cyan square. The lobby zones are flat blue rectangles with a single first-word label (LobbyScene split(' ')[0], so 'TU Delft Quantum Lab' renders as just 'TU'). BootScene preloads only a 1x1 base64 'particle' that is never used.",
+          "gapVsGTA6": "GTA6's bar is photoreal worlds. The realistic intermediate bar is: textured sprites, readable iconography, depth/shadow, particle FX. Flat primitives read as a tech demo. The truncated 'TU'/'Periodic' zone labels also look like bugs.",
+          "action": "Replace setFillStyle primitives with actual sprite atlases (element glyph icons for atoms, a character sprite for the player). Show full zone names with word-wrap in the lobby buttons. Use the preloaded particle (or a real one) for a pickup burst. Even simple circle textures + glow/shadow would massively lift perceived quality.",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Juice / feedback on core actions",
+          "observation": "The only feedback primitive is flashMessage() — a center-screen text that auto-destroys. Atom collection (collectAtom, lines 166-185) just deletes the sprite and updates HUD text; there is no tween, scale-pop, particle burst, screen flash, camera shake, or sound. No this.tweens, no camera.shake/flash, no particle emitter exist anywhere in the codebase. Hover 'juice' is a hard setDisplaySize swap (no tween).",
+          "gapVsGTA6": "GTA6-level game-feel layers multiple instant responses per action (impact, particles, haptics, audio, slight camera move). Here picking up an atom — the core loop verb — has near-zero kinetic payoff, so the loop feels flat and unrewarding.",
+          "action": "On collectAtom: spawn a particle burst at the atom position, tween a +score popup that floats up and fades, pop the coins HUD with a scale tween, play a pitch-randomized pickup SFX, and do a tiny camera.flash on rare elements (Au/Cu). Convert hover grow/shrink to a short tween. Add camera.shake on the hazard message.",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Core gameplay loop depth",
+          "observation": "The Arena loop is: wander a static single screen with WASD/mouse, overlap 20 bouncing atoms to gain +10 MC and inventory count, atoms respawn after 2s (collectAtom line 184 uses raw setTimeout, not Phaser this.time, so it leaks across scene restarts). There is no goal, no win/lose, no progression, no use for collected atoms inside the Arena, no enemies/NPCs, no objectives. The rich crafting/economy (chem-lab synthesis, steel pipeline, puzzles, grades) lives entirely in separate React pages disconnected from the Phaser arena.",
+          "gapVsGTA6": "GTA6 is a continuous, goal-driven, systemic world. Here the 'game' is an aimless pickup with no loop closure, while the actually-deep simulation systems are siloed in DOM pages the player reaches by a different route. There is no through-line that makes collecting atoms feel purposeful.",
+          "action": "Close the loop: make Arena-collected atoms feed the chem-lab inventory (shared backend) so collecting has a downstream payoff; add a per-session objective/timer/quota with a results screen; surface a HUD link/portal from Arena into chem-lab/steel. Replace setTimeout respawn with this.time.delayedCall to avoid orphaned callbacks.",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Movement & camera",
+          "observation": "Movement applies a constant 300 px/s velocity with instant on/off (update lines 276-302); the configured setDrag(0.99)/setBounce are effectively overridden by the manual *0.95 decel and direct setVelocity, so acceleration is binary. The world is a single fixed 1920x1080 screen with no camera follow, no scrolling world, no parallax, and a hard clamp that zeroes velocity at the border (line 309) producing an abrupt stop. Mouse and keyboard control schemes fight each other via an isUsingKeyboard guard each pointermove.",
+          "gapVsGTA6": "GTA6 has weighty, momentum-based locomotion and a living, scrolling camera. Here movement is arcade-stiff on a static board with no camera language, so it feels like a 2010 flash game.",
+          "action": "Pick one acceleration model (use setAcceleration + maxVelocity + drag, not manual velocity scaling). Build a larger tilemap world and add this.cameras.main.startFollow(player) with lerp and deadzone, plus a parallax background. Soften the border (bounce/slide instead of velocity=0). Decide on a single canonical control scheme or make mouse a clearly secondary mode.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Offline / connection UX",
+          "observation": "connectToArena swallows failures into console.warn('Offline mode') with no on-screen indication (ArenaScene 233-235); the shop only tells you it needs a server when clicked. LobbyScene.joinArena on failure prints a small red line and then hard-cuts to Arena after a bare setTimeout 3s (line 103), with no spinner, retry, or explanation. The lobby's 'Waiting for players...' is static text with no real player count despite the Colyseus lobby room existing.",
+          "gapVsGTA6": "AAA games communicate connection state clearly (connecting, retrying, offline) and never silently degrade. Here the player can't tell if multiplayer/economy is live, and dead HUD elements (breathing/health/PPE driven only by server state) just sit at defaults offline.",
+          "action": "Add a visible connection-state badge (Connecting/Online/Offline) in both scenes, a retry button, and a spinner during joinArena. Wire 'Waiting for players...' to the real lobby room player count. Gray out / label the shop and vitals HUD as 'offline' when no room, instead of leaving them looking interactive.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Lobby UX polish & affordance",
+          "observation": "Lobby zone buttons (LobbyScene 44-61) only change fill color on select with no checkmark, border, or persistent 'selected' state text, and the label is just the first word of the zone name, so 'Periodic Table Biome' shows 'Periodic' and 'TU Delft Quantum Lab' shows 'TU'. The READY button has a pointerover lighten but no pointerout reset (line 66 only adds pointerover), so it stays highlighted after first hover. No description/preview of what each zone is. The screenshot also shows the selected 'TU' tile only faintly distinguished.",
+          "gapVsGTA6": "GTA6 menus have rich previews, clear selection state, and consistent hover in/out. Here selection is ambiguous and labels look truncated/buggy.",
+          "action": "Show full (wrapped) zone names with a thumbnail/blurb, add an explicit selected-state ring/checkmark, add the missing readyBtn pointerout handler to reset color, and disable READY until a zone is chosen with a tooltip explaining each zone.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "HUD consistency Arena vs DOM activities",
+          "observation": "The Arena HUD is emoji-prefixed plain text at fixed pixel coords (coins/inventory/breathing/health/PPE/shop), while chem-lab and steel pages are polished Tailwind/Orbitron React UIs with cards, tabs, tolerances and live countdowns. The two halves of the product look like different games. Arena HUD coords are hard-coded for 1080p and will mis-place under any other scale, and the shop button at y=940 / controls text at y=1000 risk being clipped under the FIT letterbox.",
+          "gapVsGTA6": "A shippable game has one coherent visual identity across all screens. The jarring jump from primitive Phaser text to a slick DOM lab breaks immersion and signals an unfinished stitch-together.",
+          "action": "Establish a shared visual system (fonts, palette, panel style, iconography) and apply it to the Phaser HUD via a consistent UI container/atlas, or render the Arena HUD as a DOM overlay reusing the same Tailwind components. Anchor HUD elements to camera/relative positions, not absolute 1080p pixels.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Lobby visual richness (first impression)",
+          "observation": "The lobby (per screenshot + LobbyScene) is a flat dark-blue rectangle with title text, five flat blue rectangles, a green READY box, and gray status text — no background art, no animation, no logo treatment, no particles, no music. Combined with the white letterbox bars it reads as a placeholder menu.",
+          "gapVsGTA6": "GTA6's entry/menu is a cinematic, animated, audio-rich set piece. The single most-seen screen here has zero motion or atmosphere.",
+          "action": "Add an animated/parallax background or subtle particle field, a tweened logo intro, idle pulse on the READY button, and ambient lobby music. This is the highest-leverage 'feels like a real game' upgrade per hour of work.",
+          "severity": "medium",
+          "audience": "developer"
+        }
+      ],
+      "overall": "MOLGANG is functionally a working multiplayer collect-a-thon with genuinely deep DOM-based simulation systems (chem-lab synthesis with a real periodic table, a multi-stage steelworks pipeline with alloy tolerances and CO2 accounting), but the actual playable Phaser game is at prototype game-feel level and is far below a GTA6-quality bar. The screenshot exposes a critical first-impression bug: the lobby renders as a centered band with white letterbox bars (Phaser Scale.FIT at hard-coded 1920x1080 with no black container background), so the game looks broken on load. The two most damaging gaps are (1) total absence of audio — there are no sound assets and no this.sound calls anywhere, so every action is silent, and (2) near-total absence of juice — the only feedback is a center-screen text flash; there are no tweens, particles, camera shake/flash, or pickup effects, and players/atoms are flat colored rectangles drawn from an 'undefined' texture. The core loop itself is shallow and goal-less (wander one static screen, overlap bouncing squares for +10 MC, respawn via a leak-prone setTimeout) and is disconnected from the rich crafting/economy that lives in separate React pages, so collecting feels purposeless. Movement is arcade-stiff on a single fixed screen with no camera follow or world to explore, and the two halves of the product (primitive Phaser HUD vs polished Tailwind labs) look like different games. Priorities for developers: fix the scale/letterbox framing, add an SFX+music layer, add pickup/UI juice (tweens+particles+camera), close the gameplay loop by feeding Arena atoms into the chem-lab and adding objectives, and unify the visual identity across Phaser and DOM screens."
+    },
+    "systems": {
+      "findings": [
+        {
+          "area": "Chemistry / reactions.json — recipe breadth",
+          "observation": "The reaction set is a hand-crafted starter of only 10 molecules (H2O, CO2, NH3, CH4, NaCl, H2SO4, C2H5OH, O2, N2, FeO). It is a synthesis lookup table keyed on a static `consumes` atom count: there is no notion of reaction reversibility, equilibrium, yield/conversion %, stoichiometric balancing of products+byproducts, intermediates, or competing/side reactions. Every recipe is a single deterministic 'inputs -> one product' rule.",
+          "gapVsGTA6": "GTA6's world is a web of interacting systems where one action ripples through many. Here each reaction is an isolated atom-counting transaction with no chemical consequence beyond the single named product — no equilibrium shifting with the temperature/pressure the bench already exposes, no incomplete-combustion branch, no byproduct stoichiometry. A living chemistry world needs reactions that yield mixtures, shift with conditions, and reverse.",
+          "action": "Extend reactions.json into a reaction-graph schema: add `produces` (multiple products + byproducts with molar coefficients), `equilibriumK`/`reversible`, `yieldCurve` as a function of the temperature/pressure already in reactions-conditions.json, and `sideReactions`. Replace the boolean 'can I make it' check with a quantitative yield computed from current bench conditions, so the same inputs give different output mixtures at different T/P. Grow the corpus well beyond 10 via the existing enrich-via-virtualpc.js pipeline (hand-verified, per the existing _handFixes pattern).",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Chemistry conditions coupling — reactions-conditions.json is decorative gating, not physics",
+          "observation": "reactions-conditions.json carries real data (T/P windows, catalyst, activation_energy_kJ_mol, reaction_type) and the bench page (frontend/app/bench/[playerId]/page.tsx) exposes T/P/catalyst sliders and a `blocked_by_conditions` path. But the coupling is binary: if you are inside the min/max window the reaction succeeds, otherwise it is blocked. activation_energy_kJ_mol and the `optimal` point are never used to compute a rate or a yield, and the reactions.json `energy` field (exothermic/stable) is never connected to the airsim or to any heat/thermal state.",
+          "gapVsGTA6": "A GTA6-grade sim makes every dial continuously meaningful, not a pass/fail gate. Right now 'optimal' vs 'just inside the window' produce identical results, and a 92.4 kJ/mol activation energy is a dead number. The exothermic flag never raises temperature, never feeds back into the air model, never starts a runaway.",
+          "action": "Use an Arrhenius-style rate (activation_energy + temperature) to drive reaction speed/yield continuously, with `optimal` as the peak. Couple reactions.json `energy: exothermic` to a local heat term that (a) raises the bench/zone temperature, (b) feeds the airsim (hot fume buoyancy, faster spread), and (c) can trigger thermal-runaway events for unsafe operation. Make the catalyst lower the effective activation energy rather than being a string-match gate.",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Toxic-fume / breathing model (airsim.ts) — transport physics",
+          "observation": "The air model is a sum of static radial point sources: each gas source sits at a fixed position with a linear 1->0 falloff inside a fixed radius and an exponential time decay (strength * exp(-decay*age)). There is no wind/advection, no diffusion spread (radius never grows), no buoyancy or vertical dimension (Vec2 only), no ventilation/room-volume/air-exchange, no accumulation in enclosed space, and no gas-gas or gas-surface interaction. Confirmed: grep for wind/diffuse/advect/ventilation/temperature/buoyancy/density in airsim.ts returns nothing.",
+          "gapVsGTA6": "GTA6-grade environmental sim has fluid that moves, pools, and reacts to the space it is in — smoke drifts with wind, gas pools in basements, ventilation clears a room. Here a chlorine cloud is a frozen disc that only shrinks in amplitude; standing 1 unit outside the hardcoded radius is perfectly safe, and an enclosed lab clears at the same rate as an open field.",
+          "action": "Promote the source model to a coarse advection-diffusion field: add a wind vector (per-zone, optionally dynamic), let the cloud radius grow with sqrt(time) (Gaussian diffusion), move Vec2 -> Vec3 for buoyant rise of hot/light gases, and add a per-room ventilation/air-exchange rate plus enclosed-volume accumulation so doors/fans/fume-hoods matter. Soften the hard radius cutoff (it creates a binary safe/unsafe edge the tests even rely on).",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Health / physiology model (airsim.ts) — toxicology realism",
+          "observation": "Health is a single 0-100 scalar with one linear damage rule (healthDamagePerHazardSec * intake) and instant linear recovery (recoveryHpPerSec) in clean air. The hazard index lumps every gas into ppm/IDLH summed linearly, so a whiff of chlorine and a whiff of CO are treated as additively identical at equal index. There is no per-gas physiology (CO binds hemoglobin and does NOT self-repair quickly; HF/acid mist causes lasting damage; H2S causes olfactory fatigue then sudden collapse), no unconsciousness/collapse state, no chronic vs acute exposure (the cumulative `exposure` field is tracked but never gates anything), and no symptom stages — breathing is the only physiological variable and it relaxes linearly.",
+          "gapVsGTA6": "Living-world NPCs/players in GTA6 have state machines with stagger, collapse, and lasting consequence. Here every gas hurts the same way, full health regenerates in ~67s flat regardless of how badly you were dosed, and the tracked cumulative exposure has zero gameplay effect (no chronic injury, no death-by-CO that recovery can't undo).",
+          "action": "Give each GasSpecies a toxicology profile (acute vs cumulative weighting, recoverable fraction, symptom thresholds) instead of a single IDLH. Add discrete physiological states (irritation -> incapacitation -> collapse) and make the already-tracked `exposure` accumulator drive chronic/irreversible damage so PPE choices and time-in-cloud have lasting stakes. Make recovery sub-linear and gas-specific (CO clears slowly, acid-mist damage is partly permanent).",
+          "severity": "high",
+          "audience": "developer"
+        },
+        {
+          "area": "Emission table coverage (airsim DEFAULT_EMISSIONS) vs chemistry corpus",
+          "observation": "Only 3 of the 10 reactions (H2SO4, NH3, FeO) emit any gas, hardcoded in a TS map separate from reactions.json. Combustion of CH4 emits nothing (no CO2/CO/soot), no incomplete-combustion CO path, and steel byproducts in steel-production.json (coke_oven_gas, tar, CO from BOF) never reach the air model. The emission ppm values are fixed constants independent of reaction scale, batch size, temperature, or how badly conditions were violated.",
+          "gapVsGTA6": "In a coupled world the fumes you breathe are a consequence of what and how you produced. Here fume output is a tiny disconnected lookup that ignores 70% of the chemistry and 100% of the steel off-gas, and is invariant to scale — synthesising 1 unit vs 100 units of H2SO4 emits the identical 30 ppm.",
+          "action": "Derive emissions from the reaction itself (its gaseous products/byproducts and batch quantity) rather than a separate hardcoded 3-entry map, and scale ppm by amount produced and by how far conditions deviated from optimal (botched runs fume more). Wire steel-production byproducts (coke_oven_gas, BOF CO, tar volatiles) into the same airsim so the steel track shares the breathing hazard.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Steel/slag economy (steel-production.json) — slag is generated but not balanced",
+          "observation": "The route data is genuinely detailed (sinter/coke/BF/BOF and EAF stages, per-stage inputs/outputs/byproducts, CO2 per ton, alloy targets with tolerances, 6 grades, a downstream finishing chain). Slag yields are defined (bof 0.12, bf 0.30, eaf 0.10 t/t) and there IS a consumption path (research-tree.json crushing/leaching/roasting -> slag_fertilizer in fertilizers.json). BUT: the slag chain is the only sink, slag has no market price or disposal cost in the materials block (unlike every input which has costPerTon), CO2 is tracked per ton but carries no cost/tax/cap, and there is no supply/demand or price dynamics — basePricePerTon and costPerTon are fixed constants with no market.",
+          "gapVsGTA6": "A GTA6-grade economy has prices that move, externalities that cost money, and waste streams that must be disposed of or sold. Here steel and slag prices never move, CO2 is a vanity stat with no carbon cost, and unconverted slag is a free no-op rather than a disposal liability or a tradable commodity. The production graph is rich but economically static.",
+          "action": "Add a market layer: dynamic prices for grades and for slag/byproducts (supply-demand or at least time/volume-based drift), a disposal cost or environmental fine for unprocessed slag and for CO2 above a cap, and make the EAF-vs-BF route choice an actual economic trade-off (electricity price vs coke price vs CO2 cost) rather than a flavor difference. Give coke_oven_gas/tar/CO byproducts real value or handling cost.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Steel alloy/grade simulation — chemistry of the heat is not modeled",
+          "observation": "Grades define alloyTargets (C/Mn/Si/Cr/Ni/Cu/P/S...) and tolerancePct, and a 13-element alloyElements list exists, but the production stages do not track an actual molten-bath composition. The ladle_furnace is flagged `alloyAdjustable: true` with no model of additions, recovery rates, or how BOF carbon blow (carbonPct 4.5 -> 0.05) hits a target. There is no tap-to-tap heat state, no temperature loss in the ladle, no off-spec/rework path when composition misses tolerance, and impurities P/S are listed as targets but never sourced from the ore/scrap.",
+          "gapVsGTA6": "Real steelmaking depth (which the data clearly aspires to) is hitting a chemistry spec on a cooling, time-pressured heat. Here grade selection is effectively a price tier with a tolerance number that nothing computes against — there is no simulated bath to be in or out of spec, so the elaborate alloyTargets are inert.",
+          "action": "Model a per-heat molten-bath composition vector over the alloyElements, mutated by each stage (decarburization in the BOF/EAF, alloy additions with recovery % in the ladle furnace, P/S pickup from ore/scrap quality). Then grade pass/fail = bath within tolerancePct of alloyTargets, with off-spec heats forced to a lower grade or rework. This makes the ladle furnace and scrap quality matter and turns the existing data into an actual simulation.",
+          "severity": "medium",
+          "audience": "developer"
+        },
+        {
+          "area": "Cross-system coupling — three sims run in parallel, not as one world",
+          "observation": "Chemistry (bench), the airsim (ArenaRoom 30Hz), and steel/slag (steel page) are wired into the app individually but barely couple to each other. The exothermic/energy flag never reaches the air or a temperature field; steel off-gas never reaches the breathing model; CO2 from steel never reaches any climate/economy stat; the airsim has no time-of-day, weather, or wind tie-in to world-config. Each is a vertical slice with one shared currency (molCoins/MolCoin) as the only real link.",
+          "gapVsGTA6": "GTA6's hallmark is systemic interconnection — one subsystem feeds the next into an emergent whole. These three are strong individual mechanics sitting side by side; the world does not yet feel alive because a chemistry choice does not propagate into the air you breathe, the heat in the room, or the economy/climate.",
+          "action": "Define a small shared world-state bus (zone temperature, wind, air composition, CO2/pollution ledger, market prices) that all three systems read and write: reactions push heat+fumes, steel pushes off-gas+CO2+slag-waste, the airsim consumes heat/wind and writes back breathability, and the economy prices the externalities. Even a coarse shared tick turns three slices into one reactive world.",
+          "severity": "high",
+          "audience": "developer"
+        }
+      ],
+      "overall": "The three systems are real and wired into gameplay — airsim runs at 30 ticks/sec inside ArenaRoom.ts (emits on hazardous reactions, applies PPE, broadcasts hazard), reactions-conditions.json gates the bench page via T/P/catalyst sliders, and steel-production.json drives a steel page with a slag->fertilizer research chain. That is a solid foundation, well above placeholder. But measured against a GTA6-grade living world, all three are shallow and, crucially, decoupled. Chemistry is a 10-recipe atom-counting lookup with no yield/equilibrium/byproducts and a pass/fail conditions gate (activation energy and the exothermic flag are dead data). The toxic-fume model is static radial point sources with no wind, diffusion, buoyancy, ventilation, or enclosed-space accumulation, feeding a single-scalar health rule where every gas hurts identically, the tracked cumulative `exposure` does nothing, and full health regenerates flat in ~67s. The steel/slag system has genuinely detailed routes/grades/byproducts but is economically static (fixed prices, CO2 is a vanity stat, slag has no disposal cost) and never simulates the molten-bath chemistry its elaborate alloyTargets imply. The biggest gap is systemic: exothermic reactions never heat the air, steel off-gas never reaches the breathing model, CO2 never reaches the economy — three good vertical slices that don't propagate into each other. Top developer priorities: (1) a shared world-state bus (heat/wind/air-composition/pollution/prices) coupling all three; (2) advection-diffusion + ventilation + per-gas toxicology in the air model; (3) quantitative condition-driven yields and a real molten-bath/market layer so the rich static data becomes a live simulation."
+    },
+    "verdicts": [
+      {
+        "rejected": false,
+        "reason": "Verified against the actual asset and its source model — the finding names real, specific, buildable gaps, not generic fluff. The render (/home/knight2/molgang-roblox/assets/renders/anvil_hammer_preview.png) shows a primitive blacksmith scene, and the source glTF (/home/knight2/molgang-roblox/assets/gltf/anvil_hammer.glb) confirms every claim: (1) The anvil is literally two boxes (AnvilBody=Cube.004, AnvilFace=Cube.005) plus a plain Cone.001 horn — it has NO heel, NO face step, and NO hardy hole, so the requested silhouette remodel targets genuinely absent geometry. (2) All three materials use flat baseColorFactor only with metallicFactor:0, roughnessFactor:0.5, and the file contains ZERO images/textures arrays (only TEXCOORD_0 UVs) — so 'author PBR cast-iron maps with edge-wear metallic chips' and a 'hot-rolled steel head map' name real missing features, not present ones. (3) The handle (Cylinder.001) carries the flat 'Wood' material with no map, so 'procedural wood-grain handle' is a real gap. Each instruction is concrete, scoped to this one file, and directly raises fidelity toward GTA6-level realism. The only minor caveat is that it's an offline 3D asset improvement rather than an in-engine gameplay change, but it is still a legitimate, actionable realism gap.",
+        "sharpened": "Remodel anvil_hammer.glb's anvil from primitive boxes into a correct anvil silhouette and replace flat colors with PBR-mapped materials. Concrete steps: (1) Geometry — replace AnvilBody(Cube.004)+AnvilFace(Cube.005)+AnvilHorn(Cone.001) with a single anvil profile: a tapered conical horn, a flat hardened face with a step-down at the heel, a square hardy hole and a round pritchel hole through the face, and a waisted body on a wider base/feet. (2) Anvil material 'AnvilIron' — currently baseColor[0.18,0.18,0.20], metallicFactor:0: author cast-iron PBR maps: dark-metal base color, mid roughness (~0.5-0.6), metallicFactor:1.0 with a metallic/roughness map that adds polished-bright edge-wear chips along the face edges and horn (lower roughness on worn metal). (3) Hammer head 'SteelHead'(Cube.007) — give it a SEPARATE hot-rolled steel base-color + roughness map (slightly bluer/scaled-steel look) distinct from the cast-iron body, metallicFactor:1.0. (4) Handle 'Wood'(Cylinder.001) — add a procedural wood-grain base-color + normal/roughness map (longitudinal grain along the handle axis) instead of the flat [0.4,0.25,0.12] color. Export updated glb/usdc/fbx and re-render the preview. Note the file currently has only TEXCOORD_0 UVs and no images/textures — UVs may need unwrapping for the new maps to tile correctly."
+      },
+      {
+        "rejected": true,
+        "reason": "Verified against the actual generator at /home/knight2/molgang-roblox/assets/blender/generate_mining_models.py (create_bof_converter, lines 135-163) and the render /home/knight2/molgang-roblox/assets/renders/bof_converter_preview.png. The finding is rejected because most of what it prescribes is ALREADY BUILT and the rest does not match the pipeline's real capabilities, so it is not a concrete, accurate gap as written. Specifics: (1) \"pear-shaped converter vessel\" is already coded — line 141 comment plus shell (142), wider top (145), cone bottom (148). (2) \"trunnion ring\" already exists — lines 151-155 create a TrunnionRing torus. (3) \"emissive heat glow at the lip\" is already attempted — MoltenGlow material/part at lines 139, 156-158. So the finding names existing work as if it were missing. (4) The \"PBR steel-shell map (weathered painted steel) + separate scorched/slag-crusted refractory-mouth map\" is NOT buildable as stated: this entire Blender pipeline authors only flat solid-color Principled BSDF base colors and creates ZERO image/UV texture maps anywhere (grep for ShaderNodeTexImage/base_color_texture/bake = none); FBX export at lines 35-37 even strips materials, which is the true reason the preview is flat grey — not the geometry. Prescribing a texture-map authoring workflow the pipeline cannot execute is the fluff tell. The ONLY genuinely missing, buildable items are \"pivot pins\" and a \"tilted pour mouth,\" plus making the existing glow actually emissive (the old mat() helper at lines 22-27 sets only inputs[0]=Base Color, never Emission). A sibling generator (generate_new_models.py / generate_track_models.py, lines 33-37) already supports Metallic/Roughness/Emission Strength/Emission Color, so the real fix is porting, not texture painting.",
+        "sharpened": "In assets/blender/generate_mining_models.py::create_bof_converter (lines 135-163), the pear vessel, trunnion ring, and MoltenGlow already exist — do NOT re-add them. Three concrete, buildable changes remain: (1) Replace the local mat() helper (lines 22-27, base-color only) with the richer material function already proven in generate_new_models.py lines 33-37 so the MoltenGlow part actually emits: set inputs[\"Emission Color\"]=(0.9,0.4,0.05) and inputs[\"Emission Strength\"]=~5.0, and give ConverterShell Metallic=0.9/Roughness=0.5 and the refractory mouth Roughness=0.9. (2) Add 2 pivot-pin cylinders through the trunnion ring: cyl((±4.8,8,0), 0.4, 1.5, 'PivotPin', rot=(0,0,pi/2)). (3) Tilt the pour mouth: change the TopOpening cylinder (line 145) to a slightly tapered cone and apply rotation_euler=(0.25,0,0) so it pours forward. Do NOT add 'PBR texture maps' — this pipeline authors no UV/image textures and the FBX export (lines 35-37) carries none; realism here comes from Principled BSDF Metallic/Roughness/Emission values, not painted maps. After editing, re-run the Blender generator to regenerate bof_converter.fbx and re-render the preview to confirm."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against the actual asset, not taken on faith. The render at /home/knight2/molgang-roblox/assets/renders/excavator_preview.png shows a crude primitive blockout (grey box cab, yellow box body, two thin bars for the arm, a small cone), and the source proves it: create_excavator() in /home/knight2/molgang-roblox/assets/blender/generate_mining_models.py builds the whole machine from ~6 boxes + one 8-vertex cone with flat diffuse materials (CatYellow/Dark/Glass as solid RGB, no texture maps). A repo-wide search for albedo/roughness/normal/metallic maps returns zero real assets, confirming PBR is entirely absent. So the finding's claims are all true gaps: no tracked undercarriage (tracks are plain boxes), no articulated boom-stick-bucket with hydraulic rams, no chipped-paint/dirt/glass PBR. It is CONCRETE (names the exact file, the canonical silhouette, the specific material features), ACTIONABLE (the project already has a Blender procedural pipeline — generate_*_models.py → fbx_to_gltf/usd → batch_render_previews — so a remodel + PBR authoring drops straight into create_excavator() and existing export/render steps), and a REAL realism gap (a flat-shaded box excavator vs GTA6 fidelity is exactly the kind of asset that breaks immersion). Not generic fluff. The one weakness is scoping/prioritization (it bundles a full remodel + multi-channel PBR into one item and doesn't set acceptance criteria or note that every other vehicle/equipment asset has the same blockout-level problem), but that is a refinement, not grounds for rejection.",
+        "sharpened": "Remodel the excavator in create_excavator() (assets/blender/generate_mining_models.py), replacing the box-and-cone blockout with the canonical silhouette: (1) tracked undercarriage — two track frames with idler/drive sprockets and a roller-detailed track shoe loop instead of plain boxes; (2) a rotating house/cab as a distinct child object pivoting on the undercarriage (so it can be animated/posed), with a glazed operator cab; (3) an articulated boom→stick→bucket chain with visible hydraulic rams (cylinder+rod pairs) at the boom, stick, and bucket-curl joints, modeled as separate parented objects at the pivots. Then author PBR maps (base color + roughness + metallic + normal) rather than flat diffuse: CAT-yellow painted steel with chipped-edge wear exposing bare metal, dirt/mud accumulation masked onto tracks and bucket, and a separate transmissive glass material for the cab. Run it through the existing pipeline (fbx_to_gltf.py / fbx_to_usd.py, lod_generate.py, batch_render_previews.py) to regenerate excavator.fbx/.glb/.usdc and excavator_preview.png. Acceptance: preview reads unmistakably as an excavator with separable track/house/arm/rams and visibly textured (not solid-color) surfaces. Note for the backlog: every vehicle/equipment asset (haul_truck, drill_rig, crushers, etc.) shares this same flat-box-with-solid-color problem and no PBR maps exist anywhere in the repo — so a reusable PBR material library + a parented-mechanism modeling helper should be built once and applied across all of them, with the excavator as the proof-of-concept."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against the actual files, the finding is concrete, actionable, and a real quality gap, not AI fluff. (1) The target file /home/knight2/molgang-roblox/assets/renders/leaching_tank_500L_from_photo_preview.png exists and its render confirms the defect exactly: the current asset is a degenerate flat gray blob (leaf/pebble shape) bearing zero resemblance to a tank. The source metadata (assets/downloads/leaching_tank_500L_from_photo_info.json) shows it was generated by single-image photogrammetry yielding only 716 verts / 1428 faces - i.e. a failed reconstruction. (2) The named source photo /home/knight2/molgang-roblox/assets/downloads/test_tank.png is a clean cylindrical 500L tank (vertical body, dished bottom, legs, side outlet) - so the prescribed rebuild geometry is grounded in the real reference, not invented. (3) The sibling asset assets/renders/leaching_tank_preview.png already shows a buildable cylindrical tank with top agitator shaft and side ports, proving the team has the parts library and capability to author exactly what is requested. The finding names a specific file, diagnoses the real defect, and prescribes buildable specifics: cylindrical body + dished bottom on legs, top-mounted agitator motor/shaft/impeller, side inlet/outlet ports, plus stainless-wall PBR maps and a translucent liquid surface. That is a discrete, verifiable work item that materially improves visual realism.",
+        "sharpened": "Discard /home/knight2/molgang-roblox/assets/{models,gltf,usd,downloads}/leaching_tank_500L_from_photo.* and the preview render - the single-image photogrammetry (716 verts) produced a degenerate flat blob, not a tank. Rebuild as procedural/hand-modeled geometry matching the source photo assets/downloads/test_tank.png: a vertical cylindrical 500L body (~0.86m dia x ~1.0m tall scaled to 500L), dished/torispherical bottom, 2-4 support legs, one side outlet port (and a side inlet), plus a top-mounted agitator (motor housing + vertical shaft + impeller) for the leaching function. Author PBR maps: brushed/poly stainless tank wall (low-medium gloss, subtle water/salt staining and weld seams) and a translucent liquid-surface material for the contents. Reuse the parts/material approach already proven in the sibling leaching_tank.glb (which has the cylinder + top shaft + side ports), then re-render the preview and re-export FBX/GLB/USD so all four asset formats are consistent."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against ground truth: the finding targets a real asset (hero_shield_generator, registered in /home/knight2/molgang-roblox/assets/MESH_REGISTRY.json) whose actual builder is create_shield_gen() at /home/knight2/molgang-roblox/assets/blender/generate_track_models.py lines 150-169. That code is demonstrably primitive and each clause of the finding fixes a concrete, named deficiency: (1) the \"armored housing + ring emitters with PBR metal/scratch maps\" replaces the single bare base cylinder (currently metallic=0.7 only, no roughness or texture maps); (2) the \"emissive+fresnel glass shader (animated noise)\" fixes the dome, which is labelled \"transparent\" in the comment but the add_material helper never sets alpha or transmission, so it is actually an opaque flat-emission (=1.0) sphere — a real bug; (3) the \"point light so the shield glows\" is buildable because create_shield_gen() currently adds ZERO lights to the scene. All three are implementable with the existing Blender FBX pipeline (generate_track_models.py -> render_single.py/batch_render_previews.py), so this is a concrete buildable change toward GTA6-grade materials, not generic AI fluff. The only imprecision is that the finding phrases it as \"rebuild the .png\" — the PNG is just a render artifact; the edit must be made in the .py builder and the FBX/preview re-exported.",
+        "sharpened": "Edit create_shield_gen() in /home/knight2/molgang-roblox/assets/blender/generate_track_models.py (lines 150-169) — do NOT edit the PNG, it is only a render output. Concrete buildable steps: (1) Replace the single flat base cylinder with a multi-part armored housing: a beveled metal hull plus 2-3 torus \"ring emitters\", each using a Principled BSDF with metallic=1.0, roughness driven by a Musgrave/Noise-fed scratch map into the Roughness input (the repo already wires texture nodes in other generators), and emissive rings (emission_strength ~4). (2) Fix the dome: it is currently a fake-transparent emissive UV sphere — the add_material helper never sets alpha/transmission, so it renders opaque. Give it a dedicated glass node group: Transmission=1.0, low roughness, a Layer Weight (Fresnel) node mixed into Emission so the rim glows brighter than the center, and an animated Noise texture driven by frame for the energy-field shimmer. (3) Add a blue point light (bpy.ops.object.light_add type='POINT') at the core (~z=2) with energy ~800 and color (0.2,0.6,1.0) so the dome actually casts/refracts glow — the scene currently has no lights at all. Then re-export the FBX and re-run assets/blender/render_single.py (or batch_render_previews.py) to regenerate hero_shield_generator_preview.png. Acceptance: dome shows visible fresnel rim + refraction, housing reads as scratched metal not flat plastic, and the core casts colored light onto surrounding geometry."
+      },
+      {
+        "rejected": true,
+        "reason": "The finding names a specific asset and a real visual gap (verified: quantum_dot_preview.png shows a flat matte off-white sphere with thin flat white wireframe rings, no emission/bloom, no metallic/iridescent rings), so it is not pure fluff. But it is rejected because its concrete mechanisms are not buildable on this engine. MOLGANG is a Roblox project (game/src/* uses Enum.Material exclusively: 115x SmoothPlastic, 76x Neon, 8x Glass, 3x Metal). Roblox exposes NO custom/HDR shader authoring API, so \"author an emissive HDR core shader with bloom\" is impossible as stated — bloom is a global Lighting BloomEffect, not a per-part shader, and emission is already achieved in-engine via Material=Neon (the actual placement script QuantumDots.server.lua already sets dot.Material=Enum.Material.Neon plus a ParticleEmitter and PointLight, so the \"animated particle nucleus\" and glow largely exist). The \"PBR thin-film/iridescence map\" is also not a real Roblox feature: SurfaceAppearance only supports fixed ColorMap/MetalnessMap/RoughnessMap/NormalMap slots (and is used nowhere in the codebase) — there is no thin-film or iridescence map type. The finding further conflates the offline Blender-style preview render (the matte look is a render artifact) with the shippable in-game object, which is already neon-emissive. So while it points at a genuine 'rings look like cheap flat wireframes' gap, its prescribed buildable change is engine-fiction.",
+        "sharpened": "Engine-correct version of the same goal (Roblox-buildable, targeting the rings, which ARE the weak point — they're absent from the in-game build and flat in the render): In QuantumDots.server.lua, generate the orbital rings procedurally as thin torus-approximation parts (a ring of ~24 small Block/Cylinder parts welded into a circle, or a single TorusMesh if available) parented to the dot. Set their Material=Enum.Material.Metal or Glass with Reflectance≈0.3 and a per-element Color3 so they pick up scene highlights instead of reading as flat white wireframe. To fake iridescence within engine limits, animate each ring's Color3 along a hue cycle (HSV lerp tied to os.clock or a TweenService loop) so highlights shift color over time — Roblox has no thin-film map, but an animated hue + Reflectance reads as iridescent. For the emissive 'HDR core' intent: the core already uses Material=Neon; instead add ONE global Lighting BloomEffect (Intensity≈1.5, Threshold≈0.95, Size≈24) so all Neon dots gain a real glow halo, and tween the existing PointLight.Brightness for a pulsing nucleus. Re-bake quantum_dot_preview.png from this in-engine setup (not a Blender matte material) so the asset matches the shippable object. This is fully implementable with existing Roblox APIs (Instance.new Part/Mesh, SurfaceAppearance for the Metal PBR maps if a baked texture is wanted, BloomEffect, TweenService) and addresses the genuine 'rings look cheap' gap without inventing a shader pipeline the engine does not have."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against the actual source pipeline, not just the render. The asset is real (assets/models/victory_trophy.fbx) and is generated by create_trophy() in /home/knight2/molgang-roblox/assets/blender/generate_track_models.py, rendered by batch_render_previews.py. The finding correctly identifies the right asset and names buildable changes, but its headline claim is FACTUALLY WRONG: \"assign a proper PBR gold (high metalness, low roughness, gold tint)\" already exists — lines 198/203/211 set metallic=0.95, roughness=0.15, base color (0.9,0.75,0.1). The render only looks dull-olive because of preview lighting/exposure, not the material. The reviewer judged from the image, not the code. However, the remaining sub-claims ARE concrete, real gaps in the source: (1) zero bevel modifiers — every part is a raw primitive_cylinder/torus/ico_sphere with no BEVEL modifier or shade_smooth, so edges are genuinely sharp; (2) no nameplate mesh exists; (3) base uses a near-black cylinder (0.15,0.12,0.1) — a marble/wood swap is a real material/mesh change; (4) add_material() never sets the Anisotropic input; (5) the render visibly crops the cup top, and the camera lives in the editable batch_render_previews.py. Four-plus of the six sub-claims map to specific, modifiable code paths, so this is actionable and a real polish gap toward AAA-asset fidelity — not fluff. It clears the rejection bar, but must be sharpened to drop the false PBR-gold premise.",
+        "sharpened": "In assets/blender/generate_track_models.py create_trophy() (NOT the material color — gold PBR already exists at metallic=0.95/roughness=0.15): (1) Add a BEVEL modifier (width ~0.02, 2-3 segments) plus bpy.ops.object.shade_smooth() to the base, stem, cup, and handle meshes to kill the raw-primitive sharp edges visible in the render. (2) Extend add_material() to expose and set the Principled BSDF \"Anisotropic\" input (~0.3-0.5) so the gold gets a brushed-metal highlight. (3) Replace the near-black base material (0.15,0.12,0.1) with a marble or wood look (lighter base color + roughness ~0.4) and optionally a wider, beveled plinth mesh. (4) Add a small extruded nameplate plane on the base front face (separate mesh + dark/engraved material) for an engraved-plate read. (5) In assets/blender/batch_render_previews.py, raise/zoom the trophy camera (and/or add a fill light) so the full silhouette including the cup top and star is in frame — the current preview crops the top. Then re-export victory_trophy.fbx/.glb and re-render the preview."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified concrete and actionable against the real repo, not generic fluff. (1) The named file /home/knight2/molgang-roblox/assets/renders/distillation_column_preview.png exists, and its render confirms the gap: the current \"distillation column\" is a short, plain mid-gray cylinder with no insulation banding, flanges, manways, ladder, or piping, in a near-empty scene — clearly a placeholder unfit for GTA6-level realism. (2) Every change the finding names is buildable in this codebase's established procedural-Blender pipeline: generate_slag_models.py already authors flange rings (add_cylinder Flange_x), full ladders with rungs+rails, feed trays, and a \"tall cylinder with cone bottom and ladder\"; generate_advanced_models.py builds flanges, feed wells, and assigns Principled-BSDF steel materials. So tall slender column + banded insulation + flange rings + side manways + ladder/cage + feed/reflux piping are direct compositions of proven primitives. (3) The one sub-item needing net-new work is \"weld seams and rust streaks\" — create_material currently only sets flat color + roughness (no noise/musgrave nodes), so procedural weathering must be added; but that still sits inside the existing node-based material approach. Net: names a specific buildable artifact and specific geometry/material edits with a clear home in the pipeline (generate_advanced_models.py / generate_slag_models.py + batch_render_previews.py to regenerate the preview). Real gap, not AI fluff.",
+        "sharpened": "Remodel the distillation column as a procedural Blender asset (extend assets/blender/generate_advanced_models.py, reusing the ladder/flange/feed-well primitives already in generate_slag_models.py), then regenerate distillation_column.fbx/.glb/.usdc and re-render the preview via batch_render_previews.py. Geometry: (a) high-segment main shell, height:diameter >= 6:1 (slender), 64+ radial segments; (b) banded insulation as 4-6 slightly-larger-radius ring sleeves down the shell with visible seams between bands; (c) flange rings at each insulation joint and at top/bottom heads; (d) 2-3 side manways (short flanged stub cylinders with bolt-ring detail); (e) external ladder with rungs + two side rails + a safety cage (ring hoops) running full height, reusing the LadderRail/rung loop from generate_slag_models.py; (f) feed nozzle mid-height and reflux/overhead piping looping from the top head down to a lower nozzle. Material/PBR: author a brushed-steel Principled BSDF (metallic ~1.0, anisotropic roughness ~0.3) and ADD the currently-missing procedural weathering — a Noise/Musgrave-driven roughness+normal mix for weld seams along band joints and vertical rust streaks below nozzles/manways (create_material today only sets flat color+roughness, so add these nodes). Acceptance: new preview shows a recognizable tall insulated distillation column with banded insulation, flanges, manways, full-height caged ladder, and feed/reflux piping, with weathered brushed-steel shading — replacing the current featureless gray cylinder."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against the live asset library at /home/knight2/molgang-roblox/assets/gltf — every claim checks out and the gap is empirically real, not AI fluff. (1) \"48 assets\": exactly 48 GLBs (and 48 matching FBX) exist. (2) The named glass/liquid assets all exist: beaker_1L.glb, erlenmeyer_flask.glb, quantum_dot.glb, boba_tea_cup.glb. (3) The core gap is confirmed by parsing the glTF JSON: across all 48 GLBs there are 213 materials but 0 embedded images and 0 textures — i.e. the entire library is flat-shaded with baseColorFactor only, zero normal/roughness/metalness/AO maps anywhere. This is exactly the gap the finding names. (4) Glass claim verified: 0 of 213 materials carry KHR_materials_transmission, so beaker/erlenmeyer/etc. render as opaque flat plastic — no transmission/refraction, precisely as stated. The finding is ACTIONABLE: it names a discrete deliverable (~8-10 master PBR materials with specific metallic/roughness/normal/AO channels, assigned per existing material slot — the GLBs already have named slots like 'Glass'/'Liquid'/'Mark' and varied metallicFactor 0..0.95, so slot assignment is wired and buildable), plus a verifiable minimal path ('even a single tiling normal/roughness set plus correct metallic flags closes most of the gap'). It is a REAL GTA6-realism gap: flat untextured surfaces are the single most visible difference from photoreal, and the project's own GTA6 backlog already lists this as P0/P1 unbuilt (W021 PBR re-skin, I102 PBR texture standards, SD007 realistic art pass) — confirming it is a known-critical, still-open gap rather than something already done. Minor caveats (does not reduce to rejection): it overlaps existing backlog items so it is not net-new prioritization, and Roblox consumes GLB PBR via SurfaceAppearance maps that must be authored/uploaded (no SurfaceAppearance wiring exists in game/ yet, and textures must land via the MESH_REGISTRY/alex upload-asset path), so the engine-side plumbing is an implied extra step the finding does not spell out. But the change is concrete and buildable, so it passes.",
+        "sharpened": "Author a shared PBR material library and apply it to the existing 48 GLBs in /home/knight2/molgang-roblox/assets/gltf, which today hold 213 materials with 0 texture maps and 0 transmission (flat baseColorFactor only). Concretely: (1) Author 8-10 tiling master material sets (brushed steel, painted steel, cast iron, glass, ceramic, rubber, copper, concrete, plastic), each as albedo+normal+roughness+metalness+AO at the I102 budget (1k handhelds / 2k vehicles / 4k hero). (2) Assign by existing material slot — the GLBs already expose named slots (e.g. 'Glass','Liquid','Mark') with varied metallicFactor (0..0.95) and roughnessFactor (0.15..0.9), so map each slot to the correct master and fix any wrong metallic flags. (3) For the four glass/liquid assets (beaker_1L, erlenmeyer_flask, quantum_dot, boba_tea_cup) add KHR_materials_transmission/IOR transmissive materials. (4) Engine plumbing the finding omits: bake the maps into Roblox SurfaceAppearance (ColorMap/NormalMap/RoughnessMap/MetalnessMap), upload via the alex upload-asset path, and sync MESH_REGISTRY.json/MeshLookup — no SurfaceAppearance wiring exists in game/ yet. Minimal-viable first step (verifiable, low cost): ship one tiling normal+roughness set plus corrected metallic flags applied across all slots; this alone closes most of the flat-plastic look. This subsumes open backlog items W021, I102, I105, SD007."
+      },
+      {
+        "reason": "VERIFIED AGAINST CODEBASE — not generic fluff. (1) Every named prop is real: quantum_dot.fbx, boba_tea_cup.fbx, victory_trophy.fbx, villain_pedestal.fbx, teleport_pad.fbx all exist on disk (63–154 KB) and as entries in /home/knight2/molgang-roblox/assets/MESH_REGISTRY.json. (2) The cohesion gap is real and measurable: the 48-asset catalog splits into 28 grounded industrial models (14 factory + 14 chemistry: bof_converter, distillation_column, ball_mill, etc.) vs 11 'decorative' arcade outliers — exactly the inconsistency described. (3) No art bible / style guide / master-palette doc exists anywhere in the project (only unrelated Python site-packages palette files), so the prescribed deliverable fills a genuine void. (4) It is buildable today: the repo has 1142 Color3/Material call sites where a master palette + per-class material/poly budget can be enforced, and the 5 named FBX files are on disk ready to re-skin. The change is specific (write a one-page art bible locking grounded-stylized PBR + a steel/rust master palette with accent colors reserved for interactive props; re-skin 5 named outliers so only accent saturation distinguishes them). Minor caveat: the 'GTA6 realism' framing is loose — the finding itself correctly recommends grounded-stylized PBR (NOT photoreal), which is the right target for a Roblox/cross-platform title; visual coherence + consistent PBR is a legitimate fidelity lever, so this is a strength, not a defect. Passes the bar: concrete, actionable, names a specific buildable change against assets that actually exist.",
+        "rejected": false,
+        "sharpened": "Ship a one-page art bible at /home/knight2/molgang-roblox/docs/ART_BIBLE.md and enforce it. Lock: (a) one stylization target = grounded-stylized PBR (not photoreal, not toy); (b) a master palette = industrial grays/steel/rust as the base, with 2-3 saturated accent colors reserved EXCLUSIVELY for interactive/UI props; (c) a per-category poly + material budget keyed to the MESH_REGISTRY.json 'category' field (factory/chemistry/mining/vehicle/architecture = realistic budget; decorative/hand_prop = accent-driven but same shader/material setup). Concrete first action: re-skin the 5 named outlier FBX files that already exist on disk — assets/models/quantum_dot.fbx, boba_tea_cup.fbx, victory_trophy.fbx, villain_pedestal.fbx, teleport_pad.fbx — so they share the same PBR roughness/metalness treatment as the 28 industrial assets (bof_converter, distillation_column, ball_mill, ...), with saturated accent color as the ONLY thing distinguishing them. Enforcement hook: since the codebase has ~1142 Color3/Material call sites, add a MaterialPalette module (or extend MeshLookup.lua) that exposes the locked palette constants and a lint/test (extend tests/MeshLookup_test.lua) that fails CI if a prop uses an off-palette accent or a non-PBR material. Definition of done: art bible committed; 5 outlier FBX re-exported and re-registered; palette constants centralized; a test asserts accent colors only appear on interactive/decorative classes."
+      },
+      {
+        "reason": "Not fluff. The finding names a specific, buildable change that maps onto infrastructure that already exists in /home/knight2/molgang-roblox: ~40 industrial FBX assets in assets/models/ (ball_mill, centrifugal_pump, gate_valve, distillation_column...) that are exactly the \"blob\" targets; a working Blender render pipeline (assets/blender/render_single.py, batch_render_previews.py) with material/world-node access, so a solid-black-on-white silhouette render is a small extension of code that already runs on the GPUs; and two existing QA tools (tools/asset_validator.py, tools/perceptual_diff.py) as natural hosts. Grep confirms NO existing silhouette/readability/edge-detail gate anywhere in docs/ or tools/ — the GTA6 backlog §22.6 and QUALITY_STANDARDS.md §88 only cover poly/material/texture budgets and SSIM screenshot regression, so this is a genuine, distinct gap, not a duplicate. The geometry callouts (motor housings, valves, hoppers, ladder rungs, flanges) are domain-correct for chemistry/industrial equipment. It has a real acceptance criterion (identifiable from black silhouette) and a clear owner (the asset pipeline). The one weak spot — \"identifiable in <1s\" — needs an operational definition rather than being literally measurable, but that is a refinement, not grounds for rejection. Net: concrete, actionable, advances GTA6-tier form readability.",
+        "rejected": false,
+        "sharpened": "Build a silhouette-readability QA gate as a new mode in the existing Blender pipeline and wire it into asset validation. Concretely: (1) Add a `--silhouette` mode to assets/blender/render_single.py that overrides every object material with a pure-black emission-free shader and sets a pure-white world background, renders each asset in assets/models/*.fbx from 3 canonical angles (3/4 front, side, top) at 512px to renders/silhouettes/<asset>_<angle>.png. (2) Add a `silhouette` check to tools/asset_validator.py that flags any asset whose black-on-white form is not identifiable, using a concrete proxy for the \"<1s read\" goal rather than the unmeasurable literal: compute the silhouette's filled-area ratio and convex-hull deficiency / number of distinct protrusions, and FLAG assets that read as a featureless blob (e.g. solid bounding-rectangle fill >0.85 with <2 distinguishing protrusions) for human review. Produce a manifest (assets/silhouette_report.json) listing pass/flag per asset. (3) Triage the flagged blob assets and add primary read-defining geometry — motor housings, valve handwheels/bonnets, hoppers, ladder rungs, pipe flanges — so the function is legible from the outline alone; re-run until the flag list is empty. (4) Codify a one-line silhouette rule in docs/QUALITY_STANDARDS.md and register it as a new P1 item in GTA6_QUALITY_BACKLOG.md §22.6 (e.g. [I107] silhouette read pass + edge-detail policy), explicitly tied to the next \"consistent edge-detail policy\" item. Acceptance: every model in assets/models/ either passes the silhouette proxy or has been human-approved, and the gate runs in run_qa.sh / qa.yml CI alongside perceptual_diff. Scope note: the literal \"every asset identifiable in <1s\" must be replaced by the area/protrusion proxy plus a documented human-review checklist, since sub-second human recognition is not directly automatable."
+      },
+      {
+        "rejected": true,
+        "reason": "The finding prescribes Phaser-specific fixes (Phaser.Scale.RESIZE/ENVELOP, a #game-container div, Phaser.Game width/height, hard-coded 1920x1080 canvas, recompute-camera-on-resize) for a \"lobby viewport\" that does not exist in the MOLGANG codebase. Verified on disk: the client is Roblox/Luau (161 .luau/.lua files, 0 .ts/.tsx) plus a Go gameserver; there is no Phaser.Game, new Phaser, Phaser.Scale, Phaser.AUTO, or #game-container anywhere in source. docs/ENGINE_MIGRATION_PLAN.md:80-82 states explicitly that the Next.js+Phaser+Colyseus stack \"is not what exists\" and \"the Colyseus/Phaser phase is legacy.\" The only Phaser grep hits are the substring \"phase\" inside vendored torch/library files; the only real 1920x1080 references are in a Selenium click-coordinate test harness (tools/test_scenarios/core.py:177, activities.py:54), not a render canvas. The single real HTML frontend, tools/web_demo/index.html, is a slag/steel OCR-sentinel parser with no canvas, no Phaser, no game viewport, and is already responsive (CSS grid + @media max-width:900px breakpoint). So none of the prescribed edits map to any buildable file. It is a plausible-sounding fix grafted onto the brief's fictional stack rather than the actual one, and it fails verification on contact. Separately, even if the Phaser stack existed, letterbox-bar color and canvas resize are 2D-web-UI polish, orthogonal to the photoreal-rendering bar that \"GTA6 realism\" denotes.",
+        "sharpened": "If a target web/Phaser client is ever built (per the engine-migration bake-off), responsive canvas sizing should be a baseline requirement, not a playtest finding. Until that client exists, there is no actionable change here. The closest real, buildable analog today is tools/web_demo/index.html, which is already responsive; no viewport/letterbox work is warranted there. Recommend discarding this finding and instead, if responsiveness matters, filing it against the chosen UE5/Godot client's UI scaling spec once that client is scaffolded."
+      },
+      {
+        "rejected": true,
+        "reason": "The finding's literal, named change is wrong for this codebase and largely already built. A full audio system already exists and is unused, so the finding mischaracterizes both the mechanism and the actual gap.\n\nEVIDENCE (paths verified):\n1. frontend/lib/audio.ts already implements a complete SoundManager: one-shot SFX (play()), per-zone ambient loops (ambient()), a localStorage-persisted mute toggle (setMuted/isMuted, lines 102-111), volume control, and fade in/out. It even handles the autoplay policy (try/catch swallowing the rejection, lines 75 and 90-94). So \"add a mute toggle\" and \"gate on autoplay-unlock\" are essentially already present.\n2. shared/audio-tracks.json already defines the exact slots the finding asks to \"add\": ui_click (button click), atom_pickup, per-zone ambient beds (lobby/arena/lab/factory), victory fanfare, menu.\n3. The proposed MECHANISM is architecturally wrong: the finding says load audio via this.load.audio in Phaser BootScene. This project does NOT use Phaser's audio loader — BootScene.ts (17 lines) only loads a particle image. Audio is a separate DOM-Audio SoundManager fed by a JSON manifest. Following the finding literally would build a duplicate, parallel audio system and fragment the credit/attribution flow (Sandrom permission tracking).\n\nWHAT IS ACTUALLY MISSING (the finding gestures at this but gets it wrong): the SoundManager is dead code. grep across the whole frontend found ZERO call sites of sound.play()/sound.ambient()/setMuted() outside lib/audio.ts; scenes (ArenaScene, LobbyScene, NPCSystem) have pointerdown handlers that never trigger SFX; there is no mute UI control in any .tsx; and there is no explicit first-pointerdown audio-unlock. Also missing as manifest slots: coin/MC-gain, hazard-alarm, and PPE-purchase chime.\n\nBecause the rubric defaults to rejected unless the finding names a specific, correct, buildable change, and the change it names (this.load.audio in BootScene) is the wrong mechanism for an already-existing system, it is rejected as written. It is not GTA6-realism-grade either — minimal UI blips and a placeholder ambient bed (all manifest titles are still \"PLACEHOLDER\", no real Sandrom files dropped) are baseline polish, not a realism differentiator.",
+        "sharpened": "Wire up the EXISTING SoundManager (frontend/lib/audio.ts) instead of building a new Phaser audio layer. Concretely: (1) In GameCanvas.tsx, on the first document pointerdown, call sound.ambient(currentZone) to satisfy the browser autoplay-unlock, then switch ambient per scene transition (lobby/arena/lab/factory). (2) In LobbyScene/ArenaScene/NPCSystem pointerdown handlers, add sound.play(\"ui_click\"); on atom pickup call sound.play(\"atom_pickup\"). (3) Add 3 new slots to shared/audio-tracks.json — coin_gain, hazard_alarm, ppe_chime — and trigger them at the coin-reward, hazard-trip, and PPE-purchase events respectively. (4) Add a mute/volume toggle control in the HUD that calls the already-built sound.setMuted()/sound.setVolume(). (5) Replace the PLACEHOLDER manifest titles by dropping the actual Sandrom files at frontend/public/audio/sandrom/. This reuses the existing manifest-driven, attribution-aware system rather than introducing a duplicate Phaser this.load.audio path."
+      },
+      {
+        "rejected": true,
+        "reason": "The finding targets code that does not exist in the codebase. Its load-bearing technical claim — \"Replace setFillStyle primitives with sprite atlases\" — references the Phaser 3 GameObjects.Shape/Graphics API, but the repo (/home/knight2/molgang-roblox) has NO Phaser client and ZERO occurrences of setFillStyle in any source file (grep across *.js/*.html/*.ts/*.lua/*.luau returns nothing; the only matches are unrelated Python site-packages and chat-log .jsonl artifacts). The real render targets are a Roblox Luau game plus a Go WebSocket gameserver (/home/knight2/molgang-roblox/gameserver/main.go) whose own header comment says it serves a \"Three.js web client\" — and Three.js does not use setFillStyle. That Three.js client isn't even committed to the repo; the only HTML files present are an OCR-text parser tool (tools/web_demo/index.html) and a marketing plan. The specific UI elements the finding names also have no backing code: no zoneButton/lobbyButton/pickup/wordWrap/player-sprite-creation identifiers exist anywhere. So although the advice has the surface form of a concrete art task (atlases, glow/shadow, word-wrap), it is generic visual-polish boilerplate pinned to a hallucinated/non-existent implementation. It names no real file, no real function, and the one concrete API it cites is absent — a developer could not act on it without first inventing the game it assumes. Not buildable as written.",
+        "sharpened": "If a real 2D web client surfaces, re-file as file-anchored tasks, e.g.: (1) In the Three.js client (the one the gameserver's main.go comment references but which is not yet in the repo), replace the procedurally-tinted atom meshes/materials with a loaded sprite-atlas texture keyed by element symbol from gameserver/data/elements.json, so each atom shows its real glyph instead of a flat-colored primitive. (2) In the zone-select UI, render the full zone \"name\" field from gameserver/data/zones.json (e.g. \"MolChain Registry Tower\", \"Slakkenspoor Fabriek\") with word-wrap rather than truncating to the zone \"id\". (3) On the atom_collected WebSocket event, trigger a one-shot particle burst at the collected atom's position. Each of these must cite the actual client file and the function that currently draws the primitive — none of which exist today, which is why the finding is rejected rather than sharpened in place."
+      },
+      {
+        "reason": "Verified against the actual codebase — every named artifact and the described gap are real:\n\nNAMED FILES ALL EXIST and behave as the finding states:\n- /media/knight2/EDS2/projects/molgang-web/shared/reactions.json — 10 recipes (H2O, CO2, NH3, CH4, NaCl, H2SO4, C2H5OH, O2, N2, FeO), each with a single-direction `consumes:{...}` stoichiometry and NO `produces`/`products` field. \"Beyond 10\" is accurate.\n- /media/knight2/EDS2/projects/molgang-web/shared/reactions-conditions.json — already holds per-recipe T/P/catalyst/Ea, exactly the data the finding says yieldCurve should be a function of.\n- /media/knight2/EDS2/projects/molgang-web/scripts/enrich-via-virtualpc.js — the named enrichment pipeline exists.\n\nTHE GAP IS REAL AND PRECISELY DESCRIBED. /media/knight2/EDS2/projects/molgang-web/api/routes/chemistry.py POST /chemistry/react (lines 145-203) is exactly the boolean \"can I make it\" check the finding wants to replace: `matched = next((r for r in recipes if _normalize(r[\"consumes\"]) == want), None)` does an exact-stoichiometry equality, and temperature_C/pressure_atm/catalyst are used ONLY as an in-range/out-of-range gate that returns success:False (lines 180-202). Same inputs => same single product, always; no yield, no product mixture, no byproducts, no equilibrium. Confirmed produces/yieldCurve/equilibriumK/byproduct/sideReaction/reversible do not exist anywhere in the chemistry data or API.\n\nPROPOSED CHANGE IS CONCRETE AND BUILDABLE: named JSON schema fields (produces with molar coefficients, equilibriumK/reversible, yieldCurve over existing T/P, sideReactions), a specific code edit (swap the boolean match for a quantitative yield over current bench conditions in react()), and a real enrichment path.\n\nONE MINOR INACCURACY (does not invalidate): the finding attributes the `_handFixes` pattern to enrich-via-virtualpc.js; it actually lives in the OUTPUT file reactions-conditions.json (`_handFixedAt`/`_handFixes` at lines 166-167), i.e. it is the established hand-verification convention for that pipeline's output. The pattern exists and the reference is substantively correct.\n\nThis is a specific, named, buildable engineering change targeting a real fidelity gap (deterministic single-product crafting vs. condition-dependent yield mixtures), not generic AI fluff. Accept.",
+        "rejected": false,
+        "sharpened": "In molgang-web/shared/reactions.json (currently 10 recipes, each a single-direction `consumes:{}` map with no products field) and the consuming endpoint api/routes/chemistry.py POST /chemistry/react, replace the boolean exact-stoichiometry match (`_normalize(r[\"consumes\"]) == want`, with T/P/catalyst used only as a pass/fail gate at lines 180-202) with a quantitative yield model:\n\n1. Extend the reactions.json recipe schema with: `produces` (one or more products + byproducts, each with molar coefficients), `reversible`/`equilibriumK`, `yieldCurve` (yield as a function of the temperature_C/pressure_atm already stored per-recipe in shared/reactions-conditions.json), and `sideReactions`.\n2. In react(), instead of returning success/failure, compute an output mixture: feed the bench's temperature_C/pressure_atm/catalyst into yieldCurve to get fractional product yields, apply sideReactions for byproducts, so identical input atoms yield different product mixtures at different T/P.\n3. Grow the corpus beyond 10 recipes via the existing scripts/enrich-via-virtualpc.js pipeline, hand-verifying additions using the same `_handFixes`/`_handFixedAt` convention already present in reactions-conditions.json (note: that convention lives in the pipeline's output file, not the script itself).\n\nAcceptance: POST /chemistry/react with the same `atoms` but different temperature_C/pressure_atm returns measurably different product/byproduct fractions; reactions.json contains >10 hand-verified recipes carrying produces/yieldCurve/equilibriumK/sideReactions fields."
+      },
+      {
+        "rejected": false,
+        "reason": "Verified against the live codebase — this is a concrete, accurate, buildable finding, not AI fluff. Both named files exist: shared/reactions-conditions.json (each recipe carries temperature_C.{min,max,optimal}, pressure_atm, catalyst, activation_energy_kJ_mol, reaction_type) and shared/reactions.json (each recipe carries energy: exothermic|stable). The core claim — \"decorative gating, not physics\" — is literally true in the backend: api/routes/chemistry.py lines 184-194 do binary range checks (if not (t.min <= temperature_C <= t.max) -> block; if not (p.min <= pressure_atm <= p.max) -> block) and an exact-string catalyst gate (line 193: (payload.catalyst or '').lower() != str(cat).lower()). The reaction either proceeds at 100% or is blocked; activation_energy_kJ_mol and optimal are loaded and surfaced to the bench UI but never drive any rate/yield math — confirmed decorative. Each proposed change maps to a real edit site: (1) Arrhenius rate replaces the binary T/P checks at lines 184-191 using already-present Ea + optimal fields; (2) catalyst-as-Ea-reduction replaces the string-match gate at line 193; (3) the exothermic heat coupling targets shared/hazard/airsim.ts, which is a real, working sim with GasSource{strengthPpm,decayPerSec,radius} and a linear-falloff sample()/step() that has NO temperature or buoyancy term and ingests fixed ppm from emitReaction() — so 'hot fume buoyancy/faster spread' and 'thermal-runaway' are genuinely absent, not duplicates of existing code. Names specific files, fields, and line-ranges; targets real missing physics toward GTA6-style emergent-systems realism. Passes CONCRETE + ACTIONABLE + REAL-GAP.",
+        "sharpened": "Replace the binary condition gate in api/routes/chemistry.py (lines ~181-201) with continuous Arrhenius physics, and couple reaction heat into shared/hazard/airsim.ts. Concretely:\n\n1. RATE/YIELD (chemistry.py): Stop returning a hard block when T/P are out of [min,max]. Instead compute a continuous reaction_progress in [0,1] from an Arrhenius-style term using the already-present activation_energy_kJ_mol and temperature_C.optimal: e.g. rate = exp(-Ea/(R*T)) normalized so progress peaks at `optimal` and falls off (not cliffs) toward min/max. Return this as a yield/speed multiplier the bench shows (\"yield 38% — raise temp toward optimal 450°C\"), reserving an actual block only for far-outside-window or unsafe states. Keep pressure as a secondary multiplier the same way.\n\n2. CATALYST AS Ea REDUCER (chemistry.py line ~193): Replace the exact-string catalyst gate with an effective-Ea reduction: presence of the correct catalyst lowers Ea (e.g. Ea_eff = Ea * (1 - catalyst_efficiency)), which raises the Arrhenius rate and lets the reaction proceed at lower T. Wrong/absent catalyst just means full Ea (slow/low-yield), not a binary fail.\n\n3. EXOTHERMIC HEAT COUPLING (reactions.json energy field -> airsim.ts): When a recipe with energy:\"exothermic\" reacts, emit a local heat term at the bench/zone. Add a `temperature`/heat field to GasSource (or a parallel HeatSource) in shared/hazard/airsim.ts and have step()/sample() use it to (a) raise local zone temperature, (b) make hot fumes buoyant and spread faster (scale decayPerSec/radius/upward bias by heat instead of the current fixed linear falloff), and (c) feed that zone temperature back into the chemistry rate so a hot bench can self-accelerate.\n\n4. THERMAL RUNAWAY: When the heat-fed zone temperature, driven by stacked exothermic reactions without cooling/PPE, crosses a threshold, trigger a thermal-runaway event (rapid temperature/emission spike, larger hazard cloud) — making unsafe operation an emergent failure mode rather than a static gate.\n\nAcceptance: activation_energy_kJ_mol and optimal stop being inert UI decoration and actually drive yield; catalyst changes Ea (not a string match); reactions.json `energy:exothermic` produces measurable zone heating that visibly speeds airsim fume spread and can cascade into a runaway. Unit-test the Arrhenius curve (peak at optimal, smooth falloff) and the heat->spread->runaway chain in airsim.test.ts."
+      },
+      {
+        "reason": "The finding targets a real, referenced module — molgang-roblox/docs/GTA6_QUALITY_BACKLOG.md line 736 documents molgang-web/shared/hazard/airsim.ts as the tested toxic-fume core (19 tests) run by ArenaRoom at 30Hz, and the finding correctly describes its actual role (emit into shared air volume, dose-based breathing/health, PPE mitigation, cloud dissipation). The proposed changes are concrete and code-level, not generic: replace the Vec2 point/radius source model with a coarse advection-diffusion field, add a per-zone wind vector, grow cloud radius as sqrt(time) (Gaussian diffusion), move Vec2->Vec3 for buoyant rise of hot/light gases, add per-room ventilation/air-exchange rate plus enclosed-volume accumulation, and soften the hard radius cutoff that creates a binary safe/unsafe edge. Each is a buildable, testable change to a named data model and directly advances environmental realism.\n\nCaveats that lower but do not kill confidence: (1) the airsim.ts source and its 19 tests are NOT committed in git anywhere — only the three backlog docs reference the file (git grep for the file and for Vec2/radius-cutoff/sqrt in .ts/.js/.lua finds nothing), so the asserted current shape (Vec2, hard radius, tests relying on the edge) cannot be independently verified against on-disk source. (2) Partial redundancy with already-planned-but-unbuilt items: HZ002 already specifies a per-zone diffusing concentration grid that ventilation removes from, HZ003 already covers downwind/adjacent players, and HZ007 already plans fume hoods/extractors/doors reducing local ppm. The genuinely additive, not-yet-planned pieces are the sqrt(time) Gaussian growth law, Vec2->Vec3 buoyancy, enclosed-volume accumulation math, and softening the hard radius cutoff. Net: it names a specific buildable change and a real gap, clearing the default-reject bar.\n\nRelevant file paths: /home/knight2/molgang-roblox/docs/GTA6_QUALITY_BACKLOG.md (line 736 status log + HZ001-010 at lines 676-699), /home/knight2/molgang-roblox/docs/ENGINE_MIGRATION_PLAN.md (notes volumetric fog as a near-ideal fit for the toxic-fume module). No airsim.ts exists on disk under /home/knight2.",
+        "rejected": false,
+        "sharpened": "Upgrade the toxic-fume transport model in molgang-web/shared/hazard/airsim.ts (the AirSim core ArenaRoom ticks at 30Hz) from a Vec2 point-source + hard-radius cutoff to a coarse advection-diffusion field. Concretely: (1) DIFFUSION — grow each emitted cloud's effective radius as sqrt(D*t) (Gaussian spread) and replace the binary radius cutoff with a smooth concentration falloff (e.g. Gaussian/exponential ppm profile), so dose at a player scales continuously with distance instead of flipping a safe/unsafe bit; update the 19 existing tests that assert on the hard edge to assert on monotonic ppm/dose curves and threshold-band crossings instead. (2) ADVECTION — add a per-zone wind vector (start static per zone, allow dynamic later) that translates the cloud center each tick, so downwind players (HZ003) get higher dose than upwind at equal distance. (3) BUOYANCY — change the source/position type from Vec2 to Vec3 and add a vertical rise term for hot/light gases (e.g. H2/NH3 rise, Cl2/SO2 sink), so vertical position affects sampled ppm. (4) ENGINEERING CONTROLS — add a per-room air-exchange rate (ACH) and an enclosed-volume accumulator so ppm builds up in sealed rooms and is removed by ventilation; wire fume-hood/extractor/open-door entities to raise the local exchange rate (this implements HZ007 and the ventilation-removal half of HZ002, which are currently planned-but-unbuilt). Keep it server-authoritative and tick-budgeted as today. Before implementing, COMMIT the existing airsim.ts + its tests (currently only referenced in backlog docs, absent from git) so the baseline model is verifiable, and dedupe scope against HZ002/HZ003/HZ007 which already cover the grid/downwind/ventilation directions — the net-new physics here is the sqrt(t) growth law, Vec3 buoyancy, enclosed-volume accumulation, and the softened falloff."
+      }
+    ]
+  }
+}

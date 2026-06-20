@@ -8,6 +8,7 @@
 import express from 'express';
 import { config } from 'dotenv';
 import * as http from 'http';
+import * as os from 'os';
 import { Server as SocketIOServer } from 'socket.io';
 import logger from './utils/logger';
 import { KafkaOrchestrator } from './integrations/kafka/orchestrator';
@@ -87,12 +88,16 @@ import { setupOpenApiRoutes } from './api/openapi';
 import GitHubSync from './automation/github-sync';
 import setupGitHubRoutes from './automation/github-routes';
 import { SecurityDashboard } from './security/securityDashboard';
+import { securityHeaders } from './security/securityHeaders';
+import { AdvancedRateLimiter } from './security/rateLimiter';
+import { internalWriteAuth } from './middleware/internalWriteAuth';
 import setupSecurityRoutes from './security/security-routes';
 import { QualityDashboard } from './quality/qualityDashboard';
 import setupQualityRoutes from './quality/quality-routes';
 import { activityMonitor } from './terminal-activity-monitor';
 import * as taskEngine from './task-engine';
 import * as tokenTracker from './token-tracker';
+import * as resourceModelRouter from './model-router';
 import * as commitsTracker from './commits-tracker';
 import * as lmstudio from './lmstudio';
 import { AGENT_META } from './agent-registry';
@@ -111,13 +116,21 @@ import { registerGpuRoutes, getGpuAvailable } from './gpu';
 import { registerQueryRoutes } from './query-builder';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
+import { registerCodexRoutes } from './codex';
+import { registerTournamentRoutes } from './org/tournament-routes';
 import { registerRequirementRoutes } from './requirements';
+import { registerFundamentalRoutes } from './fundamentals/routes';
 import { MicroPostStore, DaoParamStore, MicroPostGossip, registerMicroPostRoutes } from './integrations/lightrag/micro-post';
+import { SilkNodeRegistry, SilkGossip, registerSilkRoutes } from './integrations/lightrag/silk-net';
+import { PulseEngine, PulseWalletStore, KnotValidationStore, registerPulseRoutes } from './integrations/lightrag/pulse';
+import { RiskKnotStore, registerRiskRoutes } from './integrations/lightrag/risk-knot';
 import { resolveModel } from './gpu/availability';
 import * as mcp from './integrations/mcp/registry';
 import * as autoresearch from './integrations/autoresearch';
 import * as selfheal from './integrations/selfheal';
 import { guardrailsAgent } from './guardrails/guardrails-agent';
+import { containmentGuard, setupContainmentRoutes } from './containment';
+import { setupPlaytestRoutes } from './playtest';
 import { analyzeCsv } from './timeseries';
 import * as credentials from './credentials';
 import * as commercialization from './commercialization';
@@ -125,18 +138,81 @@ import * as commitAudit from './commit-audit';
 
 // Load environment
 config();
+// Re-load credentials now that dotenv has populated process.env: the module's
+// boot-time load ran at import (before config()), so FIELD_ENCRYPTION_KEY from
+// .env was not yet visible. This pass decrypts api_keys and migrates any
+// plaintext-at-rest to encrypted (no-op when the key is unset). See #31.
+credentials.loadCredentials();
 
 const app = express();
 const server = http.createServer(app);
+// Restrict WebSocket CORS to the local dashboards. `origin: '*'` let any
+// website on the internet open a socket to this server, violating the
+// local-only posture. Override with SOCKET_CORS_ORIGINS (comma-separated)
+// if the dashboard is ever served from another origin.
+const SOCKET_CORS_ORIGINS = (process.env.SOCKET_CORS_ORIGINS ||
+  'http://localhost:3000,http://localhost:3100,http://127.0.0.1:3000,http://127.0.0.1:3100')
+  .split(',').map(o => o.trim()).filter(Boolean);
 const io = new SocketIOServer(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] }
+  cors: { origin: SOCKET_CORS_ORIGINS, methods: ['GET', 'POST'] }
 });
 const PORT = process.env.PORT || 3100;
+const SERVER_START_TIME = Date.now();
 
 // Middleware
 // Bumped from default 100kb so /api/migration/slag/claim can accept a base64-
 // encoded screenshot (~5 MB worst case after the ~33% base64 overhead).
 app.use(express.json({ limit: '6mb' }));
+
+// ── Security middleware (mounted before any route so it applies globally) ──
+// 1) Response security headers. Safe-by-default; strict mode (COEP/COOP/strict
+//    CSP/X-Frame DENY) is opt-in via ENFORCE_STRICT_SECURITY — see
+//    src/security/securityHeaders.ts.
+app.use(securityHeaders);
+
+// 2) Global per-IP rate limiter. Default 1200 req/min/IP with a 60s window.
+//    The recon measured a single multi-dashboard browser at ~270 req/min, and
+//    all LOCAL dashboards share one bucket (req.ip == 127.0.0.1, no trust
+//    proxy), so the headroom covers a power user with several tabs. External
+//    attackers each get their OWN per-IP bucket, so the flooding-defense value
+//    is unaffected by the generous localhost ceiling. Socket.IO + the canonical
+//    liveness probes are exempt (bypassed before the limiter). cleanup() runs
+//    every 5 min so the in-memory store can't leak; the timer is unref'd.
+const rateLimitEnabled = (process.env.RATE_LIMIT_ENABLED ?? 'true').toLowerCase() !== 'false';
+if (rateLimitEnabled) {
+  const rateLimiter = new AdvancedRateLimiter();
+  // Parse defensively: a non-numeric / non-positive env value would otherwise
+  // yield NaN (perIp's `count >= NaN` is always false → limiting silently off)
+  // or disable limiting, so fall back to the safe default instead.
+  const parsePositive = (v: string | undefined, fallback: number): number => {
+    const n = parseInt(v ?? '', 10);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+  };
+  const windowMs = parsePositive(process.env.RATE_LIMIT_WINDOW_MS, 60000);
+  const maxRequests = parsePositive(process.env.RATE_LIMIT_MAX_REQUESTS, 1200);
+  const limiterMw = rateLimiter.perIp({ windowMs, maxRequests });
+  // Exempt the persistent WebSocket transport and the two canonical liveness
+  // probes by BYPASSING the limiter entirely — perIp() has no skip path (a null
+  // key buckets under 'unknown'), so exemption must happen before it runs.
+  // NOTE: match the health probes EXACTLY, not by `/health` suffix — a suffix
+  // match let an attacker dodge the limiter with any `/x/health` path. The
+  // per-subsystem health routes (/api/llm/health, …) are low-frequency and stay
+  // rate-limited, which 1200/min easily accommodates.
+  const EXEMPT_PATHS = new Set(['/health', '/api/health']);
+  const isExempt = (p: string) => p.startsWith('/socket.io') || EXEMPT_PATHS.has(p);
+  app.use((req, res, next) => (isExempt(req.path || '') ? next() : limiterMw(req, res, next)));
+  const cleanupTimer = setInterval(() => rateLimiter.cleanup(), 5 * 60 * 1000);
+  if (typeof cleanupTimer.unref === 'function') cleanupTimer.unref();
+  logger.info(`Rate limiter enabled: ${maxRequests} req / ${windowMs}ms per IP (socket.io + health exempt)`);
+} else {
+  logger.warn('Rate limiter disabled (RATE_LIMIT_ENABLED=false)');
+}
+
+// 3) Guard the internal-only write endpoints. WARN mode by default (logs but
+//    allows) so it's non-breaking; INTERNAL_WRITE_ENFORCE=true rejects callers
+//    that are neither localhost nor presenting INTERNAL_WRITE_SERVICE_TOKEN.
+app.use(internalWriteAuth());
+
 // Plan review — make plans available from VirtualPC + per-section human comments
 // that relay back to the agents. See src/plan-review + /plan-review.html.
 registerPlanRoutes(app);
@@ -144,6 +220,8 @@ registerPlanRoutes(app);
 registerDataQualityRoutes(app);
 // Finance — intangible-asset (immateriële activa) capitalization report + ROI.
 registerFinanceRoutes(app);
+// Fundamentals, news, and filings storage with source + publication date.
+registerFundamentalRoutes(app);
 // GPU daemon — availability detection (3h), dynamic no-GPU model fallback, and
 // LM Studio auto-boot when a GPU returns.
 registerGpuRoutes(app);
@@ -153,8 +231,11 @@ registerQueryRoutes(app);
 registerSpectroscopyRoutes(app);
 // Asset mirror coverage — Roblox→Web cross-platform remediation plan for designers.
 registerAssetMirrorRoutes(app);
-// Requirements register — USDP use-case-driven requirements with traceability
-// (coverage/verification) from requirement → feature/commit/test. See src/requirements.
+// Codex bridge — coding/review tasks via codex exec (GPT-5.5 dev leg).
+registerCodexRoutes(app);
+// Dev tournament — 3-developer competing-branch regime.
+registerTournamentRoutes(app);
+// Requirements register — USDP use-case-driven requirements with traceability.
 registerRequirementRoutes(app);
 // Force fresh HTML on every load so updates (new agents, panels, fixes)
 // show up immediately instead of serving stale cached markup.
@@ -192,6 +273,36 @@ app.get('/newsgroup', (_req, res) => {
 });
 
 // Dashboard is now served at root (localhost:3100) - no separate /dashboard route needed
+
+// Data-agent dashboard + config pages (also served by express.static, explicit routes for discoverability)
+app.get('/data-agent-dashboard', (_req, res) => {
+  res.type('html').sendFile(path.resolve(__dirname, '..', 'public', 'data-agent-dashboard.html'), (err: any) => {
+    if (err) res.status(500).send('Error loading data-agent dashboard');
+  });
+});
+
+app.get('/data-agent-config', (_req, res) => {
+  res.type('html').sendFile(path.resolve(__dirname, '..', 'public', 'data-agent-config.html'), (err: any) => {
+    if (err) res.status(500).send('Error loading data-agent config');
+  });
+});
+
+// Data-science starter example — JSON mirror of public/examples/data-science/starter.py
+app.get('/api/data-science/starter', (_req, res) => {
+  const filePath = path.resolve(__dirname, '..', 'public', 'examples', 'data-science', 'starter.py');
+  try {
+    const code = require('fs').readFileSync(filePath, 'utf8');
+    res.json({
+      ok: true,
+      title: 'VirtualPC Data Science Starter',
+      description: 'Minimal self-contained example: load CSV, validate, engineer features, baseline regression, outlier detection.',
+      file_path: '/examples/data-science/starter.py',
+      code,
+    });
+  } catch (err: any) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
 
 // Terminal Activity Monitor - Track what's happening in both terminals
 app.get('/api/terminal/activity', (req, res) => {
@@ -295,7 +406,9 @@ function ghPathAllowed(p: string): boolean {
 function ghApiFetch(repoPath: string): Promise<{ path: string; content: string; size: number; html_url: string; encoding: string }> {
   return new Promise((resolve, reject) => {
     const { execFile } = require('child_process');
-    execFile('gh', ['api', `repos/${GH_REPO}/contents/${repoPath}`], { maxBuffer: 4 * 1024 * 1024 }, (err: any, stdout: string, stderr: string) => {
+    // 15s timeout so a slow/hung `gh` call can't block the request indefinitely
+    // (the event loop isn't blocked, but the awaiting request would hang forever).
+    execFile('gh', ['api', `repos/${GH_REPO}/contents/${repoPath}`], { maxBuffer: 4 * 1024 * 1024, timeout: 15000 }, (err: any, stdout: string, stderr: string) => {
       if (err) { reject(new Error(stderr || err.message)); return; }
       try {
         const j = JSON.parse(stdout);
@@ -723,6 +836,14 @@ app.post('/api/mcp/call', async (req, res) => {
 app.post('/api/docs/regenerate', async (req, res) => {
   try {
     const scope = String(req.body?.scope || 'all');
+    // Allow-list the scope before it reaches the spawned script as a CLI arg.
+    // regenerate-docs.js only understands these four values; anything else is
+    // either a typo or an injection attempt and must not be forwarded.
+    const ALLOWED_SCOPES = ['all', 'readme', 'architecture', 'wiki'];
+    if (!ALLOWED_SCOPES.includes(scope)) {
+      res.status(400).json({ success: false, error: `invalid scope; allowed: ${ALLOWED_SCOPES.join(', ')}` });
+      return;
+    }
     const { spawn } = require('child_process');
     const script = path.join(REPO_ROOT, 'scripts', 'regenerate-docs.js');
     if (!require('fs').existsSync(script)) {
@@ -835,6 +956,54 @@ app.get('/api/tokens/events', (req, res) => {
   res.json({ success: true, events: tokenTracker.getRecentEvents(agent, limit) });
 });
 
+// Model scheduler — current reservations and idle models.
+app.get('/api/models/schedule', (req, res) => {
+  const { getSchedule } = require('./lmstudio');
+  res.json({ success: true, ...getSchedule() });
+});
+
+app.post('/api/models/schedule/:modelId/extend', (req, res) => {
+  const { extendModelReservation } = require('./lmstudio');
+  const extraMs = parseInt(req.body.extraMs, 10) || 30_000;
+  const ok = extendModelReservation(req.params.modelId, extraMs);
+  if (!ok) { res.status(404).json({ success: false, error: 'model not reserved' }); return; }
+  res.json({ success: true, modelId: req.params.modelId, extendedByMs: extraMs });
+});
+
+// Trigger background download of the smallest recommended local model.
+app.post('/api/models/download-recommended', async (req, res) => {
+  const { ensureLocalModel } = require('./model-downloader');
+  const result = await ensureLocalModel();
+  res.json({ success: result.ok, ...result });
+});
+
+// Model-router health: resource detection + matched roster + recommended downloads.
+app.get('/api/health/models', (req, res) => {
+  const roster = resourceModelRouter.generateRoster();
+  res.json({
+    success: true,
+    weightClass: roster.weightClass,
+    resources: roster.resources,
+    simulationByDefault: roster.simulationByDefault,
+    allowBigModels: roster.allowBigModels,
+    allowCloud: roster.allowCloud,
+    recommendedDownloads: roster.recommendedDownloads.map(m => ({
+      id: m.id,
+      name: m.name,
+      diskGB: m.diskGB,
+      ramGB: m.ramGB,
+      loadCommand: m.lmStudioLoad ? `lms load ${m.lmStudioLoad}` : null,
+    })),
+    rosterSample: roster.roster.slice(0, 10),
+  });
+});
+
+app.post('/api/health/models/refresh', (req, res) => {
+  const { refreshRoster } = require('./lmstudio');
+  const roster = refreshRoster(req.body);
+  res.json({ success: true, weightClass: roster.weightClass, rosterSample: roster.roster.slice(0, 10) });
+});
+
 // Auto-update status — what the last scripts/auto-update.sh tick observed.
 // Returns { status, message, local_sha, remote_sha, checked_at } or
 // { absent: true } before the timer has fired even once.
@@ -890,14 +1059,32 @@ app.get('/api/commercialization/budget', (req, res) => {
 });
 
 // Approve / reject / execute — these mutate spend, so they require an
-// authenticated human with one of the privileged roles. AuthMiddleware
-// is wired further down via setupAuthRoutes; until then we accept a
-// development X-Approver header that the dashboard sends along.
+// authenticated human with one of the privileged roles. The auth system is
+// constructed later inside initialize(); we hold a reference here so these
+// module-level routes can verify a Bearer session token against a role.
+let approverAuthSystem: AuthSystem | null = null;
+const APPROVER_ROLES = ['ceo', 'cto'];
+
 function privilegedActor(req: express.Request): string | null {
-  // TODO: replace with proper authMiddleware.requireRole(['ceo','cto','economy'])
-  // once the routes are reorganized to receive it. For now, trust the header
-  // only when the request is from localhost — same posture as other admin
-  // endpoints in this file.
+  // Preferred path: an authenticated session token with a privileged role.
+  // This is the real check and is the only one honoured in production.
+  const token = req.headers.authorization?.split(' ')[1];
+  if (approverAuthSystem && token) {
+    const authToken = approverAuthSystem.verifyToken(token);
+    if (authToken && APPROVER_ROLES.includes(authToken.role)) {
+      return authToken.username;
+    }
+    // A token was supplied but is invalid or under-privileged — reject it
+    // outright rather than silently falling through to the dev header.
+    return null;
+  }
+
+  // Dev-only fallback: the dashboard's X-Approver header from localhost. This
+  // is spoofable, so it is OFF unless explicitly opted into and never in
+  // production. Set ALLOW_HEADER_APPROVER=1 for local UI work without a login.
+  const headerFallbackAllowed =
+    process.env.NODE_ENV !== 'production' && process.env.ALLOW_HEADER_APPROVER === '1';
+  if (!headerFallbackAllowed) return null;
   const ip = String(req.ip || '');
   const isLocal = ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1';
   if (!isLocal) return null;
@@ -908,7 +1095,7 @@ function privilegedActor(req: express.Request): string | null {
 app.post('/api/commercialization/:id/approve', (req, res) => {
   const who = privilegedActor(req);
   if (!who) {
-    res.status(403).json({ success: false, error: 'approval requires X-Approver header from localhost' });
+    res.status(403).json({ success: false, error: 'approval requires an authenticated ceo/cto session token' });
     return;
   }
   const r = commercialization.approve(req.params.id, who);
@@ -922,7 +1109,7 @@ app.post('/api/commercialization/:id/approve', (req, res) => {
 app.post('/api/commercialization/:id/reject', (req, res) => {
   const who = privilegedActor(req);
   if (!who) {
-    res.status(403).json({ success: false, error: 'rejection requires X-Approver header from localhost' });
+    res.status(403).json({ success: false, error: 'rejection requires an authenticated ceo/cto session token' });
     return;
   }
   const r = commercialization.reject(req.params.id, who);
@@ -936,7 +1123,7 @@ app.post('/api/commercialization/:id/reject', (req, res) => {
 app.post('/api/commercialization/:id/execute', async (req, res) => {
   const who = privilegedActor(req);
   if (!who) {
-    res.status(403).json({ success: false, error: 'execute requires X-Approver header from localhost' });
+    res.status(403).json({ success: false, error: 'execute requires an authenticated ceo/cto session token' });
     return;
   }
   // execute() is now async — Stripe paymentIntents.create() is a network call.
@@ -1317,7 +1504,21 @@ app.get('/api/tracks', (req, res) => {
 app.get('/api/tracks/:id', (req, res) => {
   try {
     const fs = require('fs');
-    const file = path.resolve(__dirname, '..', 'public', 'assets', 'tracks', `${req.params.id}.json`);
+    // Path-traversal guard: a track id is a flat slug, never a path. Reject
+    // anything outside [A-Za-z0-9_-] so encoded "../" sequences can't escape
+    // the tracks directory and read arbitrary files (e.g. /etc/passwd).
+    const id = String(req.params.id);
+    if (!/^[A-Za-z0-9_-]+$/.test(id)) {
+      res.status(400).json({ success: false, error: 'invalid track id' });
+      return;
+    }
+    const tracksDir = path.resolve(__dirname, '..', 'public', 'assets', 'tracks');
+    const file = path.resolve(tracksDir, `${id}.json`);
+    // Defence in depth: confirm the resolved path is still inside tracksDir.
+    if (file !== path.join(tracksDir, `${id}.json`) || !file.startsWith(tracksDir + path.sep)) {
+      res.status(400).json({ success: false, error: 'invalid track id' });
+      return;
+    }
     if (!fs.existsSync(file)) {
       res.status(404).json({ success: false, error: 'track not found' });
       return;
@@ -1624,46 +1825,57 @@ app.get('/api/progress/:person', (req, res) => {
 
 // Note: /api/backlog is defined in setupRoutes() to avoid route duplication
 
-// System metrics - LIVE from task engine
+// System metrics - LIVE from task engine and token tracker
 app.get('/api/metrics', (req, res) => {
   const gameStats = taskEngine.getGameStats();
   const allItems = taskEngine.getBacklogItems();
   const completed = allItems.filter((i: any) => i.status === 'completed').length;
   const inProg = allItems.filter((i: any) => i.status === 'in_progress').length;
   const pending = allItems.filter((i: any) => i.status === 'pending').length;
+  const errored = allItems.filter((i: any) => i.status === 'error').length;
   const total = allItems.length;
 
+  const tokenSummary = tokenTracker.getAgentSummary().combined;
+  const uptimeSeconds = Math.floor((Date.now() - SERVER_START_TIME) / 1000);
+  const uptimePct = uptimeSeconds > 0 ? 100 : 0; // since last server start
+  // Cache hit rate = ratio of tier-1 (free local / simulated) calls vs total.
+  const cacheHitRate = tokenSummary.totalCalls > 0
+    ? Math.round((tokenTracker.getRecentEvents(undefined, 1000).filter((e: any) => e.tier === 1).length / Math.max(1, tokenTracker.getRecentEvents(undefined, 1000).length)) * 100)
+    : 100;
+
   const metrics = {
-    version: '3.2',
+    version: process.env.npm_package_version || '1.0.0',
     timestamp: new Date().toISOString(),
     totalTasks: gameStats.tasksCompleted + gameStats.tasksInProgress,
     completed: gameStats.tasksCompleted,
     inProgress: gameStats.tasksInProgress,
     pending,
-    costSavings: '87%',
+    errored,
+    costSavings: `${tokenSummary.costSavingsPercent}%`,
 
-    dailyUpdates: gameStats.tasksCompleted * 3,
-    dailyActiveUsers: 1247,
-    studentCapacity: 1000000,
+    dailyUpdates: gameStats.completedLastHour + gameStats.completedLastMinute,
+    dailyActiveUsers: 0, // not tracked; reserved for future auth/session layer
+    studentCapacity: 0,  // not tracked; removed from dashboard
 
     qwenTokens: {
       dailyBudget: 1000000,
-      consumed: 847650,
-      remaining: 152350,
-      percentUsed: 85,
-      status: 'healthy'
+      consumed: tokenSummary.totalTokens,
+      remaining: Math.max(0, 1000000 - tokenSummary.totalTokens),
+      percentUsed: Math.min(100, Math.round((tokenSummary.totalTokens / 1000000) * 100)),
+      status: tokenSummary.totalTokens > 900000 ? 'critical' : tokenSummary.totalTokens > 700000 ? 'warning' : 'healthy'
     },
 
-    apiResponseTime: 145,
-    cacheHitRate: 87,
-    uptime: 99.87,
+    apiResponseTime: 0, // not instrumented yet
+    cacheHitRate,
+    uptime: uptimePct,
+    uptimeSeconds,
 
     costBreakdown: {
-      description: '87% Cost Reduction achieved through:',
+      description: `${tokenSummary.costSavingsPercent}% Cost Reduction achieved through:`,
       items: [
-        { method: 'Intelligent Caching', savings: 40, description: 'Cache common queries' },
-        { method: 'Request Batching', savings: 30, description: 'Batch multiple requests' },
-        { method: 'Model Routing', savings: 20, description: 'Route to optimal model' }
+        { method: 'Local / Simulated Routing', savings: tokenSummary.costSavingsPercent, description: 'Route to on-device or simulated models' },
+        { method: 'Model Routing', savings: 20, description: 'Route to optimal model by weight class' },
+        { method: 'Request Batching', savings: 10, description: 'Batch multiple requests' }
       ]
     },
     agents: {
@@ -1974,6 +2186,37 @@ app.get('/api/kafka/audit', (req, res) => {
   res.json({ success: true, count: limit, tail: _kafkaAuditTail(limit) });
 });
 
+// Demo network info — local IP + port-forward instructions
+function getLocalIp(): string {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] || []) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+}
+
+app.get('/api/demo/network-info', (req, res) => {
+  const port = process.env.PORT || 3100;
+  const localIp = getLocalIp();
+  res.json({
+    success: true,
+    localIp,
+    port,
+    localUrl: `http://${localIp}:${port}`,
+    localhostUrl: `http://localhost:${port}`,
+    routerSteps: [
+      `Open your router admin page (usually http://192.168.1.1 or http://192.168.0.1).`,
+      `Find "Port Forwarding", "Virtual Servers", or "NAT/PAT".`,
+      `Add a rule: external TCP port ${port} → internal ${localIp}:${port}.`,
+      `Save/apply. Your colleague can now reach this demo at http://<your-public-ip>:${port}`,
+    ],
+  });
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
@@ -2055,10 +2298,18 @@ async function initialize() {
 
     // 1. Initialize LightRAG (shared memory)
     logger.info('📊 Initializing LightRAG...');
+    const neo4jPassword = secretOrEnv('infra', 'NEO4J_PASSWORD');
+    if (!neo4jPassword) {
+      const msg = 'NEO4J_PASSWORD is not set.';
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error(`${msg} Refusing to start with a default Neo4j password in production.`);
+      }
+      logger.warn(`⚠️  ${msg} Falling back to the insecure default 'password' (dev only).`);
+    }
     const lightrag = new LightRAGClient({
       neo4j_url: secretOrEnv('infra', 'NEO4J_URI') || 'bolt://localhost:7687',
       neo4j_username: secretOrEnv('infra', 'NEO4J_USER') || 'neo4j',
-      neo4j_password: secretOrEnv('infra', 'NEO4J_PASSWORD') || 'password'
+      neo4j_password: neo4jPassword || 'password'
     });
     await lightrag.connect();
     logger.info('✓ LightRAG connected');
@@ -2099,6 +2350,123 @@ async function initialize() {
     } catch (e: any) {
       logger.warn(`governance-graph init failed: ${e.message}`);
     }
+
+    // 1c. Ingest the Familie knowledge graph — een aparte, verbergbare graaf
+    //     met personen / bedrijven / hardware / software / projecten. Zelfde
+    //     graceful-offline gedrag. De /api/family/* surface hieronder serveert
+    //     'm in 3D-force-graph formaat met een verberg-toggle.
+    try {
+      const fam = await import('./integrations/lightrag/family-graph');
+      const r = await fam.ingestFamilyGraph(lightrag);
+      if (r.offline) logger.warn('family-graph: LightRAG offline — skip ingest');
+      else logger.info(`✓ family-graph: ${r.entities} objecten, ${r.categories} categorieën, ${r.structuralEdges} structureel + ${r.semanticEdges} afgeleid + ${r.verifiedEdges} geverifieerd (hidden=${r.hidden})`);
+      // Chat-extractie delta (data/family-extract.json) — idempotent, getagd source='chat'.
+      const ex = await fam.ingestExtract(lightrag);
+      if (ex.missing) logger.info('family-graph: geen chat-extractie (run scripts/family-extract.py)');
+      else if (!ex.offline) logger.info(`✓ family-graph: chat-extractie — ${ex.entities} entiteiten, ${ex.chats} chats, ${ex.edges} randen`);
+      // Molgang-game delta (data/molgang-extract.json) — getagd source='molgang'.
+      const mg = await fam.ingestMolgang(lightrag);
+      if (mg.missing) logger.info('family-graph: geen molgang-extractie (run scripts/molgang-extract.py)');
+      else if (!mg.offline) logger.info(`✓ family-graph: molgang — ${mg.entities} entiteiten, ${mg.edges} randen`);
+      // Chemie/fysica staalslak-valorisatie (data/slag-chemistry.json) — source='chem'.
+      const ch = await fam.ingestChemistry(lightrag);
+      if (ch.missing) logger.info('family-graph: geen chemie-data (data/slag-chemistry.json ontbreekt)');
+      else if (!ch.offline) logger.info(`✓ family-graph: chemie — ${ch.entities} entiteiten, ${ch.edges} randen`);
+    } catch (e: any) {
+      logger.warn(`family-graph init failed: ${e.message}`);
+    }
+
+    // Familie-graaf endpoints. GET /graph → 3D node-link JSON (respecteert de
+    // verberg-toggle); GET/POST /visibility → toggle uitlezen/zetten.
+    const familyApi = await import('./integrations/lightrag/family-graph');
+    app.get('/api/family/graph', async (_req, res) => {
+      try { res.json({ success: true, lightrag_connected: lightrag.isConnected(), ...(await familyApi.getFamilyGraph3D(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    app.get('/api/family/entities', async (_req, res) => {
+      try { res.json({ success: true, ...(await familyApi.listFamilyEntities(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    app.get('/api/family/visibility', (_req, res) => {
+      res.json({ success: true, ...familyApi.getFamilyVisibility() });
+    });
+    app.post('/api/family/visibility', async (req, res) => {
+      try {
+        const hidden = req.body?.hidden === true || req.body?.hidden === 'true';
+        res.json({ success: true, ...(await familyApi.setFamilyVisibility(lightrag, hidden)) });
+      } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    // Verberg-toggle als losse "flip" (geen body nodig).
+    app.post('/api/family/toggle', async (_req, res) => {
+      try {
+        const cur = familyApi.getFamilyVisibility();
+        res.json({ success: true, ...(await familyApi.setFamilyVisibility(lightrag, !cur.hidden)) });
+      } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    // Categorieën (voor de portal-dropdown).
+    app.get('/api/family/categories', (_req, res) => {
+      res.json({ success: true, categories: familyApi.getCategories() });
+    });
+    // i18n-woordenboek (NL/EN/CN) voor de taal-toggle in het portaal.
+    app.get('/api/family/i18n', (_req, res) => {
+      res.json({ success: true, ...familyApi.getI18n() });
+    });
+    // Localhost-only: het privé portal-token uitlezen (de eigenaar leest 'm
+    // lokaal en voert 'm één keer in op zijn Quest). Externe LAN-clients krijgen 403.
+    app.get('/api/family/portal-token', (req, res) => {
+      const ip = (req.socket.remoteAddress || '').replace('::ffff:', '');
+      if (ip !== '127.0.0.1' && ip !== '::1') { res.status(403).json({ success: false, error: 'alleen via localhost' }); return; }
+      res.json({ success: true, token: familyApi.getOrCreatePortalToken() });
+    });
+
+    // Privé schrijf-gate: alle update-endpoints vereisen het token
+    // (header x-family-token of ?token=). Zo is de graaf op het LAN te
+    // raadplegen maar alleen met token te wijzigen.
+    const requireFamilyToken: import('express').RequestHandler = (req, res, next) => {
+      const tok = (req.headers['x-family-token'] as string) || (req.query.token as string) || (req.body && req.body.token);
+      if (!familyApi.checkPortalToken(tok)) { res.status(401).json({ success: false, error: 'ongeldig of ontbrekend portal-token' }); return; }
+      next();
+    };
+    // Object toevoegen/bijwerken.
+    app.post('/api/family/node', requireFamilyToken, async (req, res) => {
+      try { res.json({ success: true, ...(await familyApi.upsertEntity(lightrag, { name: req.body?.name, cat: req.body?.cat, note: req.body?.note })) }); }
+      catch (e: any) { res.status(400).json({ success: false, error: e.message }); }
+    });
+    // Object verwijderen.
+    app.delete('/api/family/node/:name', requireFamilyToken, async (req, res) => {
+      try { res.json({ success: true, ...(await familyApi.removeEntity(lightrag, req.params.name)) }); }
+      catch (e: any) { res.status(400).json({ success: false, error: e.message }); }
+    });
+    // Rand toevoegen.
+    app.post('/api/family/edge', requireFamilyToken, async (req, res) => {
+      try { res.json({ success: true, ...(await familyApi.upsertEdge(lightrag, { from: req.body?.from, to: req.body?.to, rel: req.body?.rel, confidence: req.body?.confidence, evidence: req.body?.evidence })) }); }
+      catch (e: any) { res.status(400).json({ success: false, error: e.message }); }
+    });
+    // Rand verwijderen.
+    app.post('/api/family/edge/delete', requireFamilyToken, async (req, res) => {
+      try { res.json({ success: true, ...(await familyApi.removeEdge(lightrag, { from: req.body?.from, to: req.body?.to, rel: req.body?.rel })) }); }
+      catch (e: any) { res.status(400).json({ success: false, error: e.message }); }
+    });
+    // Chat-extractie opnieuw inladen (na het draaien van scripts/family-extract.py).
+    app.post('/api/family/ingest-extract', requireFamilyToken, async (_req, res) => {
+      try { res.json({ success: true, ...(await familyApi.ingestExtract(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    // Molgang-extractie opnieuw inladen (na scripts/molgang-extract.py).
+    app.post('/api/family/ingest-molgang', requireFamilyToken, async (_req, res) => {
+      try { res.json({ success: true, ...(await familyApi.ingestMolgang(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    // Chemie/fysica data opnieuw inladen (na bewerken van data/slag-chemistry.json).
+    app.post('/api/family/ingest-chemistry', requireFamilyToken, async (_req, res) => {
+      try { res.json({ success: true, ...(await familyApi.ingestChemistry(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
+    // Forceer een snapshot-export + Drive-sync (los van de auto-trigger bij wijzigingen).
+    app.post('/api/family/export-sync', requireFamilyToken, async (_req, res) => {
+      try { res.json({ success: true, ...(await familyApi.exportAndSync(lightrag)) }); }
+      catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+    });
 
     // Asset query endpoints — read straight from the LightRAG graph so
     // designers (Mira, Luna) can ask "which 3D models from Roblox are not
@@ -2467,13 +2835,37 @@ async function initialize() {
     logger.info(`✓ P2PGossip configured (${gossipPeers.length} peers, swarm-managed)`);
 
     // 1f-micro. Micro-post P2P network — 2-line content, TTL chain anchors, DAO governance.
-    const microPostStore = new MicroPostStore();
+    const microSnapshotPath = process.env.MICRO_POST_DATA_DIR
+      ? `${process.env.MICRO_POST_DATA_DIR}/micro-posts.json`
+      : './data/micro-posts.json';
+    const microPostStore = new MicroPostStore(undefined, { storage: microSnapshotPath });
+    const microRestored = microPostStore.load();
+    if (microRestored) logger.info(`✓ MicroPost store: restored ${microRestored.loaded} posts`);
     const microPostDao = new DaoParamStore(microPostStore);
     const microPostGossip = new MicroPostGossip(microPostStore, gossipPeers);
     microPostStore.startGc();
     microPostGossip.start();
     registerMicroPostRoutes(app, microPostStore, microPostDao, microPostGossip);
     logger.info('✓ MicroPost P2P network active');
+
+    // 1f-pulse. Pulse (PLS) economy — mined by knot validation, burned when idle 3 months.
+    const pulseWallets    = new PulseWalletStore();
+    const pulseKnots      = new KnotValidationStore();
+    const pulseEngine     = new PulseEngine(pulseWallets, pulseKnots);
+    pulseEngine.startGc();
+    registerPulseRoutes(app, pulseEngine, microPostStore);
+    const riskKnotStore = new RiskKnotStore();
+    registerRiskRoutes(app, riskKnotStore, pulseWallets);
+    logger.info('✓ Pulse economy active — mine PLS by validating knots, stake on risk knots');
+
+    // 1f-silk. Silk Net — free, open-source knitweb participation tier.
+    // Silk nodes are permissionless; posts propagate into the shared MicroPostStore
+    // and reach the full knitweb via bridge nodes. Not a testnet — data is real.
+    const silkRegistry = new SilkNodeRegistry();
+    const silkGossip   = new SilkGossip(silkRegistry, microPostStore, myUrl);
+    silkGossip.start();
+    registerSilkRoutes(app, silkRegistry, microPostStore, silkGossip, myUrl);
+    logger.info('✓ Silk Net active — permissionless knitweb tier ready');
 
     // 1g. Agent Bridge — wires task completions/failures into the knowledge graph.
     const agentBridge = new AgentBridge(agentAPI, factValidator);
@@ -2585,6 +2977,9 @@ async function initialize() {
     // the top of initialize()); falls back to AuthSystem's env behavior when
     // Infisical isn't configured yet.
     const authSystem = new AuthSystem({ fieldCrypto: secrets ? resolveFieldCrypto(secrets) : undefined });
+    // Expose the auth system to the module-level spend-approval routes so they
+    // can verify a Bearer session token + privileged role (see privilegedActor).
+    approverAuthSystem = authSystem;
     const authMiddleware = new AuthMiddleware(authSystem);
     const ceoAuditLogger = new CEOAuditLogger();
     const specialistDashboards = new SpecialistDashboards();
@@ -2667,6 +3062,37 @@ async function initialize() {
     }
     setupVitalsRoutes(app, vitals, inferenceAudit, selfRepair);
     setupGuardrailsRoutes(app);
+    setupContainmentRoutes(app);
+    console.log(`🛡️  ContainmentGuard MEGA active (mode: ${containmentGuard.mode}, ${containmentGuard.getPolicy().commandRules.length} command rules)`);
+    setupPlaytestRoutes(app);
+
+    // 6c. Global JSON error handler — must be registered after every route.
+    // Without it, an error thrown (or forwarded via next(err)) in any handler
+    // falls through to Express's default handler, which returns an HTML page
+    // and leaks the stack trace, breaking the JSON API contract. Log the full
+    // error server-side; return a terse JSON 500 to the caller.
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+      if (res.headersSent) return next(err);
+      logger.error(`Unhandled error on ${req.method} ${req.path}: ${err?.stack || err?.message || err}`);
+      res.status(err?.status || 500).json({
+        success: false,
+        error: err?.message || 'internal server error',
+      });
+    });
+
+    // 6c. Global JSON error handler — must be registered after every route.
+    // Without it, an error thrown (or forwarded via next(err)) in any handler
+    // falls through to Express's default handler, which returns an HTML page
+    // and leaks the stack trace, breaking the JSON API contract. Log the full
+    // error server-side; return a terse JSON 500 to the caller.
+    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+      if (res.headersSent) return next(err);
+      logger.error(`Unhandled error on ${req.method} ${req.path}: ${err?.stack || err?.message || err}`);
+      res.status(err?.status || 500).json({
+        success: false,
+        error: err?.message || 'internal server error',
+      });
+    });
 
     // 7. Start server
     server.listen(PORT, () => {

@@ -358,7 +358,9 @@ describe('NFC_INDEXES', () => {
 
   it('all values are valid Cypher CREATE INDEX strings', () => {
     for (const cypher of Object.values(NFC_INDEXES)) {
-      expect(cypher).toMatch(/CREATE (FULLTEXT )?INDEX IF NOT EXISTS/);
+      // Named (fulltext) indexes put the name BEFORE `IF NOT EXISTS`; anonymous
+      // indexes have it right after `INDEX`. Both are valid Neo4j 5 syntax.
+      expect(cypher).toMatch(/CREATE (FULLTEXT )?INDEX (\w+ )?IF NOT EXISTS FOR/);
     }
   });
 

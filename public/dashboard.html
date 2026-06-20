@@ -591,6 +591,10 @@
                     <div class="nav-icon">📟</div>
                     <div>Agents Terminal</div>
                 </div>
+                <div class="nav-item" onclick="window.open('/demo-dashboard.html','_blank')">
+                    <div class="nav-icon">🎬</div>
+                    <div>Demo Dashboard</div>
+                </div>
             </div>
 
             <div class="nav-section">
@@ -663,33 +667,33 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Version</div>
-                        <div class="stat-value" id="stat-version">3.2</div>
-                        <div class="stat-change">Enterprise Edition</div>
+                        <div class="stat-value" id="stat-version">—</div>
+                        <div class="stat-change">From package.json</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Daily Updates</div>
-                        <div class="stat-value" id="stat-daily-updates">147</div>
+                        <div class="stat-value" id="stat-daily-updates">—</div>
                         <div class="stat-change">System events/day</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">QWEN Tokens Used</div>
-                        <div class="stat-value" id="stat-qwen">847K</div>
+                        <div class="stat-value" id="stat-qwen">—</div>
                         <div class="stat-change">of 1M daily budget</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">System Uptime</div>
-                        <div class="stat-value" id="stat-uptime">99.87%</div>
+                        <div class="stat-value" id="stat-uptime">—</div>
                         <div class="stat-change">✓ Operational</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Cache Hit Rate</div>
-                        <div class="stat-value" id="stat-cache">87%</div>
+                        <div class="stat-value" id="stat-cache">—</div>
                         <div class="stat-change">Optimization level</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Student Capacity</div>
-                        <div class="stat-value" id="stat-capacity">1M+</div>
-                        <div class="stat-change">Global scale ready</div>
+                        <div class="stat-value" id="stat-capacity">—</div>
+                        <div class="stat-change">Not tracked</div>
                     </div>
                 </div>
 
@@ -877,7 +881,7 @@
             <div class="content-section" id="autoresearch">
                 <div class="page-header">
                     <div class="page-title">🔬 Auto-Research</div>
-                    <div class="page-subtitle">Multi-step research loop on local Gemma 4. Plans sub-questions, probes the code graph for evidence, synthesizes, self-critiques.</div>
+                    <div class="page-subtitle">Multi-step research loop on the matched model. Plans sub-questions, probes the code graph for evidence, synthesizes, self-critiques.</div>
                 </div>
 
                 <div class="card">
@@ -1162,13 +1166,13 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Persona Prompt <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— drafted by Gemma 4 (local)</span></div>
+                    <div class="card-title">Persona Prompt <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— drafted by the matched local model</span></div>
                     <pre id="ad-prompt" style="white-space: pre-wrap; word-wrap: break-word; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.85em; line-height: 1.55; color: var(--text-secondary); background: var(--bg-darker); border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 320px; overflow-y: auto; margin: 0;">Loading…</pre>
                     <div id="ad-prompt-meta" style="margin-top: 8px; font-size: 0.8em; color: var(--text-secondary);"></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-title">Ask this agent <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— replies in-character via local Gemma 4</span></div>
+                    <div class="card-title">Ask this agent <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— replies in-character via matched local model</span></div>
                     <form id="ad-ask-form" autocomplete="off" style="display: flex; gap: 8px; margin-bottom: 10px;">
                         <input id="ad-ask-input" type="text" placeholder="Ask a question…" style="flex: 1; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-darker); color: var(--text-primary); font-size: 0.9em; font-family: inherit;">
                         <button type="submit" id="ad-ask-btn" style="padding: 9px 18px; border-radius: 8px; border: 1px solid var(--primary); background: rgba(96,165,250,0.18); color: var(--primary); font-weight: 600; cursor: pointer; font-family: inherit;">Ask</button>
@@ -1655,7 +1659,7 @@
             const card = document.getElementById('ar-result-card');
             btn.disabled = true; btn.textContent = 'Researching…';
             card.style.display = 'block';
-            document.getElementById('ar-meta').textContent = ' — running on local Gemma 4, may take 30-90 s';
+            document.getElementById('ar-meta').textContent = ' — running on matched local model, may take 30-90 s';
             document.getElementById('ar-answer').textContent = `${agent} is planning sub-questions…`;
             document.getElementById('ar-trace').textContent = '';
             try {
@@ -1738,7 +1742,7 @@
                         const finding = r.findings[idx];
                         const target = list.children[idx].querySelector('.sh-suggest');
                         target.style.display = 'block';
-                        target.textContent = 'Asking Kai (local Gemma 4)…';
+                        target.textContent = 'Asking Kai (matched model)…';
                         btn.disabled = true; btn.textContent = '…';
                         try {
                             const sr = await fetch('/api/selfheal/suggest', {
@@ -2019,7 +2023,7 @@
             const out = document.getElementById('ad-ask-out');
             btn.disabled = true; btn.textContent = 'Thinking…';
             out.style.display = 'block';
-            out.textContent = 'Routing to ' + adCurrentAgent + ' via local Gemma 4 …';
+            out.textContent = 'Routing to ' + adCurrentAgent + ' via model-router …';
             try {
                 const t0 = Date.now();
                 const r = await fetch('/api/llm/chat', {
@@ -2043,7 +2047,24 @@
                 } else if (j.success) {
                     out.textContent = '(empty response — model used the full thinking budget; try a shorter question)\n\n— ' + dt + 's';
                 } else {
-                    out.textContent = 'Error: ' + (j.reason || j.error || 'unknown');
+                    const hint = j.hint || '';
+                    out.innerHTML = '<span style="color:#ef4444">Error: ' + escapeHtml(j.reason || j.error || 'unknown') + '</span>' + (hint ? '<br><br>' + escapeHtml(hint).replace(/\n/g, '<br>') : '');
+                    if (hint && /lms load|download/i.test(hint)) {
+                        const loadBtn = document.createElement('button');
+                        loadBtn.textContent = 'Load recommended model';
+                        loadBtn.style.marginTop = '10px';
+                        loadBtn.onclick = async () => {
+                            loadBtn.disabled = true; loadBtn.textContent = 'Loading…';
+                            try {
+                                const dr = await fetch('/api/models/download-recommended', { method: 'POST' }).then(r => r.json());
+                                out.innerHTML += '<br><br>' + (dr.success ? '✅ ' : '❌ ') + escapeHtml(dr.message || (dr.success ? 'download started' : 'failed'));
+                            } catch (e) {
+                                out.innerHTML += '<br><br>❌ Network error: ' + escapeHtml(e.message);
+                            }
+                        };
+                        out.appendChild(document.createElement('br'));
+                        out.appendChild(loadBtn);
+                    }
                 }
             } catch (err) {
                 out.textContent = 'Network error: ' + err.message;
@@ -2306,16 +2327,19 @@
                 }
                 // Daily Updates
                 if (data.dailyUpdates !== undefined) {
-                    document.getElementById('stat-daily-updates').textContent = data.dailyUpdates;
+                    document.getElementById('stat-daily-updates').textContent = data.dailyUpdates || '—';
                 }
                 // QWEN Tokens
                 if (data.qwenTokens?.consumed !== undefined) {
-                    const consumed = Math.round(data.qwenTokens.consumed / 1000);
-                    document.getElementById('stat-qwen').textContent = consumed + 'K';
+                    const consumed = data.qwenTokens.consumed;
+                    const display = consumed === 0 ? '—' : (consumed >= 1000 ? Math.round(consumed / 1000) + 'K' : consumed);
+                    document.getElementById('stat-qwen').textContent = display;
                 }
                 // Uptime
-                if (data.uptime !== undefined) {
-                    document.getElementById('stat-uptime').textContent = data.uptime.toFixed(2) + '%';
+                if (data.uptimeSeconds !== undefined) {
+                    const s = data.uptimeSeconds;
+                    const fmt = s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : Math.floor(s / 3600) + 'h ' + Math.floor((s % 3600) / 60) + 'm';
+                    document.getElementById('stat-uptime').textContent = fmt;
                 }
                 // Cache Hit Rate
                 if (data.cacheHitRate !== undefined) {
@@ -2323,7 +2347,7 @@
                 }
                 // Student Capacity
                 if (data.studentCapacity !== undefined) {
-                    const cap = data.studentCapacity >= 1000000 ? '1M+' : data.studentCapacity;
+                    const cap = data.studentCapacity >= 1000000 ? '1M+' : (data.studentCapacity || '—');
                     document.getElementById('stat-capacity').textContent = cap;
                 }
             } catch (error) {

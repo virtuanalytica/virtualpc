@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>007 — Rogue Agent Watch</title>
+<style>
+  :root {
+    --bg: #0b0d14;
+    --panel: #131620;
+    --panel2: #1a1d2b;
+    --line: #2a3147;
+    --accent: #ff8c50;
+    --accent-cool: #00dc82;
+    --text: #e8ecf6;
+    --text-dim: #8b93b8;
+    --gold: #ffd24a;
+    --pass: #50c882;
+    --warn: #ffae3b;
+    --fail: #e85a64;
+    --info: #5ba8f7;
+    --code: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 18px; letter-spacing: -0.01em; }
+  header .subtitle { margin: 2px 0 0; color: var(--text-dim); font-size: 12px; }
+  .status-pill {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .status-healthy { background: rgba(80,200,130,0.12); color: var(--pass); }
+  .status-degraded { background: rgba(255,174,59,0.12); color: var(--warn); }
+  .status-critical { background: rgba(232,90,100,0.15); color: var(--fail); }
+  main {
+    padding: 20px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+  .stat .value {
+    font-size: 26px;
+    font-weight: 800;
+    margin-top: 4px;
+    letter-spacing: -0.02em;
+  }
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    color: var(--text-dim);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    background: var(--panel2);
+  }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .tag-critical { background: rgba(232,90,100,0.15); color: var(--fail); }
+  .tag-warning { background: rgba(255,174,59,0.15); color: var(--warn); }
+  .tag-info { background: rgba(91,168,247,0.12); color: var(--info); }
+  .tag-healthy { background: rgba(80,200,130,0.12); color: var(--pass); }
+  .tag-paused { background: rgba(255,140,80,0.12); color: var(--accent); }
+  .tag-stalled { background: rgba(232,90,100,0.12); color: var(--fail); }
+  .btn {
+    background: var(--panel2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn-primary {
+    background: var(--accent);
+    color: #1a1a1a;
+    border-color: var(--accent);
+  }
+  .btn-danger {
+    background: var(--fail);
+    color: #fff;
+    border-color: var(--fail);
+  }
+  .btn-success {
+    background: var(--pass);
+    color: #0b1a0f;
+    border-color: var(--pass);
+  }
+  .truncate { max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .small { font-size: 11px; color: var(--text-dim); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.ok { background: var(--pass); color: #0b1a0f; }
+  .toast.err { background: var(--fail); color: #fff; }
+  .flex { display: flex; gap: 8px; align-items: center; }
+  .refresh { font-size: 11px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🎯 007 — Rogue Agent Watch</h1>
+    <div class="subtitle">Licensed to kill rogue agents. Suspicious-activity detection & manual intervention.</div>
+  </div>
+  <div class="flex">
+    <span class="refresh" id="last-refresh">—</span>
+    <span class="status-pill" id="overall-status">Loading…</span>
+    <button class="btn" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="stats-grid">
+    <div class="stat"><div class="label">Active Alerts</div><div class="value" id="stat-alerts">—</div></div>
+    <div class="stat"><div class="label">Critical</div><div class="value" id="stat-critical">—</div></div>
+    <div class="stat"><div class="label">Pending Approvals</div><div class="value" id="stat-approvals">—</div></div>
+    <div class="stat"><div class="label">Cost This Hour</div><div class="value" id="stat-cost">—</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Agent Health</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>Status</th>
+          <th>Current Task</th>
+          <th>Stall</th>
+          <th>Tokens/hr</th>
+          <th>Cost/hr</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="agents-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Active Alerts</div>
+      <div class="actions">
+        <button class="btn" onclick="ackAll()">Acknowledge All</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Severity</th>
+          <th>Category</th>
+          <th>Agent</th>
+          <th>Message</th>
+          <th>Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="alerts-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Open Incidents</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Category</th>
+          <th>Agent</th>
+          <th>Summary</th>
+          <th>Started</th>
+          <th>Interventions</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="incidents-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Recent Interventions</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Target</th>
+          <th>Reason</th>
+          <th>By</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="interventions-tbody"></tbody>
+    </table>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let healthData = null;
+
+function show(msg, ok=true) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (ok ? 'ok' : 'err');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function fmtTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  const now = Date.now();
+  const sec = Math.floor((now - d) / 1000);
+  if (sec < 60) return sec + 's ago';
+  if (sec < 3600) return Math.floor(sec/60) + 'm ago';
+  if (sec < 86400) return Math.floor(sec/3600) + 'h ago';
+  return d.toLocaleString();
+}
+
+async function api(method, path, body) {
+  const opts = { method, headers: {} };
+  if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const r = await fetch(API + path, opts);
+  if (!r.ok) throw new Error((await r.json()).error || r.statusText);
+  return r.json();
+}
+
+async function loadHealth() {
+  const { data } = await api('GET', '/api/guardrails/health');
+  healthData = data;
+  document.getElementById('stat-alerts').textContent = data.activeAlerts;
+  document.getElementById('stat-critical').textContent = data.criticalAlerts;
+  document.getElementById('stat-approvals').textContent = data.pendingApprovals;
+  document.getElementById('stat-cost').textContent = '$' + (data.totalCostThisHour || 0).toFixed(3);
+
+  const pill = document.getElementById('overall-status');
+  pill.textContent = data.overall;
+  pill.className = 'status-pill status-' + data.overall;
+
+  const tbody = document.getElementById('agents-tbody');
+  tbody.innerHTML = (data.agents || []).map(a => `
+    <tr>
+      <td><strong>${a.agent}</strong></td>
+      <td><span class="tag tag-${a.status}">${a.status}</span></td>
+      <td class="truncate">${a.currentTask || '—'}</td>
+      <td>${a.taskStallMinutes}m</td>
+      <td>${a.tokensThisHour.toLocaleString()}</td>
+      <td>$${a.costThisHour.toFixed(3)}</td>
+      <td class="actions">
+        ${a.status === 'paused'
+          ? `<button class="btn btn-success" onclick="resumeAgent('${a.agent}')">Resume</button>`
+          : `<button class="btn btn-danger" onclick="pauseAgent('${a.agent}')">Pause</button>`}
+        <button class="btn" onclick="killTask('${a.agent}')">Kill Task</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadAlerts() {
+  const { data } = await api('GET', '/api/guardrails/alerts?acknowledged=false&limit=50');
+  const tbody = document.getElementById('alerts-tbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="small" style="padding:20px">No active alerts</td></tr>'; return; }
+  tbody.innerHTML = data.map(a => `
+    <tr>
+      <td><span class="tag tag-${a.severity}">${a.severity}</span></td>
+      <td>${a.category}</td>
+      <td>${a.agent || '—'}</td>
+      <td class="truncate" title="${a.message}">${a.message}</td>
+      <td class="small">${fmtTime(a.timestamp)}</td>
+      <td class="actions">
+        <button class="btn" onclick="ackAlert('${a.id}')">Ack</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadIncidents() {
+  const { data } = await api('GET', '/api/guardrails/incidents?resolved=false&limit=20');
+  const tbody = document.getElementById('incidents-tbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="7" class="small" style="padding:20px">No open incidents</td></tr>'; return; }
+  tbody.innerHTML = data.map(i => `
+    <tr>
+      <td class="small">${i.id.slice(0,16)}…</td>
+      <td>${i.category}</td>
+      <td>${i.agent || '—'}</td>
+      <td class="truncate" title="${i.summary}">${i.summary}</td>
+      <td class="small">${fmtTime(i.startedAt)}</td>
+      <td class="small">${i.interventions.length}</td>
+      <td class="actions">
+        <button class="btn btn-primary" onclick="resolveInc('${i.id}')">Resolve</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadInterventions() {
+  const { data } = await api('GET', '/api/guardrails/interventions?limit=20');
+  const tbody = document.getElementById('interventions-tbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" class="small" style="padding:20px">No interventions yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td class="small">${fmtTime(r.timestamp)}</td>
+      <td><span class="tag tag-info">${r.type}</span></td>
+      <td>${r.targetAgent || r.targetTask || r.targetModel || '—'}</td>
+      <td class="truncate">${r.reason}</td>
+      <td>${r.initiatedBy}</td>
+      <td><span class="tag tag-${r.result==='success'?'healthy':r.result==='failed'?'critical':'warning'}">${r.result}</span></td>
+    </tr>
+  `).join('');
+}
+
+async function loadAll() {
+  try {
+    await Promise.all([loadHealth(), loadAlerts(), loadIncidents(), loadInterventions()]);
+    document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch (e) { show('Load failed: ' + e.message, false); }
+}
+
+async function ackAlert(id) {
+  try { await api('POST', `/api/guardrails/alerts/${id}/acknowledge`, { by: 'operator' }); show('Alert acknowledged'); loadAlerts(); }
+  catch (e) { show(e.message, false); }
+}
+
+async function ackAll() {
+  const { data } = await api('GET', '/api/guardrails/alerts?acknowledged=false&limit=50');
+  await Promise.all(data.map(a => api('POST', `/api/guardrails/alerts/${a.id}/acknowledge`, { by: 'operator' }).catch(()=>{})));
+  show('All alerts acknowledged'); loadAlerts();
+}
+
+async function pauseAgent(agent) {
+  try {
+    await api('POST', '/api/guardrails/intervene', { type: 'pause-agent', targetAgent: agent, reason: 'Manual pause from 007 dashboard' });
+    show(`Agent ${agent} paused`); loadHealth();
+  } catch (e) { show(e.message, false); }
+}
+
+async function resumeAgent(agent) {
+  try {
+    await api('POST', '/api/guardrails/intervene', { type: 'resume-agent', targetAgent: agent, reason: 'Manual resume from 007 dashboard' });
+    show(`Agent ${agent} resumed`); loadHealth();
+  } catch (e) { show(e.message, false); }
+}
+
+async function killTask(agent) {
+  const task = healthData?.agents?.find(a => a.agent === agent)?.currentTask;
+  if (!task) { show('No active task to kill', false); return; }
+  try {
+    await api('POST', '/api/guardrails/intervene', { type: 'kill-task', targetAgent: agent, reason: 'Manual kill from 007 dashboard' });
+    show(`Task killed for ${agent}`); loadHealth();
+  } catch (e) { show(e.message, false); }
+}
+
+async function resolveInc(id) {
+  try { await api('POST', `/api/guardrails/incidents/${id}/resolve`); show('Incident resolved'); loadIncidents(); }
+  catch (e) { show(e.message, false); }
+}
+
+loadAll();
+setInterval(loadAll, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Familie — VR (Meta Quest 3S)</title>
+  <style>
+    html,body{margin:0;height:100%;background:#0b0e14;color:#e6edf3;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}
+    #hud{position:fixed;top:14px;left:14px;z-index:10;background:rgba(18,24,38,.92);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 16px;max-width:340px}
+    #hud h1{margin:0 0 4px;font-size:16px} #hud p{margin:4px 0;font-size:12px;color:#8b98ad}
+    a{color:#5b8cff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <h1>Familie — VR 🥽</h1>
+    <p>Zet je <b>Meta Quest 3S</b> op en tik op het bril-icoon rechtsonder om VR te starten (WebXR). Beweeg met de controllers; richt op een knoop voor het label.</p>
+    <p id="status">grafiek laden…</p>
+    <p><a href="/family-portal.html">← terug naar portaal (bewerken + categorie-filters)</a></p>
+  </div>
+
+  <!-- 3d-force-graph-vr bundelt A-Frame + WebXR; A-Frame toont automatisch de VR-knop op de Quest-browser. -->
+  <script src="https://unpkg.com/3d-force-graph-vr@2.0.5/dist/3d-force-graph-vr.min.js"></script>
+  <script>
+    const GROUP_COLORS = {1:'#ff8fab',2:'#5b8cff',3:'#ffd166',4:'#06d6a0',5:'#9b8cff',6:'#ff9f5b',7:'#4dd2ff',8:'#c0e34d',9:'#ff6b9d',10:'#7ee787',11:'#36c5f0',12:'#f5a623',13:'#b07cff',14:'#8899aa',17:'#e07a5f',18:'#81b29a',19:'#f2cc8f',20:'#e06c9f',21:'#6db5c4',22:'#b8b8d1',0:'#cfd8e3'};
+    const Graph = ForceGraphVR()(document.body)
+      .backgroundColor('#0b0e14')
+      .nodeLabel('name')
+      .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
+      .nodeVal(n => n.val || 2)
+      .nodeRelSize(6)
+      .linkColor(l => l.inferred ? '#5a4a20' : '#3a4a70')
+      .linkOpacity(0.6);
+
+    fetch('/api/family/graph').then(r=>r.json()).then(d=>{
+      const st=document.getElementById('status');
+      if (d.hidden) { st.textContent='De Familie-graaf staat op VERBORGEN — zet hem zichtbaar in het portaal.'; return; }
+      Graph.graphData({ nodes:d.nodes||[], links:(d.links||[]).map(l=>({source:l.source,target:l.target,inferred:l.inferred})) });
+      st.textContent = (d.nodes||[]).length + ' objecten · ' + (d.links||[]).length + ' relaties — klaar voor VR';
+    }).catch(e=>{ document.getElementById('status').textContent='Laden mislukt: '+e.message; });
+  </script>
+</body>
+</html>

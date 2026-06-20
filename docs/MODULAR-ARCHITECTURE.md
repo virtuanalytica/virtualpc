@@ -38,7 +38,7 @@ verification logic.
 | **PQ key resolution** | `setPqRootResolver(did → root)` (`value-chain.ts`) | wallet-vault enrollment registry | — | ✅ Callback-injected |
 | **Event fan-out** | `GroupEventBus` over `TransportAdapter[]` | capability-routed (governance vs telemetry); Kafka as durable internal stream | event `class` decides required capability | ✅ Core never imports a concrete transport |
 | **Credential issuer / identity** | `SovereignIdentityService` (concrete) | — | — | ⚠️ Extraction candidate: services take the concrete class; an `IdentityPort` (resolve / verify / receive) would allow external DID registries |
-| **k-NN index** | linear scan inside `FactMatrixService` | — | — | ⚠️ Extraction candidate: an `IndexPort` would allow HNSW/IVF plug-ins (the benchmark records the linear-scan baseline to beat) |
+| **k-NN index** | `VectorIndexPort` (`index-port.ts`) | `LinearScanIndex` (exact, the benchmark baseline); HNSW / IVF are plug-in candidates | `IndexCapabilities` (`exact`, `approximate`, `designCapacity`) | ✅ Interface-backed; index returns ids+scores only — rows come from the authoritative store, so a hostile index cannot fabricate rows (CI-asserted) |
 | **Graph persistence (Neo4j)** | best-effort mirror | — | — | ✅ By design a *cache, not truth* (threat model §3.6) — replaceable because losing it loses nothing |
 
 ## Data exchange: metadata makes data modular
