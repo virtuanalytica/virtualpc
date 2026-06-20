@@ -12,10 +12,35 @@
       --primary: #60a5fa; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
-    header { padding: 16px 24px; background: linear-gradient(90deg, #111827, #0b0f19); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-    h1 { margin: 0; font-size: 1.35rem; display: flex; align-items: center; gap: 10px; }
-    .subtitle { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+    .layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: var(--bg-2); border-right: 1px solid var(--border); padding: 16px;
+      overflow-y: auto; position: sticky; top: 0; height: 100vh;
+    }
+    .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { font-size: 1.6rem; }
+    .sidebar-title { font-weight: 700; font-size: 1.05rem; }
+    .sidebar-subtitle { color: var(--muted); font-size: 0.7rem; margin-top: 2px; }
+    .nav-section { margin-bottom: 20px; }
+    .nav-section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 4px;
+      border-radius: 6px; cursor: pointer; color: var(--muted); border-left: 3px solid transparent;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: rgba(96,165,250,0.1); color: var(--primary); }
+    .nav-item.active { background: rgba(96,165,250,0.15); color: var(--primary); border-left-color: var(--primary); font-weight: 600; }
+    .nav-icon { font-size: 1.1rem; min-width: 22px; text-align: center; }
+    .main-content { min-width: 0; }
+    .topbar {
+      padding: 14px 24px; background: linear-gradient(90deg, #111827, #0b0f19); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .topbar h1 { margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 10px; }
+    .subtitle { color: var(--muted); font-size: 0.8rem; margin-top: 2px; }
     .status { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .badge { padding: 5px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-size: 0.8rem; }
     .badge.ok { border-color: var(--success); color: var(--success); }
@@ -23,7 +48,7 @@
     .badge.danger { border-color: var(--danger); color: var(--danger); }
     main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; overflow-x: auto; scroll-margin-top: 80px; }
     .card h2 { margin: 0 0 12px; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
     .card h3 { margin: 0 0 8px; font-size: 0.95rem; }
     .muted { color: var(--muted); }
@@ -54,136 +79,191 @@
     .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
     .form-grid input, .form-grid select, .form-grid textarea { width: 100%; background: var(--bg-2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; }
     .form-grid textarea { resize: vertical; min-height: 60px; }
+    .menu-toggle {
+      display: none; position: fixed; top: 12px; left: 12px; z-index: 1000;
+      background: var(--primary); color: #0b0f19; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 700;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: fixed; left: 0; top: 0; width: 260px; height: 100vh; z-index: 999; transform: translateX(-100%); transition: transform 0.3s; }
+      .sidebar.open { transform: translateX(0); }
+      .menu-toggle { display: block; }
+      .topbar { padding-left: 50px; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>🧠 VirtuAnalytica</h1>
-      <div class="subtitle">VirtualPC demo — small local LLMs · VirtualPC backlog · fundamentals · knitweb P2P</div>
-    </div>
-    <div class="status">
-      <span class="badge" id="model-badge">Model: …</span>
-      <span class="badge" id="node-badge">Node: …</span>
-      <span class="badge" id="agents-badge">Agents: …</span>
-      <span class="badge" id="backlog-badge">Backlog: …</span>
-    </div>
-  </header>
-
-  <main>
-    <div class="grid">
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2>🤖 Local LLM Summary</h2>
-        <div class="row">
-          <input type="text" id="summary-ticker" value="AAPL" placeholder="Ticker" style="width:120px;text-transform:uppercase;">
-          <button id="summary-btn">Summarize fundamentals</button>
-          <span class="muted small" style="align-self:center;">Runs on the loaded 278 MB Qwen2.5 model</span>
+  <button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">🧠</div>
+        <div>
+          <div class="sidebar-title">VirtuAnalytica</div>
+          <div class="sidebar-subtitle">VirtualPC demo</div>
         </div>
-        <div class="summary-box" id="summary-box">Pick a ticker and click to generate a local-LLM summary.</div>
       </div>
 
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2>🌍 Global Live Activity Feed</h2>
-        <pre id="global-log" class="summary-box" style="max-height:300px; overflow:auto; font-size:0.78rem;">Loading…</pre>
+      <div class="nav-section">
+        <div class="nav-section-title">Demo</div>
+        <div class="nav-item active" data-target="section-summary"><div class="nav-icon">🤖</div><div>LLM Summary</div></div>
+        <div class="nav-item" data-target="section-activity"><div class="nav-icon">🌍</div><div>Live activity</div></div>
+        <div class="nav-item" data-target="section-backlog"><div class="nav-icon">📋</div><div>Backlog</div></div>
+        <div class="nav-item" data-target="section-add-backlog"><div class="nav-icon">➕</div><div>Add backlog</div></div>
+        <div class="nav-item" data-target="section-agents"><div class="nav-icon">👥</div><div>Agents</div></div>
+        <div class="nav-item" data-target="section-interaction"><div class="nav-icon">🎙️</div><div>Interact</div></div>
       </div>
 
-      <div class="card">
-        <h2>📋 VirtualPC Backlog</h2>
-        <div id="backlog-table">Loading…</div>
+      <div class="nav-section">
+        <div class="nav-section-title">Data</div>
+        <div class="nav-item" data-target="section-fundamentals"><div class="nav-icon">📈</div><div>Fundamentals</div></div>
+        <div class="nav-item" data-target="section-news"><div class="nav-icon">📰</div><div>News & Filings</div></div>
       </div>
 
-      <div class="card" style="grid-column: 1 / -1;">
-        <h2>➕ Add to VirtualPC Backlog</h2>
-        <p class="muted small">Create a new backlog item and assign it to an agent. Extra fields are optional.</p>
-        <div class="form-grid" style="margin: 12px 0;">
-          <input type="text" id="bl-title" placeholder="Title *">
-          <select id="bl-assignee"></select>
-          <select id="bl-priority">
-            <option value="low">low</option>
-            <option value="medium" selected>medium</option>
-            <option value="high">high</option>
-            <option value="critical">critical</option>
-          </select>
-          <input type="number" id="bl-hours" placeholder="Estimated hours" min="0" step="0.5">
-          <input type="text" id="bl-sprint" placeholder="Sprint (optional)">
-          <textarea id="bl-description" placeholder="Description *"></textarea>
-          <input type="text" id="bl-subtasks" placeholder="Subtasks, comma separated (optional)">
+      <div class="nav-section">
+        <div class="nav-section-title">Network</div>
+        <div class="nav-item" data-target="section-p2p"><div class="nav-icon">🕸️</div><div>Knitweb P2P</div></div>
+        <div class="nav-item" data-target="section-network"><div class="nav-icon">🌐</div><div>Port-forward</div></div>
+        <div class="nav-item" data-target="section-router"><div class="nav-icon">🧠</div><div>Model router</div></div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Apps</div>
+        <div class="nav-item" onclick="window.open('/dashboard.html','_blank')"><div class="nav-icon">📊</div><div>VirtualPC Dashboard</div></div>
+        <div class="nav-item" onclick="window.open('/agents.html','_blank')"><div class="nav-icon">📟</div><div>Agents Terminal</div></div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <h1>🧠 VirtuAnalytica</h1>
+          <div class="subtitle">small local LLMs · VirtualPC backlog · fundamentals · knitweb P2P</div>
         </div>
-        <button id="add-backlog-btn">Create backlog item</button>
-        <div id="bl-result" class="muted small" style="margin-top:8px;"></div>
-      </div>
-
-      <div class="card">
-        <h2>👥 Agents Overview</h2>
-        <div id="agents-grid">Loading…</div>
-      </div>
-
-      <div class="card">
-        <h2>📈 Fundamentals</h2>
-        <div id="fundamentals-table">Loading…</div>
-      </div>
-
-      <div class="card">
-        <h2>📰 News & Filings</h2>
-        <h3>News</h3>
-        <div id="news-table">Loading…</div>
-        <h3 style="margin-top:14px;">Filings</h3>
-        <div id="filings-table">Loading…</div>
-      </div>
-
-      <div class="card">
-        <h2>🕸️ Knitweb P2P</h2>
-        <p><strong>This node:</strong> <span id="node-url" class="muted">…</span></p>
-        <div class="row">
-          <input type="text" id="peer-url" placeholder="http://peer-ip:3100" style="flex:1;">
-          <button id="add-peer-btn">Add peer</button>
+        <div class="status">
+          <span class="badge" id="model-badge">Model: …</span>
+          <span class="badge" id="node-badge">Node: …</span>
+          <span class="badge" id="agents-badge">Agents: …</span>
+          <span class="badge" id="backlog-badge">Backlog: …</span>
         </div>
-        <div id="peers-table">Loading…</div>
-        <h3 style="margin-top:14px;">Silk nodes</h3>
-        <div id="silk-table">Loading…</div>
       </div>
 
-      <div class="card">
-        <h2>🌐 Port-Forward Instructions</h2>
-        <div class="steps" id="network-steps">Loading…</div>
-      </div>
-
-      <div class="card">
-        <h2>🧠 Model Router Status</h2>
-        <div id="router-status">Loading…</div>
-      </div>
-
-      <div class="card" id="agent-interaction-card" style="grid-column: 1 / -1;">
-        <h2>🎙️ Agent Live Interaction</h2>
-        <p class="muted small">Watch what agents are doing right now, then talk to one directly. Their answers are generated by the local model and can indirectly create or update backlog items.</p>
-        <div class="row" style="margin-top:10px;">
-          <select id="agent-select" style="background:var(--bg-2); color:var(--text); border:1px solid var(--border); padding:8px 12px; border-radius:6px;"></select>
-          <button id="load-agent-btn">Load activity</button>
-        </div>
-
-        <div class="grid" style="margin-top:14px; grid-template-columns: 1fr 1fr;">
-          <div>
-            <h3>Recent CLI log</h3>
-            <pre id="agent-log" class="summary-box" style="max-height:260px; overflow:auto; font-size:0.78rem;">Select an agent and click Load activity.</pre>
+      <main>
+        <div class="grid">
+          <div class="card" id="section-summary" style="grid-column: 1 / -1;">
+            <h2>🤖 Local LLM Summary</h2>
+            <div class="row">
+              <input type="text" id="summary-ticker" value="AAPL" placeholder="Ticker" style="width:120px;text-transform:uppercase;">
+              <button id="summary-btn">Summarize fundamentals</button>
+              <span class="muted small" style="align-self:center;">Runs on the loaded 278 MB Qwen2.5 model</span>
+            </div>
+            <div class="summary-box" id="summary-box">Pick a ticker and click to generate a local-LLM summary.</div>
           </div>
-          <div>
-            <h3>In-progress tasks</h3>
-            <div id="agent-tasks">Select an agent and click Load activity.</div>
-          </div>
-        </div>
 
-        <div style="margin-top:16px;">
-          <h3>Ask the selected agent</h3>
-          <div class="row">
-            <input type="text" id="agent-question" placeholder="What should we build next?" style="flex:1;">
-            <button id="ask-agent-btn">Ask agent</button>
+          <div class="card" id="section-activity" style="grid-column: 1 / -1;">
+            <h2>🌍 Global Live Activity Feed</h2>
+            <pre id="global-log" class="summary-box" style="max-height:300px; overflow:auto; font-size:0.78rem;">Loading…</pre>
           </div>
-          <div class="summary-box" id="agent-answer" style="margin-top:10px;">The agent's reply will appear here.</div>
-        </div>
-      </div>
 
+          <div class="card" id="section-backlog">
+            <h2>📋 VirtualPC Backlog</h2>
+            <div id="backlog-table">Loading…</div>
+          </div>
+
+          <div class="card" id="section-add-backlog" style="grid-column: 1 / -1;">
+            <h2>➕ Add to VirtualPC Backlog</h2>
+            <p class="muted small">Create a new backlog item and assign it to an agent. Extra fields are optional.</p>
+            <div class="form-grid" style="margin: 12px 0;">
+              <input type="text" id="bl-title" placeholder="Title *">
+              <select id="bl-assignee"></select>
+              <select id="bl-priority">
+                <option value="low">low</option>
+                <option value="medium" selected>medium</option>
+                <option value="high">high</option>
+                <option value="critical">critical</option>
+              </select>
+              <input type="number" id="bl-hours" placeholder="Estimated hours" min="0" step="0.5">
+              <input type="text" id="bl-sprint" placeholder="Sprint (optional)">
+              <textarea id="bl-description" placeholder="Description *"></textarea>
+              <input type="text" id="bl-subtasks" placeholder="Subtasks, comma separated (optional)">
+            </div>
+            <button id="add-backlog-btn">Create backlog item</button>
+            <div id="bl-result" class="muted small" style="margin-top:8px;"></div>
+          </div>
+
+          <div class="card" id="section-agents">
+            <h2>👥 Agents Overview</h2>
+            <div id="agents-grid">Loading…</div>
+          </div>
+
+          <div class="card" id="section-fundamentals">
+            <h2>📈 Fundamentals</h2>
+            <div id="fundamentals-table">Loading…</div>
+          </div>
+
+          <div class="card" id="section-news">
+            <h2>📰 News & Filings</h2>
+            <h3>News</h3>
+            <div id="news-table">Loading…</div>
+            <h3 style="margin-top:14px;">Filings</h3>
+            <div id="filings-table">Loading…</div>
+          </div>
+
+          <div class="card" id="section-p2p">
+            <h2>🕸️ Knitweb P2P</h2>
+            <p><strong>This node:</strong> <span id="node-url" class="muted">…</span></p>
+            <div class="row">
+              <input type="text" id="peer-url" placeholder="http://peer-ip:3100" style="flex:1;">
+              <button id="add-peer-btn">Add peer</button>
+            </div>
+            <div id="peers-table">Loading…</div>
+            <h3 style="margin-top:14px;">Silk nodes</h3>
+            <div id="silk-table">Loading…</div>
+          </div>
+
+          <div class="card" id="section-network">
+            <h2>🌐 Port-Forward Instructions</h2>
+            <div class="steps" id="network-steps">Loading…</div>
+          </div>
+
+          <div class="card" id="section-router">
+            <h2>🧠 Model Router Status</h2>
+            <div id="router-status">Loading…</div>
+          </div>
+
+          <div class="card" id="section-interaction" style="grid-column: 1 / -1;">
+            <h2>🎙️ Agent Live Interaction</h2>
+            <p class="muted small">Watch what agents are doing right now, then talk to one directly. Their answers are generated by the local model and can indirectly create or update backlog items.</p>
+            <div class="row" style="margin-top:10px;">
+              <select id="agent-select" style="background:var(--bg-2); color:var(--text); border:1px solid var(--border); padding:8px 12px; border-radius:6px;"></select>
+              <button id="load-agent-btn">Load activity</button>
+            </div>
+
+            <div class="grid" style="margin-top:14px; grid-template-columns: 1fr 1fr;">
+              <div>
+                <h3>Recent CLI log</h3>
+                <pre id="agent-log" class="summary-box" style="max-height:260px; overflow:auto; font-size:0.78rem;">Select an agent and click Load activity.</pre>
+              </div>
+              <div>
+                <h3>In-progress tasks</h3>
+                <div id="agent-tasks">Select an agent and click Load activity.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px;">
+              <h3>Ask the selected agent</h3>
+              <div class="row">
+                <input type="text" id="agent-question" placeholder="What should we build next?" style="flex:1;">
+                <button id="ask-agent-btn">Ask agent</button>
+              </div>
+              <div class="summary-box" id="agent-answer" style="margin-top:10px;">The agent's reply will appear here.</div>
+            </div>
+          </div>
+
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
 
   <script>
     const $ = id => document.getElementById(id);
@@ -193,6 +273,21 @@
       try { const r = await fetch(path, opts); return await r.json(); }
       catch { return { success: false, error: 'network' }; }
     }
+
+    function setActiveNav(item) {
+      document.querySelectorAll('.nav-item[data-target]').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      document.querySelector('.sidebar').classList.remove('open');
+    }
+
+    document.querySelectorAll('.nav-item[data-target]').forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.getAttribute('data-target');
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActiveNav(item);
+      });
+    });
 
     async function loadModelStatus() {
       const h = await api('/api/llm/health');
@@ -229,7 +324,6 @@
       const j = await api('/api/backlog/per-person');
       const badge = $('backlog-badge');
       let rows = [];
-      // /api/backlog/per-person returns { personName: { role, avatar, tasks: [...] } }
       if (j && typeof j === 'object' && !j.error) {
         for (const person of Object.keys(j)) {
           const entry = j[person];
@@ -341,7 +435,9 @@
       if (select.querySelector(`option[value="${escapeHtml(name)}"]`)) {
         select.value = name;
         await loadAgentActivity();
-        $('agent-interaction-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('section-interaction').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const nav = document.querySelector(`.nav-item[data-target="section-interaction"]`);
+        if (nav) setActiveNav(nav);
       }
     }
 
