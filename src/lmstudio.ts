@@ -2,13 +2,9 @@
  * LM Studio agent-inference backend.
  *
  * Thin wrapper around the OpenAI-compatible API at http://127.0.0.1:1234/v1.
- * Model selection is delegated to src/model-router.ts, which matches agents to
- * locally-loadable models based on the host's compute resources (weight class).
- *
- * Graceful degradation:
- *   - If a model is loaded, we route the agent to the smallest matching one.
- *   - If no model is loaded, we simulate a response so VirtualPC keeps working.
- *   - If the server is reachable but the call fails, we retry once then fall back.
+ * Model selection is delegated to src/model-router.ts; time-slot sharing is
+ * handled by src/model-scheduler.ts.  VirtualPC always tries to use a real
+ * model.  Simulation is only used when FORCE_SIMULATE=1.
  */
 
 import logger from './utils/logger';
@@ -16,6 +12,8 @@ import { execFile } from 'child_process';
 import { bestEffortPublish } from './integrations/kafka/shared';
 import { secretOrEnv } from './security/secretsBootstrap';
 import * as modelRouter from './model-router';
+import * as modelScheduler from './model-scheduler';
+import * as modelDownloader from './model-downloader';
 
 // Lazy-imported to avoid the chicken-and-egg between token-tracker (also
 // imports from agent-registry like this module does). Re-imported inside
@@ -400,41 +398,62 @@ export async function chatAsAgent(
     hint = 'chat';
   }
 
-  const models = await getModels();
+  let models = await getModels();
   const roster = getRoster();
 
-  // Simulation mode: keep agents alive when no local model is loaded.
-  if (modelRouter.shouldSimulate(roster) && models.length === 0) {
+  // Opt-in simulation only.
+  if (modelRouter.shouldSimulate(roster)) {
     const sim = modelRouter.simulateAgentResponse(agent, messages);
     recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-    logger.info(`Simulating response for ${agent} (no local LLM loaded)`);
+    logger.info(`FORCE_SIMULATE active — simulating response for ${agent}`);
     return { ok: true, ...sim, agent };
   }
 
-  let model: string | null = null;
+  // Cloud-only route (designer/docs) already tried Claude CLI above and failed.
+  // We now surface that as an error so the user sees the auth problem.
   if (hint === 'claude-sonnet') {
-    // This should only happen if Claude CLI failed above; simulate to avoid error.
-    const sim = modelRouter.simulateAgentResponse(agent, messages);
-    recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-    return { ok: true, ...sim, agent };
+    return {
+      ok: false,
+      reason: 'Cloud route (Claude) selected but Claude CLI is not authenticated. Run `claude /login` or set ANTHROPIC_API_KEY.',
+      hint: 'Alternatively load a local model: ' + modelDownloader.recommendedLoadCommands().join('; '),
+    };
   }
 
-  model = modelRouter.resolveModelForAgent(agent, hint, models, roster);
+  // If no models are loaded, try to auto-download the smallest fitting one.
+  if (models.length === 0) {
+    logger.info(`model-scheduler: no models loaded for ${agent}; attempting auto-download`);
+    const dl = await modelDownloader.ensureLocalModel();
+    if (dl.ok) {
+      models = await getModels(true);
+    } else {
+      logger.warn(`model-downloader: ${dl.message}`);
+    }
+  }
+
+  let model: string | null = modelRouter.resolveModelForAgent(agent, hint, models, roster);
 
   if (!model) {
     const health = await healthCheck();
     if (!health.reachable) {
-      // LM Studio is down — simulate instead of erroring.
-      const sim = modelRouter.simulateAgentResponse(agent, messages);
-      recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-      logger.info(`LM Studio unreachable — simulating response for ${agent}`);
-      return { ok: true, ...sim, agent };
+      return {
+        ok: false,
+        reason: 'LM Studio server is unreachable and no cloud fallback is available.',
+        hint: 'Start LM Studio, or install the LM Studio CLI and run: ' + modelDownloader.recommendedLoadCommands().join('; '),
+      };
     }
-    // Reachable but no matching model loaded — simulate so the UI doesn't crash.
-    const sim = modelRouter.simulateAgentResponse(agent, messages);
-    recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-    logger.info(`No loaded model matches ${hint} for ${agent} — simulating response`);
-    return { ok: true, ...sim, agent };
+    return {
+      ok: false,
+      reason: `No matching model is loaded for ${agent} (${hint}).`,
+      hint: 'Load one with: ' + modelDownloader.recommendedLoadCommands().join('; '),
+    };
+  }
+
+  // Reserve a time slot for this model.  If every capable model is busy, the
+  // scheduler may return a busy model so agents share it.
+  const preferred = roster.roster.find(e => e.agent === agent)?.models ?? [];
+  const reservedModel = modelScheduler.reserveModel(agent, hint, preferred, models);
+  if (reservedModel) {
+    model = reservedModel;
   }
 
   const started = Date.now();
@@ -507,22 +526,27 @@ export async function chatAsAgent(
             latencyMs,
           };
         } catch (e2: any) {
-          // Last resort: simulate so the request still returns content.
-          const sim = modelRouter.simulateAgentResponse(agent, messages);
-          recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-          logger.warn(`Both ${model} and fallback ${fallbackModel} failed — simulating for ${agent}`);
-          return { ok: true, ...sim, agent };
+          return {
+            ok: false,
+            reason: `Both ${model} and fallback ${fallbackModel} failed. Last: ${e2.message}`,
+            hint: 'Check LM Studio logs and load a smaller model.',
+          };
         }
       }
     }
 
-    // Any other error: simulate instead of returning a hard error.
-    const sim = modelRouter.simulateAgentResponse(agent, messages);
-    recordThroughput(agent, sim.model, sim.usage, sim.latencyMs);
-    logger.warn(`LM Studio error for ${agent}: ${msg} — simulating response`);
-    return { ok: true, ...sim, agent };
+    return {
+      ok: false,
+      reason: `LM Studio error for ${agent}: ${msg}`,
+      hint: 'Check `lms server status` and `lms ps`',
+    };
+  } finally {
+    modelScheduler.releaseReservation(model);
   }
 }
+
+export function getSchedule() { return modelScheduler.getSchedule(); }
+export function extendModelReservation(modelId: string, extraMs: number) { return modelScheduler.extendReservation(modelId, extraMs); }
 
 /** Build a system prompt that grounds the agent in their VirtualPC role. */
 export function systemPromptForAgent(agent: string, role: string, context?: string): string {

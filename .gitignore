@@ -38,11 +38,17 @@ Thumbs.db
 /data/backlog/*.json
 /data/tasks/*.json
 /data/issues/*.json
+/data/chain-snapshot.json
+/data/demo-screenshot-*.png
+/data/external/
 /backlog/
 /backlog-data/
 mock-data/
 test-data/
 test-results/
+.venv-mlx/
+.virtualpc-state/
+data-agents-sidecar/
 
 # Agent-specific files
 /agent-configs/

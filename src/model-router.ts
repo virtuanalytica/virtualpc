@@ -60,6 +60,8 @@ export const MODEL_CATALOG: ModelInfo[] = [
   { id: 'stablelm-2-zephyr-1.6b', name: 'StableLM 2 Zephyr 1.6B', weightClass: 'lightweight', params: 1.6, diskGB: 1.0, ramGB: 2.0, tags: ['chat'],           lmStudioLoad: 'stabilityai/stablelm-2-zephyr-1.6b' },
 
   // ─── Middleweight roster (200 MB – 4 GB) ─────────────────────────────────
+  // Demo/MLX-optimized small middleweight models (fit on a lightweight PC with ~9 GB free)
+  { id: 'qwen2.5-0.5b-instruct-4bit', name: 'Qwen2.5 0.5B Instruct (MLX 4bit)', weightClass: 'middleweight', params: 0.5, diskGB: 0.28, ramGB: 0.7, tags: ['chat', 'reasoning'], lmStudioLoad: 'mlx-community/Qwen2.5-0.5B-Instruct-4bit' },
   { id: 'qwen2.5-7b',       name: 'Qwen2.5 7B Instruct',   weightClass: 'middleweight', params: 7,     diskGB: 4.5,  ramGB: 5.0, tags: ['chat', 'reasoning', 'long-context'], lmStudioLoad: 'bartowski/Qwen2.5-7B-Instruct-GGUF' },
   { id: 'qwen2.5-coder-7b', name: 'Qwen2.5 Coder 7B',      weightClass: 'middleweight', params: 7,     diskGB: 4.5,  ramGB: 5.0, tags: ['code', 'chat', 'long-context'],      lmStudioLoad: 'bartowski/Qwen2.5-Coder-7B-Instruct-GGUF' },
   { id: 'gemma-3-4b',       name: 'Gemma 3 4B IT',         weightClass: 'middleweight', params: 4,     diskGB: 2.5,  ramGB: 3.5, tags: ['chat', 'long-context'],              lmStudioLoad: 'bartowski/gemma-3-4b-it-GGUF' },
@@ -547,6 +549,10 @@ export function simulateAgentResponse(agent: string, messages: { role: string; c
 }
 
 export function shouldSimulate(roster?: GeneratedRoster): boolean {
-  const r = roster ?? generateRoster();
-  return process.env.SIMULATE_INFERENCE === '1' || r.simulationByDefault;
+  // Simulation is now opt-in only.  By default VirtualPC must use a real
+  // model (local or cloud).  Set FORCE_SIMULATE=1 to restore simulated
+  // responses for testing or for resource-constrained headless runs.
+  if (process.env.FORCE_SIMULATE === '1') return true;
+  if (process.env.SIMULATE_INFERENCE === '1') return true;
+  return false;
 }

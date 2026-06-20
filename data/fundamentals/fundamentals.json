@@ -1,0 +1,93 @@
+[
+  {
+    "ticker": "AAPL",
+    "company": "Apple Inc.",
+    "period": "FY2024",
+    "revenue": 391035,
+    "netIncome": 93736,
+    "eps": 6.16,
+    "peRatio": 32.5,
+    "marketCap": 3000000,
+    "source": "Apple Investor Relations",
+    "publicationDate": "2024-11-01",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "MSFT",
+    "company": "Microsoft Corp.",
+    "period": "FY2024",
+    "revenue": 245122,
+    "netIncome": 88136,
+    "eps": 11.8,
+    "peRatio": 35.2,
+    "marketCap": 3100000,
+    "source": "Microsoft SEC Filing",
+    "publicationDate": "2024-07-30",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "GOOGL",
+    "company": "Alphabet Inc.",
+    "period": "FY2024",
+    "revenue": 350018,
+    "netIncome": 100690,
+    "eps": 8.04,
+    "peRatio": 24.8,
+    "marketCap": 2200000,
+    "source": "Alphabet Investor Relations",
+    "publicationDate": "2025-02-05",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "AMZN",
+    "company": "Amazon.com Inc.",
+    "period": "FY2024",
+    "revenue": 637959,
+    "netIncome": 59248,
+    "eps": 5.53,
+    "peRatio": 48.1,
+    "marketCap": 2300000,
+    "source": "Amazon SEC Filing",
+    "publicationDate": "2025-02-06",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "TSLA",
+    "company": "Tesla Inc.",
+    "period": "FY2024",
+    "revenue": 97690,
+    "netIncome": 71530,
+    "eps": 3.52,
+    "peRatio": 62.3,
+    "marketCap": 800000,
+    "source": "Tesla Investor Relations",
+    "publicationDate": "2025-01-29",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "NVDA",
+    "company": "NVIDIA Corp.",
+    "period": "FY2025",
+    "revenue": 113270,
+    "netIncome": 72880,
+    "eps": 2.94,
+    "peRatio": 55.6,
+    "marketCap": 3300000,
+    "source": "NVIDIA SEC Filing",
+    "publicationDate": "2025-02-26",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  },
+  {
+    "ticker": "META",
+    "company": "Meta Platforms Inc.",
+    "period": "FY2024",
+    "revenue": 164203,
+    "netIncome": 62360,
+    "eps": 24.5,
+    "peRatio": 25.4,
+    "marketCap": 1500000,
+    "source": "Meta Investor Relations",
+    "publicationDate": "2025-01-29",
+    "lastUpdated": "2026-06-20T10:15:32.425Z"
+  }
+]

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "filing-1781950532428-1qjhs3",
+    "ticker": "AAPL",
+    "formType": "10-K",
+    "filingDate": "2024-11-01",
+    "source": "SEC EDGAR",
+    "description": "Annual report for fiscal year 2024.",
+    "url": "https://example.com/aapl-10k"
+  },
+  {
+    "id": "filing-1781950532428-1cua5l",
+    "ticker": "AAPL",
+    "formType": "8-K",
+    "filingDate": "2025-01-30",
+    "source": "SEC EDGAR",
+    "description": "Current report – Q1 2025 earnings release.",
+    "url": "https://example.com/aapl-8k"
+  },
+  {
+    "id": "filing-1781950532428-lun0z6",
+    "ticker": "MSFT",
+    "formType": "10-K",
+    "filingDate": "2024-07-30",
+    "source": "SEC EDGAR",
+    "description": "Annual report for fiscal year 2024.",
+    "url": "https://example.com/msft-10k"
+  },
+  {
+    "id": "filing-1781950532428-go3vrt",
+    "ticker": "GOOGL",
+    "formType": "10-Q",
+    "filingDate": "2024-10-30",
+    "source": "SEC EDGAR",
+    "description": "Quarterly report for Q3 2024.",
+    "url": "https://example.com/googl-10q"
+  },
+  {
+    "id": "filing-1781950532428-ix77ev",
+    "ticker": "AMZN",
+    "formType": "10-K",
+    "filingDate": "2025-02-06",
+    "source": "SEC EDGAR",
+    "description": "Annual report for fiscal year 2024.",
+    "url": "https://example.com/amzn-10k"
+  },
+  {
+    "id": "filing-1781950532428-gxzmy2",
+    "ticker": "TSLA",
+    "formType": "10-K",
+    "filingDate": "2025-01-29",
+    "source": "SEC EDGAR",
+    "description": "Annual report for fiscal year 2024.",
+    "url": "https://example.com/tsla-10k"
+  },
+  {
+    "id": "filing-1781950532428-hhdf2n",
+    "ticker": "NVDA",
+    "formType": "10-Q",
+    "filingDate": "2024-11-20",
+    "source": "SEC EDGAR",
+    "description": "Quarterly report for Q3 FY2025.",
+    "url": "https://example.com/nvda-10q"
+  }
+]

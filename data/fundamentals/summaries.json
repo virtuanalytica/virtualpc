@@ -1,0 +1,20 @@
+{
+  "AAPL": {
+    "ticker": "AAPL",
+    "summary": "Apple Inc. (AAPL) reported strong financial results for the fiscal year 2024, with revenue and net income growing significantly compared to the previous year. The company's EPS and P/E ratio were also well above the industry average. The market capitalization of the company is expected to remain strong, and the stock is expected to continue to appreciate in value.",
+    "model": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    "latencyMs": 30666
+  },
+  "META": {
+    "ticker": "META",
+    "summary": "Meta Platforms Inc. (META) reported strong revenue and net income, with EPS of $24.5 and a P/E ratio of 25.4. The company's market capitalization is $15 billion.",
+    "model": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    "latencyMs": 3054
+  },
+  "GOOGL": {
+    "ticker": "GOOGL",
+    "summary": "Alphabet Inc. (GOOGL) reported a net income of $100690M in FY2024, with EPS of $8.04. The company's market capitalization is $220 billion. The company's P/E ratio is 24.8.",
+    "model": "mlx-community/Qwen2.5-0.5B-Instruct-4bit",
+    "latencyMs": 3716
+  }
+}
