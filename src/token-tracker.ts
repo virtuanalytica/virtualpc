@@ -281,7 +281,8 @@ export function getRecentEvents(agent?: string, limit: number = 20): any[] {
   }));
 }
 
-// Tick every 30 seconds to generate usage data
-setInterval(recordAgentTokens, 30000);
-// Generate some initial history
-for (let i = 0; i < 20; i++) recordAgentTokens();
+// Token usage is recorded for REAL via recordRealEvent(), wired into
+// lmstudio.chatAsAgent on every successful inference call (local + CLI estimates).
+// The legacy recordAgentTokens() simulation is intentionally NOT scheduled here —
+// the dashboard must reflect real usage only (no mock data). The function remains
+// exported for demo/test harnesses that explicitly opt in.
