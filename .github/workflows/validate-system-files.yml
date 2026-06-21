@@ -115,5 +115,8 @@ jobs:
         echo "Dashboard Assets:"
         ls -1 public/*.{html,css,svg} 2>/dev/null | xargs -I {} basename {} | sed 's/^/  ✓ /' || true
 
+    - name: Check README doc counts match source of truth
+      run: bash scripts/check-doc-counts.sh
+
     - name: Validation complete
       run: echo "✓ System files validation passed"
