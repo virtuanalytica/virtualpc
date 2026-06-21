@@ -18,14 +18,17 @@ import {
   getFamilyVisibility,
   setFamilyVisibility,
   listFamilyEntities,
+  overridesSummary,
   FAMILY_GRAPH_NAME,
 } from '../../src/integrations/lightrag/family-graph';
 
-// Curated baseline (ingestFamilyGraph only — excludes the chat/molgang deltas
-// which are layered in separately and depend on optional data files). Bump when
-// the curated object/category set intentionally changes.
-const EXPECTED_CURATED_ENTITIES = 56;
-const EXPECTED_CATEGORIES = 16;            // 10 curated + 4 chat + 2 molgang
+// Curated baseline = the STATIC ENTITIES array length (currently 55). Assert it
+// in isolation from user-portal overrides: ingestFamilyGraph returns
+// `entities: ENTITIES.length + ov.entities`, so subtract overridesSummary().entities
+// to keep this regression-lock deterministic across environments (a portal edit
+// must not change the curated baseline). Bump when ENTITIES intentionally changes.
+const EXPECTED_CURATED_ENTITIES = 55;
+const EXPECTED_CATEGORIES = 22;            // 10 curated + 4 chat + 2 molgang + 6 chem (slag-valorisatie)
 const MIN_CURATED_NODES = EXPECTED_CURATED_ENTITIES + EXPECTED_CATEGORIES + 1;
 
 describe('Familie knowledge graph', () => {
@@ -53,7 +56,8 @@ describe('Familie knowledge graph', () => {
     if (!connected) return;
     const r1 = await ingestFamilyGraph(client);
     expect(r1.offline).toBeFalsy();
-    expect(r1.entities).toBe(EXPECTED_CURATED_ENTITIES);
+    // subtract user-portal overrides so the lock tracks the static curated set only
+    expect(r1.entities - overridesSummary().entities).toBe(EXPECTED_CURATED_ENTITIES);
     expect(r1.categories).toBe(EXPECTED_CATEGORIES);
     expect(r1.verifiedEdges).toBeGreaterThan(0);
 
