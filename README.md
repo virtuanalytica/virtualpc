@@ -1,7 +1,8 @@
 # VirtualPC — distributed multi-agent system
 
-A multi-agent backend with a 14-agent roster (CEO Fill, CTO Kai, devs, artists,
-researchers, commercialization), a unified LiteLLM gateway in front of local
+A multi-agent backend with a 22-agent production roster (CEO Fill, CTO Kai, devs,
+artists, researchers, commercialization; plus 14 tester personas), a unified
+LiteLLM gateway in front of local
 LM Studio + cloud providers, a live task engine that streams subtask progress
 to dashboards, and an auto-update path that pulls from GitHub on a 15-min timer.
 
@@ -9,11 +10,11 @@ Repository: [github.com/febuz/virtualpc](https://github.com/febuz/virtualpc)
 
 What's in the box:
 - **LiteLLM gateway** at `127.0.0.1:4000` (`deploy/docker-compose.litellm.yml`)
-  routing 13 model entries — 5 local LM Studio + 8 cloud — through one
+  routing 20 model entries — 11 local LM Studio + 9 cloud — through one
   OpenAI-compatible API. virtualpc points at it via `LITELLM_URL`.
 - **Agent registry** (`src/agent-registry.ts`) — single source of truth for
   the roster. Add a name there, every dashboard picks it up.
-- **Task engine** (`src/task-engine.ts`) — 14 agents, autonomous tick,
+- **Task engine** (`src/task-engine.ts`) — 22 production agents, autonomous tick,
   per-subtask progress, persistent state on EDS2.
 - **Auth** (`src/auth/`) — login, sessions, 2FA-ready, audit log,
   role-based specialist dashboards.
@@ -73,19 +74,17 @@ node dist/index.js
 
 ## 🔌 LiteLLM gateway
 
-`deploy/litellm-config.yaml` registers 13 models. Local LM Studio entries
-work out of the box; cloud entries (claude-sonnet, gpt-4o-mini, grok,
-deepseek-chat, kimi, perplexity, mistral-large, gemini) wait for keys.
+`deploy/litellm-config.yaml` registers 20 models (11 local + 9 cloud). Local
+LM Studio entries work out of the box; cloud entries (claude-sonnet, claude-opus,
+gpt-4o-mini, grok, deepseek-chat, kimi, perplexity, mistral-large, gemini) wait for keys.
 
-To enable cloud routes, drop a key file at `~/.virtualpc/llm-keys.env`:
+To enable cloud routes, provision keys through Infisical, a key manager, or a
+process-manager injected secret source:
 
 ```bash
-mkdir -p ~/.virtualpc
-cat > ~/.virtualpc/llm-keys.env <<'EOF'
-ANTHROPIC_API_KEY=sk-ant-...
-OPENAI_API_KEY=sk-...
-# ...etc
-EOF
+export INFISICAL_PROJECT_ID=...
+export INFISICAL_CLIENT_ID=...
+export INFISICAL_CLIENT_SECRET=...
 systemctl --user restart virtualpc-litellm.service
 ```
 
@@ -361,7 +360,7 @@ npm run format   # Auto-format code
 - **Rate Limiting**: 100 req/s per IP
 - **JWT Validation**: Protected API endpoints
 - **API Key Auth**: Fallback for agents
-- **Secrets Management**: .env never committed (see .gitignore)
+- **Secrets Management**: managed secret sources only; the open-source repo does not use `.env` files
 
 ---
 
