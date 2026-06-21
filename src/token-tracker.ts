@@ -35,6 +35,16 @@ export const MODEL_COSTS: { [model: string]: { prompt: number; completion: numbe
   // User has a flat-fee plan, so per-token cost is $0 from our accounting
   // perspective. Marked tier 1 so it shows alongside the local roster.
   'kimi-k2.6':      { prompt: 0, completion: 0, tier: 1 },
+  // Aliases for the names used in agent-registry AgentMeta.models[] so real calls
+  // are not silently mis-tiered to the $0 fallback (see docs/MODEL-NAME-CONSISTENCY-AUDIT.md).
+  // All local / flat-fee -> genuinely tier-1 $0; NOT speculative pricing.
+  'deepseek-r1':    { prompt: 0, completion: 0, tier: 1 },
+  'kimi':           { prompt: 0, completion: 0, tier: 1 },
+  'moonshot':       { prompt: 0, completion: 0, tier: 1 },
+  'hermes-3':       { prompt: 0, completion: 0, tier: 1 },
+  'qwen-coder-32b': { prompt: 0, completion: 0, tier: 1 },
+  // NOTE: 'gpt-5.5' is referenced by agents but NOT served by the gateway and has
+  // no known pricing — deliberately NOT added here (would be guessed paid cost).
   // Cloud fallbacks (used only when local is unreachable or context exceeds local ctx)
   'mistral-7b':     { prompt: 0.0001, completion: 0.0003, tier: 2 },
   'llama-70b':      { prompt: 0.0003, completion: 0.0008, tier: 2 },
