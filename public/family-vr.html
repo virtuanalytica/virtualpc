@@ -16,6 +16,11 @@
     <h1>Familie — VR 🥽</h1>
     <p>Zet je <b>Meta Quest 3S</b> op en tik op het bril-icoon rechtsonder om VR te starten (WebXR). Beweeg met de controllers; richt op een knoop voor het label.</p>
     <p id="status">grafiek laden…</p>
+    <div style="display:flex;gap:5px;margin:6px 0">
+      <button id="lng-nl" onclick="setLang('nl')" style="flex:1;padding:4px;background:#1b2838;border:1px solid #3a4f6e;color:#e6edf3;border-radius:5px;cursor:pointer;font-size:12px">NL</button>
+      <button id="lng-en" onclick="setLang('en')" style="flex:1;padding:4px;background:#11182b;border:1px solid #2a3550;color:#8b98ad;border-radius:5px;cursor:pointer;font-size:12px">EN</button>
+      <button id="lng-cn" onclick="setLang('cn')" style="flex:1;padding:4px;background:#11182b;border:1px solid #2a3550;color:#8b98ad;border-radius:5px;cursor:pointer;font-size:12px">中文 (粵)</button>
+    </div>
     <p><a href="/family-portal.html">← terug naar portaal (bewerken + categorie-filters)</a></p>
   </div>
 
@@ -23,9 +28,21 @@
   <script src="https://unpkg.com/3d-force-graph-vr@2.0.5/dist/3d-force-graph-vr.min.js"></script>
   <script>
     const GROUP_COLORS = {1:'#ff8fab',2:'#5b8cff',3:'#ffd166',4:'#06d6a0',5:'#9b8cff',6:'#ff9f5b',7:'#4dd2ff',8:'#c0e34d',9:'#ff6b9d',10:'#7ee787',11:'#36c5f0',12:'#f5a623',13:'#b07cff',14:'#8899aa',17:'#e07a5f',18:'#81b29a',19:'#f2cc8f',20:'#e06c9f',21:'#6db5c4',22:'#b8b8d1',0:'#cfd8e3'};
+    // i18n: node labels honor the language chosen here or in the portal (shared
+    // localStorage). Graceful NL fallback. Categories have no legend in VR, so
+    // node labels are the applicable part of the toggle.
+    let LANG = localStorage.getItem('familyLang') || 'nl';
+    function applyLangButtons(){
+      ['nl','en','cn'].forEach(l=>{ const b=document.getElementById('lng-'+l); if(!b) return;
+        const on=l===LANG; b.style.background=on?'#1b2838':'#11182b';
+        b.style.borderColor=on?'#3a4f6e':'#2a3550'; b.style.color=on?'#e6edf3':'#8b98ad'; });
+    }
+    function setLang(l){ LANG=l; localStorage.setItem('familyLang',l); document.documentElement.lang=l;
+      applyLangButtons(); Graph.nodeLabel(Graph.nodeLabel()); }
+    applyLangButtons();
     const Graph = ForceGraphVR()(document.body)
       .backgroundColor('#0b0e14')
-      .nodeLabel('name')
+      .nodeLabel(n => (n.i18n && n.i18n[LANG]) || n.name)
       .nodeColor(n => GROUP_COLORS[n.group] || '#cfd8e3')
       .nodeVal(n => n.val || 2)
       .nodeRelSize(6)
