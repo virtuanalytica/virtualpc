@@ -2951,16 +2951,20 @@ function setupRoutes(app: express.Express, components: any) {
 
   app.get('/api/dashboard', async (req, res) => {
     try {
+      // Real task counts from the live task engine (no mock data). NOTE: this
+      // endpoint is legacy/superseded by /api/metrics; cost_optimization &
+      // performance below are still placeholder and have no live source yet.
+      const stats = taskEngine.getTaskStats();
       res.json({
         success: true,
-        tasksCompleted: 58,
-        monthlySavings: '1,760',
+        tasksCompleted: stats.completed,
+        monthlySavings: '1,760',  // placeholder — no live cost-savings source yet (see note above)
         overview: {
-          total_tasks: 75,
-          completed: 58,
-          in_progress: 12,
-          pending: 5,
-          blocked: 2
+          total_tasks: stats.total,
+          completed: stats.completed,
+          in_progress: stats.inProgress,
+          pending: stats.pending,
+          blocked: 0  // no 'blocked' status in the task model — reported honestly as 0
         },
         agents: {
           fill: { status: 'idle', tasks_completed: 8, current_task: 'Strategic planning' },
