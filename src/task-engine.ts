@@ -23,6 +23,8 @@ interface Task {
   title: string;
   status: 'completed' | 'in-progress' | 'pending';
   priority: 'critical' | 'high' | 'medium' | 'low';
+  project: string;
+  tags: string[];
   description: string;
   sprint: string;
   estimated_hours: number;
@@ -35,10 +37,66 @@ interface Task {
   _lastTick: number;
 }
 
+type TaskTemplate = {
+  title: string;
+  priority: Task['priority'];
+  description: string;
+  estimated_hours: number;
+  subtasks: string[];
+  project?: string;
+  tags?: string[];
+};
+
 // === TASK POOLS: infinite work per agent ===
 // When an agent runs out, we pick the next from the pool and push it to tasks[]
 
-const taskPools: { [agent: string]: Array<{ title: string; priority: Task['priority']; description: string; estimated_hours: number; subtasks: string[] }> } = {
+const DEFAULT_PROJECT = 'VirtualPC platform';
+const DEFAULT_PROJECT_TAG = 'project:virtualpc-platform';
+
+function slugifyTag(value: string): string {
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9:]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized.replace(/^(project|priority|sprint|agent|role)-(.+)$/, '$1:$2');
+}
+
+function normalizeTags(tags: unknown, fallback: string[]): string[] {
+  const raw = Array.isArray(tags) ? tags : [];
+  const out = new Set<string>();
+  for (const tag of [...raw, ...fallback]) {
+    const normalized = slugifyTag(String(tag || ''));
+    if (normalized) out.add(normalized);
+  }
+  return [...out];
+}
+
+function normalizeProject(value: unknown): string {
+  const project = String(value || '').trim();
+  return project || DEFAULT_PROJECT;
+}
+
+function defaultTaskTags(task: Partial<Task> & { assigned_to?: string; sprint?: string; priority?: Task['priority']; project?: string }): string[] {
+  const project = normalizeProject(task.project);
+  const projectSlug = slugifyTag(project) || 'virtualpc-platform';
+  const role = ROLE_MAP[task.assigned_to || ''] || task.assigned_to || 'unassigned';
+  return normalizeTags([], [
+    project === DEFAULT_PROJECT ? DEFAULT_PROJECT_TAG : `project:${projectSlug}`,
+    task.priority ? `priority:${task.priority}` : 'priority:medium',
+    task.sprint ? `sprint:${task.sprint}` : 'sprint:backlog',
+    task.assigned_to ? `agent:${task.assigned_to}` : 'agent:unassigned',
+    `role:${role}`,
+  ]);
+}
+
+function ensureTaskMetadata(task: Task): Task {
+  task.project = normalizeProject((task as any).project);
+  task.tags = normalizeTags((task as any).tags, defaultTaskTags(task));
+  return task;
+}
+
+const taskPools: { [agent: string]: TaskTemplate[] } = {
   Fill: [
     { title: 'Quarterly OKR planning', priority: 'critical', description: 'Set platform-level OKRs for the next quarter. Translate them into per-agent task seed targets so the engine has a coherent direction.', estimated_hours: 5, subtasks: ['Review last quarter outcomes', 'Set 3 platform OKRs', 'Map OKRs to agents', 'Publish OKR document', 'Communicate to roster'] },
     { title: 'University & enterprise partnership outreach', priority: 'high', description: 'Identify partner organizations that could pilot VirtualPC for their own workflows. Draft proposals that highlight platform extensibility.', estimated_hours: 5, subtasks: ['Identify 5 candidate partners', 'Draft generic partnership proposal', 'Schedule pilot meetings', 'Track conversations in CRM'] },
@@ -148,6 +206,61 @@ const taskPools: { [agent: string]: Array<{ title: string; priority: Task['prior
   ],
 };
 
+function defaultTaskPoolFor(agent: string): TaskTemplate[] {
+  const role = ROLE_MAP[agent] || agent;
+
+  if (agent === 'Governor') {
+    return [
+      { title: 'Knowledge graph lineage audit', priority: 'high', description: 'Audit recently ingested VirtualPC and Alexander knowledge chunks for owner, source, and freshness metadata.', estimated_hours: 4, subtasks: ['Sample corpus chunks', 'Check source labels', 'Flag stale entries', 'Publish lineage notes'] },
+      { title: 'Wiki gap triage', priority: 'high', description: 'Find concepts that appear in corpus search but lack a canonical wiki/governance node.', estimated_hours: 4, subtasks: ['Run corpus searches', 'Compare wiki nodes', 'Draft missing entries', 'Queue review'] },
+      { title: 'Graph policy consistency pass', priority: 'medium', description: 'Check governance and corpus records for conflicting ownership, status, or review-gate language.', estimated_hours: 3, subtasks: ['List policy nodes', 'Compare claims', 'Resolve duplicates', 'Document decisions'] },
+      { title: 'Agent-access ACL review', priority: 'medium', description: 'Verify each registered agent has the right MCP tool access for its role and no unnecessary write surface.', estimated_hours: 3, subtasks: ['Read roster ACLs', 'Map tools to roles', 'Flag excess access', 'Publish diff'] },
+    ];
+  }
+
+  if (agent === 'Pixel') {
+    return [
+      { title: 'Knowledge search UX pass', priority: 'high', description: 'Improve the dashboard flow that agents use to inspect corpus, wiki, and codegraph evidence.', estimated_hours: 5, subtasks: ['Trace search routes', 'Design result states', 'Add source badges', 'Verify mobile layout'] },
+      { title: 'Wiki graph inspector', priority: 'high', description: 'Build a compact inspector for wiki/governance nodes with linked corpus evidence.', estimated_hours: 6, subtasks: ['Define data shape', 'Render node detail', 'Link evidence', 'Add empty states'] },
+      { title: 'Agent blocker panel', priority: 'high', description: 'Surface blocked, stale, and placeholder tasks clearly so operators can intervene before queues drift.', estimated_hours: 5, subtasks: ['Read guardrails health', 'Read backlog state', 'Design panel', 'Wire refresh'] },
+      { title: 'Corpus source filter polish', priority: 'medium', description: 'Make source-kind and source-prefix filtering ergonomic for large local knowledge graphs.', estimated_hours: 4, subtasks: ['Audit filters', 'Add presets', 'Preserve query state', 'Test results'] },
+    ];
+  }
+
+  if (agent === 'Athena') {
+    return [
+      { title: 'Review gate evidence audit', priority: 'critical', description: 'Review whether accepted work includes unit, regression, build, and knowledge-source evidence before approval.', estimated_hours: 5, subtasks: ['Collect branch evidence', 'Check standards', 'Run targeted tests', 'Write verdict'] },
+      { title: 'Coding standards enforcement pass', priority: 'high', description: 'Sample recent changes against CODING-STANDARDS and file actionable corrections.', estimated_hours: 4, subtasks: ['Read changed files', 'Check standards', 'Identify risks', 'Publish review notes'] },
+      { title: 'Competing branch review rehearsal', priority: 'high', description: 'Dry-run the two-branch review pipeline and verify the winning-branch criteria are objective.', estimated_hours: 4, subtasks: ['Select sample item', 'Score alternatives', 'Compare evidence', 'Record rubric update'] },
+      { title: 'Knowledge-backed review checklist', priority: 'medium', description: 'Update the review checklist so each architectural claim links to corpus, codegraph, or wiki evidence.', estimated_hours: 3, subtasks: ['Audit checklist', 'Add graph lookup prompts', 'Test on sample PR', 'Publish revision'] },
+    ];
+  }
+
+  if (agent.startsWith('Hermes-')) {
+    return [
+      { title: `${agent}: standup blocker sweep`, priority: 'high', description: `${role} sweeps the team queue for blocked or stale tasks and routes each item to an owner.`, estimated_hours: 3, subtasks: ['Read team backlog', 'Identify blockers', 'Assign owner', 'Publish standup'] },
+      { title: `${agent}: knowledge evidence check`, priority: 'high', description: 'Verify active team work cites current corpus/wiki/codegraph evidence before implementation continues.', estimated_hours: 3, subtasks: ['Query corpus', 'Query wiki', 'Attach evidence', 'Escalate gaps'] },
+      { title: `${agent}: review handoff prep`, priority: 'medium', description: 'Package completed team work so Athena can review without chasing missing context.', estimated_hours: 3, subtasks: ['Collect test output', 'Collect diff summary', 'Collect risk notes', 'Send handoff'] },
+      { title: `${agent}: retro action tracking`, priority: 'medium', description: 'Turn retrospective findings into concrete follow-up tasks with owners and due dates.', estimated_hours: 2, subtasks: ['Read retro notes', 'Extract actions', 'Assign owners', 'Update backlog'] },
+    ];
+  }
+
+  if (agent.startsWith('Tester-')) {
+    return [
+      { title: `${agent}: scenario playtest`, priority: 'high', description: `${role} runs a role-specific playtest and records reproducible findings.`, estimated_hours: 3, subtasks: ['Pick scenario', 'Run playtest', 'Capture issue', 'File bug'] },
+      { title: `${agent}: regression repro pass`, priority: 'high', description: 'Re-run recently fixed issues and verify they stay fixed on the current build.', estimated_hours: 3, subtasks: ['Select fixed issue', 'Reproduce old path', 'Verify current behavior', 'Report result'] },
+      { title: `${agent}: knowledge freshness check`, priority: 'medium', description: 'Check whether player-facing or curriculum-facing behavior matches the latest knowledge graph documentation.', estimated_hours: 2, subtasks: ['Read relevant wiki', 'Compare gameplay', 'Flag mismatch', 'Suggest update'] },
+      { title: `${agent}: friction note`, priority: 'medium', description: 'Write one concise friction note with expected behavior, actual behavior, and impact.', estimated_hours: 2, subtasks: ['Observe friction', 'Write expected/actual', 'Rate severity', 'Post to forum'] },
+    ];
+  }
+
+  return [
+    { title: `${agent}: role backlog refinement`, priority: 'medium', description: `${role} refines its active backlog into evidence-backed, testable work items.`, estimated_hours: 3, subtasks: ['Read current context', 'Query knowledge graph', 'Draft tasks', 'Publish handoff'] },
+    { title: `${agent}: blocker scan`, priority: 'high', description: `${role} checks for blocked dependencies and routes them to the right owner.`, estimated_hours: 2, subtasks: ['Read active tasks', 'Find stale items', 'Assign owner', 'Record status'] },
+    { title: `${agent}: graph evidence update`, priority: 'medium', description: `${role} contributes missing source links or freshness notes to the shared knowledge graph.`, estimated_hours: 2, subtasks: ['Find missing evidence', 'Collect source', 'Draft update', 'Queue review'] },
+  ];
+}
+
 // Track which pool index each agent is at
 // Start at index 10 so the newly-added tasks (from the 2026-04-23 chat backlog:
 // Cleopatra/MoneyGod, GPU symbiosis, RTS factory, agent social profiles, testplay,
@@ -175,26 +288,24 @@ function randomTickRate(): number {
 
 /** Generate a new task for an agent from their pool */
 function generateTask(agent: string): Task {
-  // Defensive: a new agent registered in agent-registry but not yet wired into
-  // taskPools/poolIndex used to crash the whole module here. Skip-gracefully:
-  // backfill an empty pool entry so the dashboard sees the agent with zero
-  // tasks instead of a 502.
-  if (!taskPools[agent]) taskPools[agent] = [];
+  // Registered agents without bespoke pools get role-aware default work instead
+  // of placeholder "define task pool" tasks.
+  if (!taskPools[agent]) taskPools[agent] = defaultTaskPoolFor(agent);
   if (poolIndex[agent] === undefined) poolIndex[agent] = 0;
-  const pool = taskPools[agent];
+  const pool = taskPools[agent].length > 0 ? taskPools[agent] : defaultTaskPoolFor(agent);
   if (pool.length === 0) {
-    // Synthesize a placeholder task so the agent shows up. Real pool entries
-    // will be added once their work is defined.
     return {
       id: `task-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      title: `${agent}: define task pool`,
+      title: `${agent}: blocker scan`,
       status: 'pending',
-      priority: 'low',
-      description: `Agent ${agent} is registered in agent-registry but has no taskPool entries in task-engine.ts yet. Add at least 5 tasks under taskPools.${agent}.`,
+      priority: 'medium',
+      project: DEFAULT_PROJECT,
+      tags: defaultTaskTags({ assigned_to: agent, priority: 'medium', sprint: `sprint-${sprintCounter}`, project: DEFAULT_PROJECT }),
+      description: `${agent} checks its queue for stale work and records the next owner.`,
       sprint: `sprint-${sprintCounter}`,
       estimated_hours: 1,
       progress: 0,
-      subtasks: [{ name: 'Add task pool entries', done: false }],
+      subtasks: [{ name: 'Scan queue', done: false }, { name: 'Record owner', done: false }],
       assigned_to: agent,
       _tickRate: 90_000,
       _lastTick: 0,
@@ -214,6 +325,8 @@ function generateTask(agent: string): Task {
     title: template.title,
     status: 'pending',
     priority: template.priority,
+    project: normalizeProject(template.project),
+    tags: normalizeTags(template.tags, defaultTaskTags({ assigned_to: agent, priority: template.priority, sprint: currentSprint(), project: template.project })),
     description: template.description,
     sprint: currentSprint(),
     estimated_hours: template.estimated_hours,
@@ -234,6 +347,7 @@ const tasks: Task[] = [];
 
 const STATE_DIR = process.env.VIRTUALPC_STATE_DIR || '/media/knight2/EDS2/virtualpc-state';
 const STATE_PATH = path.join(STATE_DIR, 'task-state.json');
+const MAX_COMPLETED_TASKS_PER_AGENT = Math.max(3, parseInt(process.env.MAX_COMPLETED_TASKS_PER_AGENT || '12', 10) || 12);
 let dirty = false;
 
 interface PersistedState {
@@ -260,9 +374,48 @@ interface WorkLogEntry {
   registeredFor: string;
 }
 
+function compactTaskHistory(items: Task[]): { tasks: Task[]; dropped: number } {
+  const keep = new Set<Task>();
+  const completedSeen = new Map<string, number>();
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    const task = items[i];
+    if (isPlaceholderTask(task)) continue;
+
+    if (task.status !== 'completed') {
+      keep.add(task);
+      continue;
+    }
+
+    const agent = task.assigned_to || 'unknown';
+    const count = completedSeen.get(agent) || 0;
+    if (count < MAX_COMPLETED_TASKS_PER_AGENT) keep.add(task);
+    completedSeen.set(agent, count + 1);
+  }
+
+  const compacted = items.filter(task => keep.has(task));
+  return { tasks: compacted, dropped: items.length - compacted.length };
+}
+
+function isPlaceholderTask(task: Task): boolean {
+  return /: define task pool$/.test(task.title)
+    || task.description.includes('has no taskPool entries')
+    || task.subtasks.some(s => s.name === 'Add task pool entries');
+}
+
+function compactTasksInPlace(reason: string): number {
+  const { tasks: compacted, dropped } = compactTaskHistory(tasks);
+  if (dropped > 0) {
+    tasks.splice(0, tasks.length, ...compacted);
+    logger.info(`task-engine: compacted ${dropped} completed historical tasks (${reason}); kept ${tasks.length}`);
+  }
+  return dropped;
+}
+
 function saveState() {
   try {
     if (!fs.existsSync(STATE_DIR)) fs.mkdirSync(STATE_DIR, { recursive: true });
+    compactTasksInPlace('pre-save');
     const snapshot: PersistedState = {
       version: 1,
       savedAt: new Date().toISOString(),
@@ -291,10 +444,16 @@ function loadState(): boolean {
       return false;
     }
     tasks.length = 0;
-    for (const t of snap.tasks) {
+    const compacted = compactTaskHistory(snap.tasks);
+    let migratedMetadata = false;
+    for (const t of compacted.tasks) {
       // Reset _lastTick so restored in-progress tasks don't all fire on the first tick
       t._lastTick = Date.now();
-      tasks.push(t);
+      const before = JSON.stringify({ project: (t as any).project, tags: (t as any).tags });
+      const normalized = ensureTaskMetadata(t);
+      const after = JSON.stringify({ project: normalized.project, tags: normalized.tags });
+      if (before !== after) migratedMetadata = true;
+      tasks.push(normalized);
     }
     Object.assign(poolIndex, snap.poolIndex || {});
     sprintCounter = snap.sprintCounter || 1;
@@ -303,6 +462,11 @@ function loadState(): boolean {
     // and replay them into workLog once it's defined.
     (globalThis as any).__virtualpcPersistedWorkLog = snap.workLog || [];
     logger.info(`task-engine: restored ${tasks.length} tasks, sprint ${sprintCounter}, ${snap.workLog?.length || 0} work-log entries from ${STATE_PATH}`);
+    if (compacted.dropped > 0) {
+      logger.info(`task-engine: dropped ${compacted.dropped} old completed tasks during restore (kept last ${MAX_COMPLETED_TASKS_PER_AGENT}/agent)`);
+      dirty = true;
+    }
+    if (migratedMetadata) dirty = true;
     return true;
   } catch (e: any) {
     logger.warn(`task-engine loadState failed: ${e.message}`);
@@ -541,6 +705,8 @@ export function getPerPersonBacklog() {
         sprint: t.sprint,
         estimated_hours: t.estimated_hours,
         progress: t.progress,
+        project: t.project,
+        tags: t.tags,
         started_at: t.started_at,
         completed_at: t.completed_at,
       })),
@@ -574,6 +740,133 @@ export function getAgentProgress(agentName: string) {
   };
 }
 
+export interface AgentScorecard {
+  agent: string;
+  role: string;
+  score: number;
+  grade: 'A' | 'B' | 'C' | 'D' | 'F';
+  status: 'working' | 'queued' | 'idle' | 'needs_attention';
+  completed: number;
+  inProgress: number;
+  pending: number;
+  total: number;
+  averageActiveProgress: number;
+  lastActivity: string | null;
+  blockerCount: number;
+  placeholderCount: number;
+  notes: string[];
+}
+
+function gradeFromAgentScore(score: number): AgentScorecard['grade'] {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
+}
+
+function looksBlocked(task: Task): boolean {
+  const text = `${task.title} ${task.description}`.toLowerCase();
+  return /\b(blocked by|is blocked|currently blocked|stalled on|waiting on|cannot proceed|missing credential|needs human)\b/.test(text);
+}
+
+export function getAgentScorecard(agentName: string): AgentScorecard {
+  const agentTasks = tasks.filter(t => t.assigned_to === agentName);
+  const completed = agentTasks.filter(t => t.status === 'completed').length;
+  const active = agentTasks.filter(t => t.status === 'in-progress');
+  const pendingTasks = agentTasks.filter(t => t.status === 'pending');
+  const placeholders = agentTasks.filter(isPlaceholderTask).length;
+  const blockers = agentTasks.filter(t => t.status !== 'completed' && looksBlocked(t)).length;
+  const averageActiveProgress = active.length
+    ? Math.round(active.reduce((sum, t) => sum + (t.progress || 0), 0) / active.length)
+    : 0;
+
+  let lastActivity: string | null = null;
+  for (let i = workLog.length - 1; i >= 0; i--) {
+    if (workLog[i].agent === agentName) {
+      lastActivity = workLog[i].timestamp;
+      break;
+    }
+  }
+
+  const notes: string[] = [];
+  let score = 100;
+
+  if (active.length === 0) {
+    score -= 35;
+    notes.push('no in-progress task');
+  } else if (active.length < 2) {
+    score -= 10;
+    notes.push('below target in-progress WIP');
+  }
+
+  if (pendingTasks.length === 0) {
+    score -= 20;
+    notes.push('no pending queue');
+  } else if (pendingTasks.length < 2) {
+    score -= 8;
+    notes.push('below target pending queue');
+  }
+
+  if (blockers > 0) {
+    score -= Math.min(30, blockers * 15);
+    notes.push(`${blockers} active blocker signal${blockers === 1 ? '' : 's'}`);
+  }
+
+  if (placeholders > 0) {
+    score -= Math.min(25, placeholders * 10);
+    notes.push(`${placeholders} placeholder task${placeholders === 1 ? '' : 's'}`);
+  }
+
+  if (lastActivity) {
+    const ageHours = (Date.now() - new Date(lastActivity).getTime()) / 3_600_000;
+    if (ageHours > 72) {
+      score -= 20;
+      notes.push('no recorded work in 72h');
+    } else if (ageHours > 24) {
+      score -= 10;
+      notes.push('no recorded work in 24h');
+    }
+  } else if (completed === 0) {
+    score -= 5;
+    notes.push('no retained work-log activity yet');
+  }
+
+  if (active.length >= 2 && pendingTasks.length >= 2 && blockers === 0 && placeholders === 0) {
+    notes.push('queue healthy');
+  }
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  const status: AgentScorecard['status'] = blockers > 0 || placeholders > 0 || score < 70
+    ? 'needs_attention'
+    : active.length > 0
+      ? 'working'
+      : pendingTasks.length > 0
+        ? 'queued'
+        : 'idle';
+
+  return {
+    agent: agentName,
+    role: ROLE_MAP[agentName] || agentName,
+    score,
+    grade: gradeFromAgentScore(score),
+    status,
+    completed,
+    inProgress: active.length,
+    pending: pendingTasks.length,
+    total: agentTasks.length,
+    averageActiveProgress,
+    lastActivity,
+    blockerCount: blockers,
+    placeholderCount: placeholders,
+    notes,
+  };
+}
+
+export function getAllAgentScorecards(): AgentScorecard[] {
+  return AGENT_NAMES.map(getAgentScorecard);
+}
+
 export function getBacklogItems() {
   // Show active + pending + last 5 completed items
   const completed = tasks.filter(t => t.status === 'completed').slice(-5);
@@ -587,11 +880,26 @@ export function getBacklogItems() {
     title: t.title,
     priority: t.priority,
     assigned_to: `${t.assigned_to} (${roleMap[t.assigned_to] || t.assigned_to})`,
+    project: t.project,
+    tags: t.tags,
     sprint: t.sprint,
     status: t.status === 'in-progress' ? 'in_progress' : t.status,
     created_at: t.started_at || new Date().toISOString(),
     description: t.description,
   }));
+}
+
+// Real task statistics over the live task store (replaces the former mock
+// Math.random() counts behind /api/task-status). Counts the actual `tasks`
+// array by status so the dashboard auto-refresh shows true numbers.
+export function getTaskStats() {
+  return {
+    total: tasks.length,
+    completed: tasks.filter(t => t.status === 'completed').length,
+    inProgress: tasks.filter(t => t.status === 'in-progress').length,
+    pending: tasks.filter(t => t.status === 'pending').length,
+    timestamp: new Date().toISOString(),
+  };
 }
 
 export function getTaskDetail(taskId: string) {
@@ -603,6 +911,8 @@ export function getTaskDetail(taskId: string) {
     title: task.title,
     priority: task.priority,
     assigned_to: task.assigned_to,
+    project: task.project,
+    tags: task.tags,
     status: task.status,
     sprint: task.sprint,
     description: task.description,
@@ -667,23 +977,29 @@ export function addTask(input: {
   description: string;
   priority?: Task['priority'];
   assigned_to: string;
+  project: string;
+  tags: string[];
   estimated_hours?: number;
   subtasks?: string[];
   sprint?: string;
 }): Task | null {
   if (!AGENT_NAMES.includes(input.assigned_to)) return null;
   const id = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const project = normalizeProject(input.project);
+  const sprint = input.sprint || 'roadmap';
   const t: Task = {
     id,
     title: input.title,
     description: input.description,
     priority: input.priority || 'medium',
+    project,
+    tags: normalizeTags(input.tags, defaultTaskTags({ assigned_to: input.assigned_to, priority: input.priority || 'medium', sprint, project })),
     status: 'pending',
     assigned_to: input.assigned_to,
     estimated_hours: input.estimated_hours ?? 4,
     subtasks: (input.subtasks || []).map(s => ({ name: s, done: false })),
     progress: 0,
-    sprint: input.sprint || 'roadmap',
+    sprint,
     _tickRate: 1,
     _lastTick: Date.now(),
   };
@@ -700,7 +1016,7 @@ export function addTask(input: {
     bestEffortPublish((p: any) => p.publishTask(input.assigned_to, {
       task_type: 'delegated',
       priority: t.priority,
-      payload: { id: t.id, title: t.title, sprint: t.sprint, estimated_hours: t.estimated_hours },
+      payload: { id: t.id, title: t.title, project: t.project, tags: t.tags, sprint: t.sprint, estimated_hours: t.estimated_hours },
     }));
   } catch { /* shared module unavailable — ignore */ }
   return t;
@@ -1194,13 +1510,11 @@ const agentCommands: { [agent: string]: string[] } = {
   ],
 };
 
-const cliSessionLog: { [agent: string]: Array<{ t: number; line: string; level: 'cmd' | 'out' | 'ok' | 'warn' | 'err' }> } = {
-  Fill: [], Kai: [], Zip: [], Mira: [], Luna: [], Cleopatra: [], Alexander: [], MoneyGod: [], Analyst: [], VideoProducer: [], Vice: [], Atlas: [], Kimi: [], Croesus: [],
-};
+const cliSessionLog: { [agent: string]: Array<{ t: number; line: string; level: 'cmd' | 'out' | 'ok' | 'warn' | 'err' }> } =
+  Object.fromEntries(AGENT_NAMES.map(agent => [agent, []]));
 
 function pushCli(agent: string, line: string, level: 'cmd' | 'out' | 'ok' | 'warn' | 'err' = 'out') {
-  const buf = cliSessionLog[agent];
-  if (!buf) return;
+  const buf = cliSessionLog[agent] || (cliSessionLog[agent] = []);
   buf.push({ t: Date.now(), line, level });
   if (buf.length > 200) buf.splice(0, buf.length - 200);
 }

@@ -80,6 +80,7 @@ import { registerTournamentRoutes } from './org/tournament-routes';
 import { resolveModel } from './gpu/availability';
 import * as mcp from './integrations/mcp/registry';
 import * as autoresearch from './integrations/autoresearch';
+import { registerGraphifyRoutes } from './integrations/graphify';
 import * as selfheal from './integrations/selfheal';
 import { guardrailsAgent } from './guardrails/guardrails-agent';
 import { containmentGuard, setupContainmentRoutes } from './containment';
@@ -90,6 +91,7 @@ import * as commercialization from './commercialization';
 import * as commitAudit from './commit-audit';
 import { TerminalAuthError, terminalCoordination } from './terminal-coordination';
 import { buildDailyManagementOverview } from './daily-management-overview';
+import { registerSystemSettingsRoutes } from './system-settings';
 
 // Load encrypted provider credentials from the local state store. Open-source
 // VirtualPC does not read .env files; deployments inject non-secret runtime
@@ -176,6 +178,12 @@ registerFinanceRoutes(app);
 registerGpuRoutes(app);
 // Query builder — saved, parameterised, versioned queries over the knowledge surfaces.
 registerQueryRoutes(app);
+// Graphify — optional AI/codebase knowledge-graph management layer. Read-only
+// status is always exposed; builds/installs require an explicit env opt-in.
+registerGraphifyRoutes(app);
+// Durable local settings shared by the SPA and operational sidecars such as
+// scripts/vitals-monitor.sh.
+registerSystemSettingsRoutes(app);
 // VirtuAnalytica — P4 data-roles command centre (metadata → databases → tools).
 registerVirtuAnalyticaRoutes(app);
 // Spectroscopy — ingest + peak detection for real spectra (Engel QChem payload).
@@ -275,11 +283,20 @@ app.post('/api/backlog/items', (req, res) => {
     res.status(400).json({ success: false, error: 'title, description, assigned_to required' });
     return;
   }
+  const tags = typeof b.tags === 'string'
+    ? b.tags.split(',').map((s: string) => s.trim()).filter(Boolean)
+    : Array.isArray(b.tags) ? b.tags.map(String).map((s: string) => s.trim()).filter(Boolean) : [];
+  if (!String(b.project || '').trim() || tags.length === 0) {
+    res.status(400).json({ success: false, error: 'project and at least one tag required' });
+    return;
+  }
   const t = taskEngine.addTask({
     title: String(b.title),
     description: String(b.description),
     priority: b.priority,
     assigned_to: String(b.assigned_to),
+    project: String(b.project),
+    tags,
     estimated_hours: typeof b.estimated_hours === 'number' ? b.estimated_hours : undefined,
     subtasks: Array.isArray(b.subtasks) ? b.subtasks.map(String) : undefined,
     sprint: b.sprint ? String(b.sprint) : undefined,
@@ -288,7 +305,7 @@ app.post('/api/backlog/items', (req, res) => {
     res.status(400).json({ success: false, error: `unknown agent '${b.assigned_to}' — must be in the canonical roster` });
     return;
   }
-  res.json({ success: true, task: { id: t.id, title: t.title, assigned_to: t.assigned_to, priority: t.priority, status: t.status } });
+  res.json({ success: true, task: { id: t.id, title: t.title, assigned_to: t.assigned_to, priority: t.priority, status: t.status, project: t.project, tags: t.tags } });
 });
 
 // ============================================================================
@@ -2814,13 +2831,22 @@ function setupRoutes(app: express.Express, components: any) {
 
   app.post('/api/backlog/create', async (req, res) => {
     try {
-      const { title, description, priority, assigned_to, story_points, sprint } = req.body;
+      const { title, description, priority, assigned_to, story_points, sprint, project } = req.body;
+      const tags = typeof req.body?.tags === 'string'
+        ? req.body.tags.split(',').map((s: string) => s.trim()).filter(Boolean)
+        : Array.isArray(req.body?.tags) ? req.body.tags.map(String).map((s: string) => s.trim()).filter(Boolean) : [];
+      if (!String(project || '').trim() || tags.length === 0) {
+        res.status(400).json({ success: false, error: 'project and at least one tag required' });
+        return;
+      }
       const id = `backlog-${Date.now()}`;
       const item = {
         id,
         title,
         description,
         priority: priority || 'medium',
+        project,
+        tags,
         assigned_to,
         story_points: story_points || 0,
         sprint: sprint || 'backlog',
@@ -2830,7 +2856,7 @@ function setupRoutes(app: express.Express, components: any) {
       await lightrag.addNode({
         type: 'Backlog',
         content: title,
-        context: description,
+        context: `${description}\n\nProject: ${project}\nTags: ${tags.join(', ')}`,
         affects: [assigned_to || 'unassigned']
       });
       res.json({ success: true, item });
@@ -2856,6 +2882,8 @@ function setupRoutes(app: express.Express, components: any) {
         task: item.title,
         id: item.id,
         status: item.status === 'in_progress' ? 'in-progress' : item.status,
+        project: item.project,
+        tags: item.tags,
       }));
 
       res.json({
@@ -3810,14 +3838,8 @@ function setupRoutes(app: express.Express, components: any) {
   // Task status endpoint for UI auto-refresh
   app.get('/api/task-status', (req, res) => {
     try {
-      // Return mock task statistics (can be enhanced with real tracking later)
-      const taskStatus = {
-        total: Math.floor(Math.random() * 50) + 20,
-        completed: Math.floor(Math.random() * 20) + 5,
-        inProgress: Math.floor(Math.random() * 15) + 2,
-        pending: Math.floor(Math.random() * 30) + 10,
-        timestamp: new Date().toISOString()
-      };
+      // Real task statistics from the live task engine (no mock data).
+      const taskStatus = taskEngine.getTaskStats();
       return res.json(taskStatus);
     } catch (error: any) {
       return res.status(500).json({ success: false, error: error.message });
