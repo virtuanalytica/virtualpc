@@ -874,12 +874,16 @@ export function getBacklogItems() {
   const pending = tasks.filter(t => t.status === 'pending');
   const visible = [...active, ...pending, ...completed];
 
-  const roleMap: { [k: string]: string } = { Kai: 'CTO', Zip: 'Dev', Mira: 'Artist', Luna: 'Tech Artist', Fill: 'CEO', Cleopatra: 'Exec', Alexander: 'Arbiter', MoneyGod: 'Economy', Analyst: 'Analyst', VideoProducer: 'Video', Vice: 'GTA Expert', Atlas: 'AR/VR/CAD', Kimi: 'Researcher' };
+  // Use the canonical ROLE_MAP (from agent-registry, covers all agents) instead of
+  // a hand-maintained local map that had only 13 of 36 agents — the other 23
+  // (Athena, Governor, Hermes-*, Pixel, Testers) displayed with no role. Short form
+  // = text before the ' · ' qualifier, preserving the compact "Name (Role)" UI.
+  const shortRole = (n: string) => (ROLE_MAP[n] || '').split(' · ')[0] || n;
   return visible.map(t => ({
     id: t.id,
     title: t.title,
     priority: t.priority,
-    assigned_to: `${t.assigned_to} (${roleMap[t.assigned_to] || t.assigned_to})`,
+    assigned_to: `${t.assigned_to} (${shortRole(t.assigned_to)})`,
     project: t.project,
     tags: t.tags,
     sprint: t.sprint,
