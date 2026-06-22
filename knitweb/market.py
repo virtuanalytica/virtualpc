@@ -81,9 +81,9 @@ class MarketCap:
             },
             "capacity": {
                 "per_dimension_hex": hex(self.fiber_space),
-                "per_dimension_approx": f"~1.16 × 10^77",
+                "per_dimension_approx": "~1.16 × 10^77",
                 "total_elements_hex": hex(self.total_elements),
-                "total_elements_approx": f"~3.47 × 10^77",
+                "total_elements_approx": "~3.47 × 10^77",
             },
             "fbr_token": {
                 "max_supply_hex": hex(self.max_fbr_supply),

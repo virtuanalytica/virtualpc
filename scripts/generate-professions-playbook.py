@@ -222,8 +222,8 @@ def use_cases(entities: List[str]) -> List[str]:
 def sample_stitches(profession: str, entities: List[str]) -> str:
     subj = entities[0].replace(" ", "_")
     pred_a = f"has_{entities[1]}"
-    pred_b = f"verified_by"
-    pred_c = f"links_to"
+    pred_b = "verified_by"
+    pred_c = "links_to"
     return f"""```json
 {{
   "triple": {{"subject": "did:knit:{subj}/sample", "predicate": "{pred_a}", "object": "did:knit:{entities[2]}/sample"}},

@@ -17,9 +17,9 @@ from __future__ import annotations
 import datetime
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
-from .addressing import addr256, is_valid_addr
+from .addressing import addr256
 
 DOT_SCHEMA = "vpc.dot/1"
 

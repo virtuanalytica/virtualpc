@@ -10,12 +10,11 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 import datetime
-import pytest
 
 from knitweb.addressing import addr256, is_valid_addr, addr_distance, ADDR_BITS, ADDR_HEX
 from knitweb.fiber import Fiber, FiberRegistry
 from knitweb.dot import Dot, DotRegistry, DotType
-from knitweb.knot import Knot, KnotRegistry, compute_knot_addr, validate_knot
+from knitweb.knot import Knot, KnotRegistry, validate_knot
 from knitweb.fbr import (
     FBRLedger, FBR_POSTER_REWARD, FBR_VALIDATOR_REWARD,
     VALIDATORS_REQUIRED, BURN_AFTER_SECONDS, MIN_FBR_TO_VOTE,

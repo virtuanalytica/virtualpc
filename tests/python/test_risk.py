@@ -3,8 +3,6 @@
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
-import datetime
-import pytest
 
 from knitweb.fbr import FBRLedger, VALIDATORS_REQUIRED
 from knitweb.risk import (

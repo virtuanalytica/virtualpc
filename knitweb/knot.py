@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import datetime
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional
 
-from .addressing import addr256, is_valid_addr
+from .addressing import addr256
 
 KNOT_SCHEMA   = "vpc.knot/1"
 MAX_LINE_LEN  = 140

@@ -12,8 +12,8 @@ from typing import Optional
 
 from .addressing import addr256
 from .fiber import Fiber, FiberRegistry
-from .dot import Dot, DotRegistry, DotType
-from .knot import Knot, KnotRegistry, compute_knot_addr
+from .dot import DotRegistry, DotType
+from .knot import Knot, KnotRegistry
 from .fbr import FBRLedger
 from .market import MarketCap
 

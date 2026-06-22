@@ -12,7 +12,7 @@ import datetime
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
-from .addressing import addr256, is_valid_addr
+from .addressing import addr256
 
 FIBER_SCHEMA = "vpc.fiber/1"
 

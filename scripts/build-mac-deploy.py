@@ -10,7 +10,7 @@ de hoofdserver (deze deploy is alleen-lezen).
 Output: ~/familie-export/familie-graph-macos-deploy.zip
 Gebruik op de Mac:  unzip familie-graph-macos-deploy.zip && cd familie-graph && ./deploy.sh
 """
-import json, os, sys, urllib.request, zipfile, io
+import json, os, urllib.request, zipfile
 
 API = os.environ.get("FAMILY_API_BASE", "http://localhost:3100")
 OUT = os.path.join(os.path.expanduser("~"), "familie-export", "familie-graph-macos-deploy.zip")

@@ -22,7 +22,6 @@ documentation. Voice-overs are generated with macOS `say`.
 from __future__ import annotations
 
 import os
-import shlex
 import subprocess
 from pathlib import Path
 from typing import Callable, Iterable, List, Optional, Tuple
