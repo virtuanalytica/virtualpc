@@ -53,10 +53,13 @@ export const COORDINATOR: ModelSpec & { role: string } = {
   provider: 'anthropic', model: 'claude-opus-4-8', effort: 'max',
 };
 
-/** The single PhD-level reviewer that reviews every leg's branch. */
+/** The single PhD-level reviewer that reviews every leg's branch.
+ *  Routed to claude-opus (claude-opus-4-8) — the most capable model the LiteLLM
+ *  gateway actually serves. gpt-5.5/Codex is not served, so the prior route
+ *  resolved to nothing at runtime (see docs/MODEL-NAME-CONSISTENCY-AUDIT.md). */
 export const REVIEWER: ModelSpec & { role: string } = {
   role: 'Principal Reviewer · senior PhD-level engineer',
-  provider: 'codex', model: 'gpt-5.5', effort: 'xhigh',
+  provider: 'anthropic', model: 'claude-opus-4-8', effort: 'xhigh',
 };
 
 export const DEV_LEGS: DeveloperLeg[] = [

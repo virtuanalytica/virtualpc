@@ -43,8 +43,10 @@ export const MODEL_COSTS: { [model: string]: { prompt: number; completion: numbe
   'moonshot':       { prompt: 0, completion: 0, tier: 1 },
   'hermes-3':       { prompt: 0, completion: 0, tier: 1 },
   'qwen-coder-32b': { prompt: 0, completion: 0, tier: 1 },
-  // NOTE: 'gpt-5.5' is referenced by agents but NOT served by the gateway and has
-  // no known pricing — deliberately NOT added here (would be guessed paid cost).
+  // NOTE: 'gpt-5.5' is NOT served by the gateway and has no known pricing, so it is
+  // deliberately NOT priced here. Runtime agents no longer route to it (Athena/REVIEWER
+  // re-routed to claude-opus 2026-06-22); only the aspirational dev-tournament GPT leg
+  // names it as a future Codex placeholder. See docs/MODEL-NAME-CONSISTENCY-AUDIT.md.
   // Cloud fallbacks (used only when local is unreachable or context exceeds local ctx)
   'mistral-7b':     { prompt: 0.0001, completion: 0.0003, tier: 2 },
   'llama-70b':      { prompt: 0.0003, completion: 0.0008, tier: 2 },
