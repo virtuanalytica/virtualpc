@@ -86,6 +86,62 @@ niets hiervan is ooit *gerenderd*. Dit is dé openstaande "werkt het echt"-vraag
 
 ---
 
+## 🤖 VIRTUANALYTICA / VIRTUALPC DEMO — Agent Army & Certification
+
+> Hardware-context: agent army draait op een server (2× Xeon Platinum 8276L,
+> 6 TB RAM, 2× RTX 3090 NVLinked). MacBook Air 2023 dient als afstandsbediening
+> / monitor. Publieke repo naam: **VirtualPC Demo**; "VirtuAnalytica" blijft
+> alleen in lokale `/Admin/...` planning.
+
+### FB-VA1 — Merge goedgekeurde knitweb/pulse PR's ⭐ hoogste prioriteit
+- **Wat:** PR's #248 (Lens), #249 (POUW quorum), #251 (migratieplan generator),
+  #263 (fiber taxonomy) hebben allemaal LGTM/febuz-goedkeuring. Wacht op
+  merge door Claude/maintainer.
+- **Waarom mens:** jij/Claude mergen naar live repo.
+- **Klaar wanneer:** 4 PR's gemerged in `Knitweb/pulse:main`.
+
+### FB-VA2 — Beslis over virtualpc PR #13
+- **Wat:** cleanup PR voor VirtuAnalytica-referenties heeft nu zware merge-conflicts
+  met `master`. De legacy bestanden (`public/virtuanalytica.html`,
+  `scripts/verify-virtuanalytica.ts`) zijn al verwijderd op `master`.
+- **Optie A (aanbevolen):** sluit PR #13 en laat een schone, gefocusede PR maken
+  als er nog demo-features uit moeten.
+- **Optie B:** geef groen licht om de conflicts in PR #13 handmatig op te lossen.
+- **Klaar wanneer:** PR #13 gesloten óf gemerged.
+
+### FB-VA3 — Phase 2: Body of Knowledge ingestion pipeline
+- **Wat:** bouw een bulk-ingestie-pijplijn voor de agent army. Eerste bronnen:
+  DAMA-DMBOK (data), PubChem subset (chem), ArXiv abstracts (academic),
+  RationalWiki/Skeptoid (pseudo). Output: Fiber bundles met `hasFiber` /
+  `hasDomain` relaties.
+- **Waarom agent:** dit is puur code + data; kan headless.
+- **Klaar wanneer:** `python tools/bulk_ingest.py --source-dir ...` produceert
+  getagde bundles die in Lens/Web ingelezen kunnen worden.
+
+### FB-VA4 — Agent-orchestrator voor server-deploy
+- **Wat:** ontwerp + implementeer een orchestrator die specialist-agents op de
+  Xeon/3090-server start, beheert, en via HTTP/P2P vanaf de MacBook Air
+  aanstuurt. Per agent: rol (data/chem/academic/pseudo), LLM-endpoint, fiber-tag.
+- **Waarom agent:** architectuur + code; headless op te bouwen.
+- **Klaar wanneer:** orchestrator draait op server en MacBook kan status zien.
+
+### FB-VA5 — DAMA-DMBOK certificatie-test generator
+- **Wat:** genereer Q&A's uit geïngesteerde triples; laat agents toetsen;
+  sla geslaagde certificaten op als `certification`-fiber bundles.
+- **Waarom agent:** code + regels; kan headless.
+- **Klaar wanneer:** een agent kan slagen voor een CDMP-achtige test en het
+  certificaat is opgeslagen in de fabric.
+
+### FB-VA6 — "Last Humanity Test" A/B demo
+- **Wat:** twee identieke modellen beantwoorden dezelfde moeilijke vragen;
+  één met Knitweb Pulse + Lens (+ optioneel P2P), één zonder. Dashboard toont
+  correctheid, provenance en confidence.
+- **Waarom agent:** code + UI; kan headless gebouwd worden.
+- **Klaar wanneer:** demo draait en laat zien dat Lens-gebruik de scores
+  verbetert.
+
+---
+
 ## Hoe terug te geven aan de agent
 Zet `rm /tmp/claude-stop-autoloop` om de autonome loop te herstarten, of geef
 gewoon door wat je in Studio zag (wat wel/niet werkte) — dan pak ik de fixes op.
