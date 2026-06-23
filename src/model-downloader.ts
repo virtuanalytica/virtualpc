@@ -5,6 +5,8 @@
  */
 
 import { execFile } from 'child_process';
+import { existsSync } from 'fs';
+import { join, delimiter } from 'path';
 import logger from './utils/logger';
 import { MODEL_CATALOG, generateRoster, type ModelInfo } from './model-router';
 
@@ -19,12 +21,29 @@ export interface DownloadResult {
   commands?: string[];
 }
 
+function platformExts(): string[] {
+  return process.platform === 'win32' ? ['.exe', '.cmd', '.bat', '.ps1', ''] : [''];
+}
+
 function which(cmd: string): Promise<string | null> {
   return new Promise((resolve) => {
-    execFile('which', [cmd], (err, stdout) => {
-      if (err) resolve(null);
-      else resolve(stdout.trim() || null);
-    });
+    // Absolute/relative paths are checked as-is and do not need PATH lookup.
+    if (cmd.includes('/') || cmd.includes('\\')) {
+      for (const ext of platformExts()) {
+        const candidate = cmd + ext;
+        if (existsSync(candidate)) return resolve(candidate);
+      }
+      return resolve(null);
+    }
+    const pathEnv = process.env.PATH || '';
+    const dirs = pathEnv.split(delimiter).filter(Boolean);
+    for (const dir of dirs) {
+      for (const ext of platformExts()) {
+        const candidate = join(dir, cmd + ext);
+        if (existsSync(candidate)) return resolve(candidate);
+      }
+    }
+    resolve(null);
   });
 }
 
