@@ -353,7 +353,7 @@ Each agent:
 
 Before running agents full-time:
 
-- [ ] Change `JWT_SECRET` in `.env` to strong random value
+- [ ] Provision `JWT_SECRET` through the deployment secret manager or managed identity flow
 - [ ] Install production HTTPS certificates (Let's Encrypt)
 - [ ] Configure email alerts for budget thresholds
 - [ ] Set up log aggregation (ELK, Splunk, etc.)

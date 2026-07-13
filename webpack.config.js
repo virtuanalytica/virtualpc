@@ -32,13 +32,14 @@ module.exports = {
     },
     compress: true,
     port: 3000,
-    proxy: {
-      '/api': {
+    proxy: [
+      {
+        context: ['/api'],
         target: 'http://localhost:3100',
         pathRewrite: { '^/api': '/api' },
         changeOrigin: true
       }
-    }
+    ]
   },
   optimization: {
     minimize: true

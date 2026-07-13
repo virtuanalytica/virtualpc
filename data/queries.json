@@ -1,0 +1,30 @@
+{
+  "queries": [
+    {
+      "id": "q-mpy8d1za-0",
+      "name": "QChem term",
+      "target": "wiki",
+      "template": "{{term}} definition",
+      "params": [
+        {
+          "name": "term",
+          "required": true
+        }
+      ],
+      "version": 2,
+      "author": "Kimi",
+      "tags": [
+        "qchem"
+      ],
+      "createdAt": "2026-06-03T15:37:44.518Z",
+      "updatedAt": "2026-06-03T15:37:44.675Z",
+      "history": [
+        {
+          "version": 1,
+          "template": "{{term}}",
+          "updatedAt": "2026-06-03T15:37:44.518Z"
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,8 @@
  *   - virtualpc/src/**.ts        (kind: code)
  *   - virtualpc/docs/*.md        (kind: doc)
  *   - virtualpc/scripts/*.{js,sh} (kind: code)
+ *   - virtualpc-knowledge/*.md   (kind: doc)
+ *   - alexander-knowledge/*.md   (kind: doc)
  *   - molgang-web/api/**.py      (kind: code)
  *   - molgang-web/frontend/app/**.tsx (kind: code)
  *   - molgang-web/shared/*.json  (kind: shared-data)
@@ -28,6 +30,8 @@ const ROOTS = [
   { dir: '/home/knight2/virtualpc/src',           glob: /\.(ts|tsx|js|mjs)$/, kind: 'code' },
   { dir: '/home/knight2/virtualpc/docs',          glob: /\.md$/,              kind: 'doc' },
   { dir: '/home/knight2/virtualpc/scripts',       glob: /\.(js|sh|py)$/,      kind: 'code' },
+  { dir: '/home/knight2/virtualpc-knowledge',     glob: /\.(md|rst|txt)$/,    kind: 'doc' },
+  { dir: '/home/knight2/alexander-knowledge',     glob: /\.(md|rst|txt)$/,    kind: 'doc' },
   { dir: '/media/knight2/EDS2/projects/molgang-web/api',     glob: /\.py$/,   kind: 'code' },
   { dir: '/media/knight2/EDS2/projects/molgang-web/frontend/app', glob: /\.(tsx|ts)$/, kind: 'code' },
   { dir: '/media/knight2/EDS2/projects/molgang-web/shared',  glob: /\.json$/, kind: 'shared-data' },
@@ -88,6 +92,8 @@ function shorten(p) {
   // Make source paths repo-relative for nicer ids
   return p
     .replace('/home/knight2/virtualpc/', 'virtualpc:')
+    .replace('/home/knight2/virtualpc-knowledge/', 'virtualpc-knowledge:')
+    .replace('/home/knight2/alexander-knowledge/', 'alexander-knowledge:')
     .replace('/media/knight2/EDS2/projects/molgang-web/', 'molgang-web:')
     .replace(/\//g, '/');
 }

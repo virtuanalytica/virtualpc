@@ -222,6 +222,7 @@ const DESIGNER_AGENTS = new Set(['Mira', 'Luna']);
 const LITELLM_URL = process.env.LITELLM_URL || '';
 const LM_STUDIO_URL = LITELLM_URL || process.env.LM_STUDIO_URL || 'http://127.0.0.1:1234/v1';
 const LITELLM_MASTER_KEY = process.env.LITELLM_MASTER_KEY || 'sk-virtualpc-dev';
+const OLLAMA_URL = (process.env.OLLAMA_URL || 'http://127.0.0.1:11434').replace(/\/$/, '');
 
 // Per-agent / per-task-type model routing. Keys are agent names from the roster.
 // Right-hand side is a substring that must appear in the LM Studio model id.
@@ -314,6 +315,7 @@ interface LmChatResponse {
 
 let cachedModels: { at: number; models: LmModel[] } | null = null;
 const MODEL_CACHE_MS = 15_000;
+let lastModelFetchWarningAt = 0;
 
 async function fetchJson<T>(url: string, init?: RequestInit, timeoutMs = 5000): Promise<T> {
   const ctrl = new AbortController();
@@ -344,36 +346,59 @@ export async function getModels(force = false): Promise<LmModel[]> {
     cachedModels = { at: Date.now(), models: r.data || [] };
     return cachedModels.models;
   } catch (e: any) {
-    logger.warn(`LM Studio unreachable: ${e.message}`);
+    cachedModels = { at: Date.now(), models: [] };
+    if (force || Date.now() - lastModelFetchWarningAt > MODEL_CACHE_MS) {
+      logger.warn(`LM Studio unreachable: ${e.message}`);
+      lastModelFetchWarningAt = Date.now();
+    }
     return [];
   }
 }
 
 export async function healthCheck(): Promise<{
   reachable: boolean;
+  chatReachable: boolean;
   gateway: 'litellm' | 'lm-studio';
   url: string;
   modelsLoaded: number;
   models: string[];
+  fallback: {
+    provider: 'ollama';
+    reachable: boolean;
+    url: string;
+    models: string[];
+    defaultModel: string;
+    error?: string;
+  };
+  activeChatBackend: 'lm-studio' | 'litellm' | 'ollama' | 'none';
   error?: string;
 }> {
   const gateway = LITELLM_URL ? 'litellm' : 'lm-studio';
+  const fallback = await ollamaHealth();
   try {
-    const models = await getModels(true);
+    const r = await fetchJson<{ data: LmModel[] }>(`${LM_STUDIO_URL}/models`, undefined, 3000);
+    const models = r.data || [];
+    cachedModels = { at: Date.now(), models };
     return {
       reachable: true,
+      chatReachable: true,
       gateway,
       url: LM_STUDIO_URL,
       modelsLoaded: models.length,
       models: models.map(m => m.id),
+      fallback,
+      activeChatBackend: LITELLM_URL ? 'litellm' : 'lm-studio',
     };
   } catch (e: any) {
     return {
       reachable: false,
+      chatReachable: fallback.reachable,
       gateway,
       url: LM_STUDIO_URL,
       modelsLoaded: 0,
       models: [],
+      fallback,
+      activeChatBackend: fallback.reachable ? 'ollama' : 'none',
       error: e.message,
     };
   }
@@ -398,6 +423,112 @@ async function resolveModel(hint: string): Promise<string | null> {
   }
   const fallback = models.find(m => !/embed/i.test(m.id));
   return fallback?.id || null;
+}
+
+const OLLAMA_HINT_ROUTES: Array<[RegExp, string]> = [
+  [/devstral|coder|code/i, 'qwen2.5-coder:7b'],
+  [/qwen3\.5|qwen|gemma/i, 'qwen2.5-coder:14b'],
+  [/deepseek|reason|arbitration/i, 'deepseek-r1:8b'],
+  [/claude|sonnet|design|docs/i, 'hermes3:8b'],
+  [/phi-4|cheap|chat/i, 'hermes3:3b'],
+];
+
+function ollamaModelForHint(hint: string): string {
+  for (const [rx, model] of OLLAMA_HINT_ROUTES) {
+    if (rx.test(hint)) return model;
+  }
+  return process.env.OLLAMA_CHAT_MODEL || 'hermes3:8b';
+}
+
+async function ollamaHealth(): Promise<{
+  provider: 'ollama';
+  reachable: boolean;
+  url: string;
+  models: string[];
+  defaultModel: string;
+  error?: string;
+}> {
+  try {
+    const r = await fetch(`${OLLAMA_URL}/api/tags`, { signal: AbortSignal.timeout(3000) });
+    if (!r.ok) {
+      return {
+        provider: 'ollama',
+        reachable: false,
+        url: OLLAMA_URL,
+        models: [],
+        defaultModel: ollamaModelForHint('chat'),
+        error: `${r.status} ${await r.text()}`,
+      };
+    }
+    const data: any = await r.json();
+    return {
+      provider: 'ollama',
+      reachable: true,
+      url: OLLAMA_URL,
+      models: Array.isArray(data.models) ? data.models.map((m: any) => m.name || m.model).filter(Boolean) : [],
+      defaultModel: ollamaModelForHint('chat'),
+    };
+  } catch (e: any) {
+    return {
+      provider: 'ollama',
+      reachable: false,
+      url: OLLAMA_URL,
+      models: [],
+      defaultModel: ollamaModelForHint('chat'),
+      error: e.message,
+    };
+  }
+}
+
+function estimateUsage(messages: LmChatMessage[], content: string) {
+  const promptText = messages.map(m => m.content).join('\n\n');
+  const promptTokens = Math.max(1, Math.round(promptText.length / 4));
+  const completionTokens = Math.max(1, Math.round(content.length / 4));
+  return {
+    prompt_tokens: promptTokens,
+    completion_tokens: completionTokens,
+    total_tokens: promptTokens + completionTokens,
+    source: 'ollama-estimate',
+  };
+}
+
+async function chatViaOllama(
+  agent: string,
+  hint: string,
+  messages: LmChatMessage[],
+  opts: { temperature?: number; max_tokens?: number } = {},
+): Promise<{ ok: true; model: string; agent: string; content: string; usage: any; latencyMs: number } | null> {
+  const model = ollamaModelForHint(hint);
+  const started = Date.now();
+  try {
+    const r = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages,
+        stream: false,
+        options: {
+          temperature: opts.temperature ?? 0.6,
+          num_predict: opts.max_tokens ?? 512,
+        },
+      }),
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!r.ok) {
+      logger.warn(`Ollama fallback failed (${model}): ${r.status} ${await r.text()}`);
+      return null;
+    }
+    const data: any = await r.json();
+    const content = data?.message?.content || '';
+    const latencyMs = Date.now() - started;
+    const usage = estimateUsage(messages, content);
+    recordThroughput(agent, `ollama/${model}`, usage, latencyMs);
+    return { ok: true, model: `ollama/${model}`, agent, content, usage, latencyMs };
+  } catch (e: any) {
+    logger.warn(`Ollama fallback unavailable (${model}): ${e.message}`);
+    return null;
+  }
 }
 
 export async function chatAsAgent(
@@ -471,12 +602,15 @@ export async function chatAsAgent(
 
   const model = await resolveModel(hint);
   if (!model) {
+    const ollama = await chatViaOllama(agent, hint, messages, opts);
+    if (ollama) return ollama;
+
     const health = await healthCheck();
     if (!health.reachable) {
       return {
         ok: false,
-        reason: 'LM Studio server unreachable',
-        hint: 'Start with:  lms server start    and load a model:  lms load google/gemma-4-26b-a4b',
+        reason: 'No local chat backend reachable',
+        hint: 'Start LM Studio or Ollama. Current fallback tried Ollama at ' + OLLAMA_URL,
       };
     }
     return {
@@ -515,6 +649,9 @@ export async function chatAsAgent(
       latencyMs,
     };
   } catch (e: any) {
+    const ollama = await chatViaOllama(agent, hint, messages, opts);
+    if (ollama) return ollama;
+
     // Two distinct error families the local stack throws under load:
     //   • VRAM/OOM pressure: gpu out of memory / cuda oom / allocation failed
     //   • Model not yet loaded: failed to load / operation canceled / unload / not yet loaded

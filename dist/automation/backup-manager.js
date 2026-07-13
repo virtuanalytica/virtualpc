@@ -10,6 +10,9 @@ class BackupManager {
         this.backups = new Map();
         this.recoveryPlans = new Map();
         this.backupSchedule = [];
+        // Monotonic suffix: two backups of the same database in the same ms would
+        // otherwise share an id and overwrite each other in the map.
+        this.idSeq = 0;
         this.initializeBackupSchedule();
         this.initializeRecoveryPlans();
     }
@@ -80,7 +83,7 @@ class BackupManager {
      * Create backup
      */
     createBackup(database, type) {
-        const backupId = `backup_${Date.now()}_${database}`;
+        const backupId = `backup_${Date.now()}_${database}_${this.idSeq++}`;
         const backup = {
             id: backupId,
             type,

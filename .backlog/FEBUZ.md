@@ -1,5 +1,8 @@
 # FEBUZ — tickets voor een mens (Edwin) 🧑‍🔧
 
+**Project:** MOLGANG
+**Default tags inherited by items:** `project:molgang`, `human-review`, `visual-qa`, `roblox`, `github-review`
+
 > Deze tickets kan de agent **niet** headless oplossen — ze vragen een mens:
 > Roblox Studio openen en kijken, visueel beoordelen, of een PR reviewen/mergen.
 > De agent heeft de logica al bewezen (headless tests groen); wat hier staat is

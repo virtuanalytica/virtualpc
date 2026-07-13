@@ -9,6 +9,7 @@
  */
 
 import logger from '../utils/logger';
+import { AGENT_NAMES } from '../agent-registry';
 
 export interface FacilitatorConfig {
   maxTasksPerAgent: number; // Max concurrent tasks
@@ -59,8 +60,7 @@ export class TaskFacilitator {
    * Initialize agent workload tracking
    */
   private initializeAgents(): void {
-    const agents = ['fill', 'kai', 'zip', 'mira', 'luna'];
-    agents.forEach(agent => {
+    AGENT_NAMES.forEach(agent => {
       this.agentWorkload.set(agent, 0);
     });
   }
@@ -241,7 +241,7 @@ export class TaskFacilitator {
 
     const previousAgent = facilitation.agent;
     facilitation.status = 'escalated';
-    facilitation.agent = 'fill'; // CEO takes over
+    facilitation.agent = 'Fill'; // CEO takes over
 
     logger.warn(
       `📢 Escalated task ${taskId} to CEO: ` +

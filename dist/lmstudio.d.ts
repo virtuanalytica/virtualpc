@@ -9,6 +9,16 @@
  * Graceful degradation: if the server is down or the model isn't loaded,
  * endpoints return a structured error the UI can display rather than 500'ing.
  */
+export declare function getLastThroughput(): {
+    [x: string]: {
+        tokensPerSec: number;
+        model: string;
+        promptTokens: number;
+        completionTokens: number;
+        latencyMs: number;
+        ts: string;
+    };
+};
 declare const TASK_TYPE_ROUTES: {
     [kind: string]: string;
 };
@@ -24,10 +34,20 @@ interface LmChatMessage {
 export declare function getModels(force?: boolean): Promise<LmModel[]>;
 export declare function healthCheck(): Promise<{
     reachable: boolean;
+    chatReachable: boolean;
     gateway: 'litellm' | 'lm-studio';
     url: string;
     modelsLoaded: number;
     models: string[];
+    fallback: {
+        provider: 'ollama';
+        reachable: boolean;
+        url: string;
+        models: string[];
+        defaultModel: string;
+        error?: string;
+    };
+    activeChatBackend: 'lm-studio' | 'litellm' | 'ollama' | 'none';
     error?: string;
 }>;
 export declare function chatAsAgent(agent: string, messages: LmChatMessage[], opts?: {

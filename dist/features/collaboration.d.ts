@@ -42,6 +42,7 @@ export declare class CollaborationManager {
     private collaborations;
     private workspaces;
     private conversations;
+    private idSeq;
     /**
      * Start collaboration
      */

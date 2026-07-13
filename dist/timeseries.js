@@ -26,12 +26,16 @@ function findTimestampColumn(header, rows) {
     const namedIdx = header.findIndex(h => namePriority.test(h));
     if (namedIdx >= 0)
         return namedIdx;
-    // Fall back: first column whose top-N values all parse as dates
+    // Fall back: first column whose top-N values all parse as dates. Require the
+    // value to be NON-numeric first — Date.parse() leniently accepts bare
+    // integers (e.g. Date.parse('2') is a valid date), which would otherwise
+    // misclassify a numeric data column (reactor temp/pressure) as the timestamp
+    // and drop it from analysis entirely.
     const sample = rows.slice(0, 8);
     for (let c = 0; c < header.length; c++) {
         if (sample.length === 0)
             break;
-        const allDates = sample.every(r => r[c] && !isNaN(Date.parse(r[c])));
+        const allDates = sample.every(r => r[c] && isNaN(Number(r[c])) && !isNaN(Date.parse(r[c])));
         if (allDates)
             return c;
     }

@@ -2,6 +2,7 @@
 
 **Status**: Enhancement & Innovation Ideas  
 **Last Updated**: 2026-04-12
+**Default tags inherited by items**: `project:virtualpc-platform`, `priority:low`, `innovation`, `long-term`
 
 ---
 
@@ -199,4 +200,3 @@ Based on player feedback (to be collected):
 
 **Last Review**: 2026-04-12  
 **Next Review**: 2026-05-12
-

@@ -122,6 +122,7 @@ INFISICAL_ENV_API / _INFRA / _MONEY  (Infisical environment slugs; default apis/
   - **Step 1 (needs owner):** create the 3 Infisical environments + populate
     secrets, provision a machine identity, inject `INFISICAL_*`. Code cannot do
     this — no access to the Infisical account.
-  - **Step 3 (gated on step 1):** once Infisical supplies the values, delete the
-    legacy `.env` and remove the transitional `process.env` fallbacks
-    (`secretOrEnv` env branch, `FieldCrypto.fromEnv` auto-init).
+  - **Step 3 (gated on step 1):** once Infisical supplies the values through the
+    process manager or managed identity flow, remove the transitional
+    `process.env` secret fallbacks (`secretOrEnv` env branch,
+    `FieldCrypto.fromEnv` auto-init).

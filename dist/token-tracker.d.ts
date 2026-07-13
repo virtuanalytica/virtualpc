@@ -3,7 +3,20 @@
  * Records every inference call with tokens used, model, cost
  * Provides aggregations by hour, day, month, and combined totals
  */
+export declare const MODEL_COSTS: {
+    [model: string]: {
+        prompt: number;
+        completion: number;
+        tier: 1 | 2 | 3;
+    };
+};
 export declare function recordAgentTokens(): void;
+export declare function recordRealEvent(input: {
+    agent: string;
+    model: string;
+    promptTokens: number;
+    completionTokens: number;
+}): void;
 export declare function getHourlyUsage(agent?: string): any[];
 export declare function getDailyUsage(agent?: string): any[];
 export declare function getAgentSummary(): {

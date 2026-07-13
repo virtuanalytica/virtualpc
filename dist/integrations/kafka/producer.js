@@ -274,6 +274,30 @@ class KafkaProducer {
         }
     }
     /**
+     * Publish a commit.audit event (recorded by post-commit git hook +
+     * /api/audit/commit endpoint).
+     */
+    async publishCommitAudit(payload) {
+        if (!this.connected)
+            return;
+        await this.producer.send({
+            topic: 'commit.audit',
+            messages: [{ key: payload.sha, value: JSON.stringify(payload) }],
+        });
+    }
+    /**
+     * Publish a task.failed event when a task hits a non-recoverable error
+     * (LM Studio timeout, model load failure, artifact-gen exception).
+     */
+    async publishTaskFailed(payload) {
+        if (!this.connected)
+            return;
+        await this.producer.send({
+            topic: 'task.failed',
+            messages: [{ key: payload.task_id, value: JSON.stringify(payload) }],
+        });
+    }
+    /**
      * Batch publish messages
      */
     async publishBatch(topic, messages) {

@@ -1,5 +1,5 @@
 /**
- * MOLGANG Phase 5 API Endpoints
+ * VirtualPC API Endpoints
  * Comprehensive game system integration
  */
 import { Express } from 'express';

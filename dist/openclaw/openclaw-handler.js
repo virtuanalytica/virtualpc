@@ -1,10 +1,41 @@
 "use strict";
-/**
- * OpenClaw Integration Handler
- * Autonomous agent command execution without approval
- */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenClawHandler = void 0;
+const child_process_1 = require("child_process");
+const path = __importStar(require("path"));
 class OpenClawHandler {
     constructor() {
         this.commandQueue = [];
@@ -41,6 +72,12 @@ class OpenClawHandler {
                 cmd.error = error.message;
                 cmd.status = 'failed';
             }
+            // Move the command OUT of the active queue into history. Previously it
+            // was left in commandQueue too, so completed commands were double-counted
+            // in getStats()/getCommandHistory() and the queue grew without bound.
+            const qi = this.commandQueue.indexOf(cmd);
+            if (qi !== -1)
+                this.commandQueue.splice(qi, 1);
             this.executedCommands.push(cmd);
             if (this.executedCommands.length > 1000) {
                 this.executedCommands.shift();
@@ -85,9 +122,46 @@ class OpenClawHandler {
                     memory: process.memoryUsage().heapUsed / 1024 / 1024,
                     uptime: process.uptime()
                 };
+            case 'molgang-readiness':
+                return this.runVirtualPcScript('molgang-agent-readiness.sh', ['--json']);
+            case 'molgang-delegate-smartslag':
+                return this.runVirtualPcScript('delegate-smartslag-roadmap.js', params?.dryRun ? ['--dry-run'] : []);
+            case 'molgang-delegate-roadmap':
+                return this.runVirtualPcScript('delegate-molgang-roadmap.js', []);
             default:
                 throw new Error(`Unknown command: ${command}`);
         }
+    }
+    /**
+     * Run a whitelisted VirtualPC operations script. These commands are the
+     * bridge between autonomous agents and local MOLGANG tooling; keep them
+     * narrow and deterministic.
+     */
+    runVirtualPcScript(scriptName, args) {
+        const repoRoot = path.resolve(__dirname, '..', '..');
+        const scriptPath = path.join(repoRoot, 'scripts', scriptName);
+        const runner = scriptName.endsWith('.js') ? 'node' : 'bash';
+        const output = (0, child_process_1.execFileSync)(runner, [scriptPath, ...args], {
+            cwd: repoRoot,
+            encoding: 'utf-8',
+            timeout: 120000,
+            maxBuffer: 1024 * 1024 * 4,
+            env: {
+                ...process.env,
+                VIRTUALPC_ROOT: repoRoot,
+                MOLGANG_ROOT: process.env.MOLGANG_ROOT || '/home/knight2/molgang-roblox'
+            }
+        });
+        const trimmed = output.trim();
+        if (scriptName === 'molgang-agent-readiness.sh') {
+            try {
+                return JSON.parse(trimmed);
+            }
+            catch (error) {
+                return { raw: trimmed, parseError: error.message };
+            }
+        }
+        return { output: trimmed };
     }
     /**
      * Get command status

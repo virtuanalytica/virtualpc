@@ -63,12 +63,16 @@ function ensureDir() {
         fs.writeFileSync(AUDIT_FILE, '');
 }
 function attributeAgent(subject) {
-    // Co-author trailer + subject keyword. Mirrors commits-tracker's heuristic
-    // but kept local so this module doesn't depend on commits-tracker (to avoid
-    // a require cycle when commits-tracker eventually wants to read this file).
-    const hay = subject.toLowerCase();
-    for (const a of agent_registry_1.AGENT_NAMES) {
-        if (hay.includes(a.toLowerCase()))
+    // Word-boundary match so "Vice" doesn't match the "vice" inside "service",
+    // "Kai" doesn't match "kafka", "Mira" doesn't match "miracle", etc. Sort
+    // by length-desc so multi-word names (Hermes-Roblox, Tester-Web-Sam) are
+    // tried before their prefixes.
+    const sorted = [...agent_registry_1.AGENT_NAMES].sort((a, b) => b.length - a.length);
+    for (const a of sorted) {
+        // Escape any regex specials in the agent name (Hermes-Roblox has -)
+        const safe = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp(`\\b${safe}\\b`, 'i');
+        if (re.test(subject))
             return a;
     }
     return 'System';
@@ -128,6 +132,27 @@ function record(input) {
         source: input.source || 'api',
     };
     appendOne(entry);
+    // Publish to Kafka commit.audit topic so the audit consumer + future
+    // replicas see the same event. Best-effort — failure logs but doesn't
+    // affect the local-jsonl recording. Architecture doc § 4.1 lists this
+    // as a producer; the wire is here.
+    // Lazy import to avoid pulling kafka into tools that just want to read
+    // the audit log without producer-side dependencies.
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { bestEffortPublish } = require('./integrations/kafka/shared');
+        bestEffortPublish((p) => p.publishCommitAudit({
+            sha: entry.sha,
+            shortSha: entry.shortSha,
+            author: entry.author,
+            ts: entry.timestamp,
+            subject: entry.subject,
+            attributedAgent: entry.attributedAgent,
+            taskRef: entry.taskRef,
+            source: entry.source,
+        }));
+    }
+    catch { /* shared.ts not loadable in some test envs — silently skip */ }
     return { ok: true, entry };
 }
 function list(filter) {

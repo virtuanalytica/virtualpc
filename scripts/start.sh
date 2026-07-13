@@ -35,11 +35,8 @@ if [ -f "$PID_FILE" ]; then
     fi
 fi
 
-# Check environment
-if [ ! -f "$SCRIPT_DIR/.env" ]; then
-    echo -e "${RED}✗ .env file not found. Run ./setup.sh first.${NC}"
-    exit 1
-fi
+# Open-source VirtualPC does not require or load .env files. Secrets should be
+# injected by Infisical/key manager, managed identity, or the process manager.
 
 echo -e "${YELLOW}[1/4] Checking services...${NC}"
 

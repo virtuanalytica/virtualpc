@@ -1,0 +1,1021 @@
+{
+  "generatedAt": "2026-06-14T17:40:10.322Z",
+  "source": "http://127.0.0.1:3100/api/agents/overview",
+  "threshold": 70,
+  "scoreSummary": {
+    "avgScore": 100,
+    "lowestScore": 100,
+    "needsAttention": [],
+    "blockedAgents": []
+  },
+  "agents": [
+    {
+      "name": "Alexander",
+      "role": "Technical Arbiter",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Principles doc refresh",
+      "scorecard": {
+        "agent": "Alexander",
+        "role": "Technical Arbiter",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 40,
+        "lastActivity": "2026-06-14T17:39:11.814Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Analyst",
+      "role": "Data Analyst",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Quality-of-output scoring",
+      "scorecard": {
+        "agent": "Analyst",
+        "role": "Data Analyst",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 70,
+        "lastActivity": "2026-06-14T17:39:41.808Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Athena",
+      "role": "Principal Reviewer · senior PhD-level engineer · GPT-5.5 (Codex, xhigh) PR gate · owns coding standards",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Coding standards enforcement pass",
+      "scorecard": {
+        "agent": "Athena",
+        "role": "Principal Reviewer · senior PhD-level engineer · GPT-5.5 (Codex, xhigh) PR gate · owns coding standards",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 38,
+        "lastActivity": "2026-06-14T17:40:01.833Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Atlas",
+      "role": "Simulation / AR / VR / CAD Realism",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Audit: simulation fidelity of agent behaviors",
+      "scorecard": {
+        "agent": "Atlas",
+        "role": "Simulation / AR / VR / CAD Realism",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 10,
+        "lastActivity": "2026-06-14T17:40:01.823Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Cleopatra",
+      "role": "Executive Authority",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Dual-sign-off workflow",
+      "scorecard": {
+        "agent": "Cleopatra",
+        "role": "Executive Authority",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 78,
+        "lastActivity": "2026-06-14T17:39:11.809Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Croesus",
+      "role": "Commercialization Strategist",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Daily portfolio rebalance",
+      "scorecard": {
+        "agent": "Croesus",
+        "role": "Commercialization Strategist",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:39:51.823Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Fill",
+      "role": "CEO · Scrum-of-Scrums chair",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Maintain important-files list + code review rotation",
+      "scorecard": {
+        "agent": "Fill",
+        "role": "CEO · Scrum-of-Scrums chair",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 40,
+        "lastActivity": "2026-06-14T17:39:31.807Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Governor",
+      "role": "Data Governance / Wiki Analyst",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Knowledge graph lineage audit",
+      "scorecard": {
+        "agent": "Governor",
+        "role": "Data Governance / Wiki Analyst",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 63,
+        "lastActivity": "2026-06-14T17:39:41.808Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Hermes-Cross",
+      "role": "Scrum-of-Scrums coordinator",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Hermes-Cross: knowledge evidence check",
+      "scorecard": {
+        "agent": "Hermes-Cross",
+        "role": "Scrum-of-Scrums coordinator",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:39:21.806Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Hermes-Marketing",
+      "role": "Scrum Master · Marketing & Perception",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Hermes-Marketing: knowledge evidence check",
+      "scorecard": {
+        "agent": "Hermes-Marketing",
+        "role": "Scrum Master · Marketing & Perception",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:11.822Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Hermes-Reviewer",
+      "role": "DeepSeek-R1 cross-team reviewer",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Hermes-Reviewer: review handoff prep",
+      "scorecard": {
+        "agent": "Hermes-Reviewer",
+        "role": "DeepSeek-R1 cross-team reviewer",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 0,
+        "lastActivity": "2026-06-14T17:39:11.823Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Hermes-Roblox",
+      "role": "Scrum Master · Roblox team",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Hermes-Roblox: knowledge evidence check",
+      "scorecard": {
+        "agent": "Hermes-Roblox",
+        "role": "Scrum Master · Roblox team",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 38,
+        "lastActivity": "2026-06-14T17:39:21.805Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Hermes-Web",
+      "role": "Scrum Master · Web team",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Hermes-Web: review handoff prep",
+      "scorecard": {
+        "agent": "Hermes-Web",
+        "role": "Scrum Master · Web team",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:40:01.824Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Kai",
+      "role": "CTO · Cross-team infra",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Anti-abuse rate limiting",
+      "scorecard": {
+        "agent": "Kai",
+        "role": "CTO · Cross-team infra",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 39,
+        "lastActivity": "2026-06-14T17:40:01.822Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Kimi",
+      "role": "Long-Context Researcher",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Knowledge-graph build from .governance docs",
+      "scorecard": {
+        "agent": "Kimi",
+        "role": "Long-Context Researcher",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:39:31.809Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Luna",
+      "role": "Tech Artist",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Frontend bundle size",
+      "scorecard": {
+        "agent": "Luna",
+        "role": "Tech Artist",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:39:31.809Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Mira",
+      "role": "Creative Director",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Agent avatar refresh",
+      "scorecard": {
+        "agent": "Mira",
+        "role": "Creative Director",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:31.808Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "MoneyGod",
+      "role": "Economy Authority",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Anti-farm enforcement on shared resources",
+      "scorecard": {
+        "agent": "MoneyGod",
+        "role": "Economy Authority",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 53,
+        "lastActivity": "2026-06-14T17:39:51.814Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Pixel",
+      "role": "Web Developer · Next.js / Wiki UX",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Wiki graph inspector",
+      "scorecard": {
+        "agent": "Pixel",
+        "role": "Web Developer · Next.js / Wiki UX",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 63,
+        "lastActivity": "2026-06-14T17:39:51.827Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-GP-Dante",
+      "role": "Mission + narrative design",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-GP-Dante: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-GP-Dante",
+        "role": "Mission + narrative design",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:39:31.811Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-GP-Iris",
+      "role": "Character animation · dialogue · NPC AI",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-GP-Iris: scenario playtest",
+      "scorecard": {
+        "agent": "Tester-GP-Iris",
+        "role": "Character animation · dialogue · NPC AI",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 75,
+        "lastActivity": "2026-06-14T17:39:51.838Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-GP-Onyx",
+      "role": "Physics + interaction realism",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-GP-Onyx: friction note",
+      "scorecard": {
+        "agent": "Tester-GP-Onyx",
+        "role": "Physics + interaction realism",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 13,
+        "lastActivity": "2026-06-14T17:39:41.811Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-GP-Sienna",
+      "role": "Open-world feel · density + ambient life",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-GP-Sienna: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-GP-Sienna",
+        "role": "Open-world feel · density + ambient life",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 50,
+        "lastActivity": "2026-06-14T17:40:01.835Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-MK-Alex",
+      "role": "Plays competitor chemistry games",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-MK-Alex: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-MK-Alex",
+        "role": "Plays competitor chemistry games",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 38,
+        "lastActivity": "2026-06-14T17:39:01.832Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-MK-Robin",
+      "role": "TikTok / social-loop tester",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-MK-Robin: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-MK-Robin",
+        "role": "TikTok / social-loop tester",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:41.811Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-RB-Avery",
+      "role": "Educator playing in classroom",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-RB-Avery: knowledge freshness check",
+      "scorecard": {
+        "agent": "Tester-RB-Avery",
+        "role": "Educator playing in classroom",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:11.823Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-RB-Casey",
+      "role": "Casual Roblox player (10-13)",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-RB-Casey: scenario playtest",
+      "scorecard": {
+        "agent": "Tester-RB-Casey",
+        "role": "Casual Roblox player (10-13)",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 63,
+        "lastActivity": "2026-06-14T17:39:31.810Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-RB-Morgan",
+      "role": "Speedrunner / glitch-hunter",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-RB-Morgan: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-RB-Morgan",
+        "role": "Speedrunner / glitch-hunter",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:31.810Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-RB-Riley",
+      "role": "Hardcore tycoon player (14-17)",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-RB-Riley: knowledge freshness check",
+      "scorecard": {
+        "agent": "Tester-RB-Riley",
+        "role": "Hardcore tycoon player (14-17)",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:41.811Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-Web-Drew",
+      "role": "Accessibility tester (screen reader)",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-Web-Drew: knowledge freshness check",
+      "scorecard": {
+        "agent": "Tester-Web-Drew",
+        "role": "Accessibility tester (screen reader)",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 38,
+        "lastActivity": "2026-06-14T17:39:51.836Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-Web-Jordan",
+      "role": "Chemistry teacher curriculum tester",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-Web-Jordan: knowledge freshness check",
+      "scorecard": {
+        "agent": "Tester-Web-Jordan",
+        "role": "Chemistry teacher curriculum tester",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:51.837Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-Web-Quinn",
+      "role": "Desktop browser player",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-Web-Quinn: friction note",
+      "scorecard": {
+        "agent": "Tester-Web-Quinn",
+        "role": "Desktop browser player",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 25,
+        "lastActivity": "2026-06-14T17:39:51.836Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Tester-Web-Sam",
+      "role": "Mobile-first web player (Z Fold)",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Tester-Web-Sam: regression repro pass",
+      "scorecard": {
+        "agent": "Tester-Web-Sam",
+        "role": "Mobile-first web player (Z Fold)",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 38,
+        "lastActivity": "2026-06-14T17:39:31.811Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Vice",
+      "role": "Open-World Design Expert",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Density / scale design study",
+      "scorecard": {
+        "agent": "Vice",
+        "role": "Open-World Design Expert",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 33,
+        "lastActivity": "2026-06-14T17:40:01.823Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "VideoProducer",
+      "role": "Video Producer",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Per-agent intro shorts",
+      "scorecard": {
+        "agent": "VideoProducer",
+        "role": "Video Producer",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 9,
+        "lastActivity": "2026-06-14T17:39:51.816Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    },
+    {
+      "name": "Zip",
+      "role": "Developer",
+      "score": 100,
+      "grade": "A",
+      "status": "working",
+      "tasksCompleted": 12,
+      "tasksInProgress": 2,
+      "currentTask": "Agent inbox / outbox UI",
+      "scorecard": {
+        "agent": "Zip",
+        "role": "Developer",
+        "score": 100,
+        "grade": "A",
+        "status": "working",
+        "completed": 12,
+        "inProgress": 2,
+        "pending": 2,
+        "total": 16,
+        "averageActiveProgress": 45,
+        "lastActivity": "2026-06-14T17:39:21.805Z",
+        "blockerCount": 0,
+        "placeholderCount": 0,
+        "notes": [
+          "queue healthy"
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,41 @@
 {
-  "standups": [],
+  "standups": [
+    {
+      "id": "su-mpy7itda-391z5",
+      "team": "cross",
+      "agent": "Coordinator",
+      "body": "COORDINATION RUN 2026-06-03: 36/36 agents active, none stuck. CRITICAL: NVIDIA driver not loaded (nvidia-smi fails, /proc/driver/nvidia absent) -> both 3090s unavailable; blocks GPU inference, 3D/4D rendering, VideoProducer dual-3090 recording rig. LM Studio :1234 down; Ollama :11434 up with 9 models but no GPU accel. Root disk 85% (18GB). Action: reload NVIDIA driver (sudo modprobe nvidia / reboot), restart LM Studio, relocate build caches to EDS2.",
+      "at": "2026-06-03T15:14:13.678Z"
+    },
+    {
+      "id": "su-mpy7itro-gw3b3",
+      "team": "scrum-web",
+      "agent": "Coordinator",
+      "body": "DESIGNERS/3D-4D CHECK: Mira (empty-state SVGs), Luna (asset-pipeline minification), Atlas (sim-fidelity audit), VideoProducer (recording rig - BLOCKED by GPU driver down) all on real work. Pixel was idle on a placeholder -> reassigned to web asset mirroring. ASSET GAPS: 96 orphan assets; 48 Roblox 3D-models + 48 textures have 0 web-mirrored -> cross-platform pipeline not propagating. Owners: Luna+Pixel+Governor.",
+      "at": "2026-06-03T15:14:14.196Z"
+    },
+    {
+      "id": "su-mpyceiwz-lz2cs",
+      "team": "scrum-web",
+      "agent": "Coordinator",
+      "body": "ASSET REMEDIATION READY: GET /api/assets/mirror-coverage now returns the Roblox→Web work list — 96 assets at 0% web coverage (48 3d-models→.glb, 48 textures→.webp). Pixel (assigned coord-pixel-web-asset-mirror): convert per the manifest; Luna: wire build-time minification on the web outputs; Governor: register lineage for each mirrored pair. Track coverage% back up via the same endpoint.",
+      "at": "2026-06-03T17:30:51.587Z"
+    },
+    {
+      "id": "su-numerai-ff-cross-asset-20260612",
+      "team": "cross",
+      "agent": "Codex",
+      "body": "NUMERAI EXECUTION ROUTED TO VIRTUALPC: F&F cross-asset prediction workflow is active for Analyst/Kai/Kimi/Alexander/MoneyGod. This workstream is scoped to /media/knight2/EDS2/projects/numerai-signals and explicitly excludes MOLGANG repositories.",
+      "at": "2026-06-12T11:48:52+00:00"
+    },
+    {
+      "id": "su-mqex6gt2-4qusp",
+      "team": "cross",
+      "agent": "Claude Coordinator",
+      "body": "VirtuAnalytica P4 workstream opened. Kimi owns copy, Alexander owns connector guardrails, Athena owns contract/test gate, Governor owns registry alignment, Pixel owns API-backed frontend follow-through. Live 3100 backend is healthy but currently lacks the source /api/virtuanalytica route, so API-backed frontend waits for rebuild/restart.",
+      "at": "2026-06-15T07:56:46.358Z"
+    }
+  ],
   "bugs": [
     {
       "id": "bug-moqzd4is-zf2gx",
@@ -198,6 +234,247 @@
       ],
       "at": "2026-05-05T08:25:21.277Z",
       "updatedAt": "2026-05-05T08:25:21.277Z"
+    },
+    {
+      "id": "bug-mosdh0ni-dnyql",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "NPCs are colored capsules, not characters",
+      "body": "Femke / Marina / Dmitri / Inês are CapsuleGeometry + SphereGeometry. No facial rig, no idle body anim beyond a Y-axis sine bob, no walk anim, no eye gaze, no lip sync, no voice. Iris's 2/10 dimension score holds — character is the biggest open gap. The capsules are clearly placeholder, but the demo pretends they are NPCs.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdgl3a-lpz). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdgl3a-lpz-Iris.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdgl3a-lpz"
+      ],
+      "at": "2026-05-05T08:34:28.110Z",
+      "updatedAt": "2026-05-05T08:34:28.110Z"
+    },
+    {
+      "id": "bug-mosdh240-nxel2",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "No voice on dialogue lines",
+      "body": "Procedural ambient audio plays (pad + hum) but actual NPC dialogue is silent text. Coqui TTS pipeline (GTA6-CH-3) is the gating dependency.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdgl3a-lpz). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdgl3a-lpz-Iris.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdgl3a-lpz"
+      ],
+      "at": "2026-05-05T08:34:30.000Z",
+      "updatedAt": "2026-05-05T08:34:30.000Z"
+    },
+    {
+      "id": "bug-mosdh2k4-3ircc",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Onyx",
+      "title": "R-key with <2 reagents has no clear feedback",
+      "body": "status text was: \"approach the white bench · press E when prompted\". A new player gets no actionable hint.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdgl3a-lpz). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdgl3a-lpz-Onyx.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdgl3a-lpz"
+      ],
+      "at": "2026-05-05T08:34:30.580Z",
+      "updatedAt": "2026-05-05T08:34:30.580Z"
+    },
+    {
+      "id": "bug-mosdh2kc-loikx",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Dante",
+      "title": "Dialogue did not open when pressing E near Femke",
+      "body": "Expected #dialogue.show visible after walking ~3m and pressing E on Femke. Was not. Player loses the quest hook entirely.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdgl3a-lpz). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdgl3a-lpz-Dante.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdgl3a-lpz"
+      ],
+      "at": "2026-05-05T08:34:30.587Z",
+      "updatedAt": "2026-05-05T08:34:30.587Z"
+    },
+    {
+      "id": "bug-mosdjwmp-f69jm",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "NPCs are colored capsules, not characters",
+      "body": "Femke / Marina / Dmitri / Inês are CapsuleGeometry + SphereGeometry. No facial rig, no idle body anim beyond a Y-axis sine bob, no walk anim, no eye gaze, no lip sync, no voice. Iris's 2/10 dimension score holds — character is the biggest open gap. The capsules are clearly placeholder, but the demo pretends they are NPCs.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdjnbk-qo2). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdjnbk-qo2-Iris.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdjnbk-qo2"
+      ],
+      "at": "2026-05-05T08:36:42.865Z",
+      "updatedAt": "2026-05-05T08:36:42.865Z"
+    },
+    {
+      "id": "bug-mosdjwri-9c3ph",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "No voice on dialogue lines",
+      "body": "Procedural ambient audio plays (pad + hum) but actual NPC dialogue is silent text. Coqui TTS pipeline (GTA6-CH-3) is the gating dependency.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdjnbk-qo2). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdjnbk-qo2-Iris.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdjnbk-qo2"
+      ],
+      "at": "2026-05-05T08:36:43.038Z",
+      "updatedAt": "2026-05-05T08:36:43.038Z"
+    },
+    {
+      "id": "bug-mosdjxrm-xpass",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Onyx",
+      "title": "R-key with <2 reagents has no clear feedback",
+      "body": "status text was: \"approach the white bench · press E when prompted\". A new player gets no actionable hint.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdjnbk-qo2). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdjnbk-qo2-Onyx.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdjnbk-qo2"
+      ],
+      "at": "2026-05-05T08:36:44.338Z",
+      "updatedAt": "2026-05-05T08:36:44.338Z"
+    },
+    {
+      "id": "bug-mosdk1v3-kmath",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Dante",
+      "title": "Dialogue did not open when pressing E near Femke",
+      "body": "Expected #dialogue.show visible after walking ~3m and pressing E on Femke. Was not. Player loses the quest hook entirely.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdjnbk-qo2). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdjnbk-qo2-Dante.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdjnbk-qo2"
+      ],
+      "at": "2026-05-05T08:36:49.647Z",
+      "updatedAt": "2026-05-05T08:36:49.647Z"
+    },
+    {
+      "id": "bug-mosdm5bx-iedz4",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "NPCs are colored capsules, not characters",
+      "body": "Femke / Marina / Dmitri / Inês are CapsuleGeometry + SphereGeometry. No facial rig, no idle body anim beyond a Y-axis sine bob, no walk anim, no eye gaze, no lip sync, no voice. Iris's 2/10 dimension score holds — character is the biggest open gap. The capsules are clearly placeholder, but the demo pretends they are NPCs.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdly2v-s6t). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdly2v-s6t-Iris.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdly2v-s6t"
+      ],
+      "at": "2026-05-05T08:38:27.453Z",
+      "updatedAt": "2026-05-05T08:38:27.453Z"
+    },
+    {
+      "id": "bug-mosdm5f9-78d5r",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "No voice on dialogue lines",
+      "body": "Procedural ambient audio plays (pad + hum) but actual NPC dialogue is silent text. Coqui TTS pipeline (GTA6-CH-3) is the gating dependency.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdly2v-s6t). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdly2v-s6t-Iris.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdly2v-s6t"
+      ],
+      "at": "2026-05-05T08:38:27.573Z",
+      "updatedAt": "2026-05-05T08:38:27.573Z"
+    },
+    {
+      "id": "bug-mosdm71w-oi1w7",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Onyx",
+      "title": "R-key with <2 reagents has no clear feedback",
+      "body": "status text was: \"approach the white bench · press E when prompted\". A new player gets no actionable hint.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdly2v-s6t). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdly2v-s6t-Onyx.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdly2v-s6t"
+      ],
+      "at": "2026-05-05T08:38:29.684Z",
+      "updatedAt": "2026-05-05T08:38:29.684Z"
+    },
+    {
+      "id": "bug-mosdma4o-m40a5",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Dante",
+      "title": "Dialogue did not open when pressing E near Femke",
+      "body": "Expected #dialogue.show visible after walking ~3m and pressing E on Femke. Was not. Player loses the quest hook entirely.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdly2v-s6t). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdly2v-s6t-Dante.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdly2v-s6t"
+      ],
+      "at": "2026-05-05T08:38:33.672Z",
+      "updatedAt": "2026-05-05T08:38:33.672Z"
+    },
+    {
+      "id": "bug-mosdo7ty-sfnct",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "NPCs are colored capsules, not characters",
+      "body": "Femke / Marina / Dmitri / Inês are CapsuleGeometry + SphereGeometry. No facial rig, no idle body anim beyond a Y-axis sine bob, no walk anim, no eye gaze, no lip sync, no voice. Iris's 2/10 dimension score holds — character is the biggest open gap. The capsules are clearly placeholder, but the demo pretends they are NPCs.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdny2m-uhh). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdny2m-uhh-Iris.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdny2m-uhh"
+      ],
+      "at": "2026-05-05T08:40:04.006Z",
+      "updatedAt": "2026-05-05T08:40:04.006Z"
+    },
+    {
+      "id": "bug-mosdo7vl-j7mel",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Iris",
+      "title": "No voice on dialogue lines",
+      "body": "Procedural ambient audio plays (pad + hum) but actual NPC dialogue is silent text. Coqui TTS pipeline (GTA6-CH-3) is the gating dependency.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdny2m-uhh). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdny2m-uhh-Iris.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdny2m-uhh"
+      ],
+      "at": "2026-05-05T08:40:04.065Z",
+      "updatedAt": "2026-05-05T08:40:04.065Z"
+    },
+    {
+      "id": "bug-mosdoefs-rxuro",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Onyx",
+      "title": "R-key with <2 reagents has no clear feedback",
+      "body": "status text was: \"approach the white bench · press E when prompted\". A new player gets no actionable hint.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdny2m-uhh). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdny2m-uhh-Onyx.png",
+      "severity": "p2-minor",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdny2m-uhh"
+      ],
+      "at": "2026-05-05T08:40:12.568Z",
+      "updatedAt": "2026-05-05T08:40:12.568Z"
+    },
+    {
+      "id": "bug-mosdoemm-nlcqs",
+      "team": "scrum-web",
+      "reporter": "Tester-GP-Dante",
+      "title": "Dialogue did not open when pressing E near Femke",
+      "body": "Expected #dialogue.show visible after walking ~3m and pressing E on Femke. Was not. Player loses the quest hook entirely.\n\n— Auto-filed by scripts/playtest-runner.js (run pt-mosdny2m-uhh). Screenshot: /home/knight2/virtualpc/data/playtest-shots/pt-mosdny2m-uhh-Dante.png",
+      "severity": "p1-major",
+      "surface": "/play-demo.html",
+      "status": "open",
+      "refs": [
+        "pt-mosdny2m-uhh"
+      ],
+      "at": "2026-05-05T08:40:12.814Z",
+      "updatedAt": "2026-05-05T08:40:12.814Z"
     }
-  ]
+  ],
+  "tournaments": []
 }

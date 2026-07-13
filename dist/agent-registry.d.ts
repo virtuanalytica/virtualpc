@@ -10,9 +10,21 @@ export interface AgentMeta {
     role: string;
     avatar: string;
     color: string;
-    kind: 'core' | 'decision' | 'specialist' | 'resource';
+    kind: 'core' | 'decision' | 'specialist' | 'resource' | 'hermes-coordinator' | 'tester' | 'marketing' | 'governance' | 'reviewer';
     /** Preferred model substrings for token-tracker / LM Studio routing */
     models: string[];
+    /**
+     * Scrum membership. Agents can belong to multiple teams (e.g. Fill chairs
+     * the scrum-of-scrums; Kai joins both web-scrum and roblox-scrum as
+     * cross-cutting infra). 'cross' = sits at the scrum-of-scrums layer.
+     */
+    teams?: ('cross' | 'scrum-roblox' | 'scrum-web' | 'scrum-marketing')[];
+    /**
+     * MCP tool ACL — names of tools the agent is allowed to call through the
+     * virtualpc MCP server. Wildcards like 'codegraph.*' allowed. Read by the
+     * MCP server on every tool invocation. Empty/undefined = no MCP access.
+     */
+    tools?: string[];
 }
 export declare const AGENT_META: AgentMeta[];
 /** Canonical list of agent names — use this everywhere you need to iterate. */

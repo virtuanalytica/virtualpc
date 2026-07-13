@@ -1,0 +1,20 @@
+{
+  "theme": "dark",
+  "refreshRate": "5000",
+  "notifications": true,
+  "autoBackup": true,
+  "resourceControls": {
+    "enabled": true,
+    "cpuTemperatureLimitC": 60,
+    "gpuTemperatureLimitC": 60,
+    "totalThreadPct": 25,
+    "perAgentThreadPct": 25,
+    "ramUtilizationPct": 75,
+    "gpuClockPctWhenHot": 50,
+    "gpuMemoryPctPerSystem": 50,
+    "targets": [
+      "virtualpc",
+      "alexander"
+    ]
+  }
+}

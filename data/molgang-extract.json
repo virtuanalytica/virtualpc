@@ -1,0 +1,171 @@
+{
+ "generated_from": "molgang-roblox",
+ "stats": {
+  "personages": 4,
+  "zones": 6,
+  "real_anchors": 5,
+  "entities": 10,
+  "edges": 16
+ },
+ "entities": [
+  {
+   "name": "Direk (Molgang)",
+   "category": "personage",
+   "note": "fictief NPC-personage",
+   "source": "molgang"
+  },
+  {
+   "name": "Prof. Femke (Molgang)",
+   "category": "personage",
+   "note": "fictief NPC-personage",
+   "source": "molgang"
+  },
+  {
+   "name": "Ank (Molgang)",
+   "category": "personage",
+   "note": "fictief NPC-personage",
+   "source": "molgang"
+  },
+  {
+   "name": "Yuki (Molgang)",
+   "category": "personage",
+   "note": "fictief NPC-personage",
+   "source": "molgang"
+  },
+  {
+   "name": "Periodic Table Biome (zone)",
+   "category": "gamezone",
+   "note": "noord — Floating islands shaped like the periodic table. Most common atom spawns.",
+   "source": "molgang"
+  },
+  {
+   "name": "Molgang Nexus Hub (zone)",
+   "category": "gamezone",
+   "note": "centrum — Central spawn area with the main hub tower and marketplace.",
+   "source": "molgang"
+  },
+  {
+   "name": "Quantum Lab (zone)",
+   "category": "gamezone",
+   "note": "oost — Futuristic lab where rare and legendary elements appear more frequently.",
+   "source": "molgang"
+  },
+  {
+   "name": "Slakkenspoor Fabriek (zone)",
+   "category": "gamezone",
+   "note": "west — Industrial steel slag processing plant. V, Fe, Ti, Si, Ca, Mn spawn at 5x rate.",
+   "source": "molgang"
+  },
+  {
+   "name": "MolChain Registry Tower (zone)",
+   "category": "gamezone",
+   "note": "centrum-oost — XRPL chain registry tower. Record your molecules on the simulated blockchai",
+   "source": "molgang"
+  },
+  {
+   "name": "ANK Kredietunie (zone)",
+   "category": "gamezone",
+   "note": "centrum-west — Cooperative credit union. Lend and borrow MolCoins with 120% collateral.",
+   "source": "molgang"
+  }
+ ],
+ "chats": [],
+ "edges": [
+  {
+   "from": "Direk (Molgang)",
+   "to": "MOLGANG",
+   "rel": "PERSONAGE_IN",
+   "kind": "rel"
+  },
+  {
+   "from": "Prof. Femke (Molgang)",
+   "to": "MOLGANG",
+   "rel": "PERSONAGE_IN",
+   "kind": "rel"
+  },
+  {
+   "from": "Ank (Molgang)",
+   "to": "MOLGANG",
+   "rel": "PERSONAGE_IN",
+   "kind": "rel"
+  },
+  {
+   "from": "Yuki (Molgang)",
+   "to": "MOLGANG",
+   "rel": "PERSONAGE_IN",
+   "kind": "rel"
+  },
+  {
+   "from": "Periodic Table Biome (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "Molgang Nexus Hub (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "Quantum Lab (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "Slakkenspoor Fabriek (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "MolChain Registry Tower (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "ANK Kredietunie (zone)",
+   "to": "MOLGANG",
+   "rel": "ZONE_VAN",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "IJmuiden",
+   "rel": "AR_ANKER",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "Tata Steel IJmuiden",
+   "rel": "AR_ANKER",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "Zaandam",
+   "rel": "AR_ANKER",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "Bergen NH",
+   "rel": "AR_ANKER",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "Amsterdam",
+   "rel": "AR_ANKER",
+   "kind": "rel"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "SmartSlag3",
+   "rel": "SIMULEERT",
+   "kind": "rel"
+  }
+ ]
+}

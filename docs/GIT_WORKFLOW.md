@@ -274,7 +274,9 @@ git commit -m "chore: remove .env from git"
 git push
 ```
 
-Then regenerate your local `.env` from `.env.example`.
+Then rotate the exposed secret in the key manager. Do not recreate local `.env`
+files for VirtualPC; use Infisical, managed identity, or process-manager
+injection for runtime-only bootstrap values.
 
 ## Best Practices
 

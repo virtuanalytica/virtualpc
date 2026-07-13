@@ -16,6 +16,8 @@ interface Task {
     title: string;
     status: 'completed' | 'in-progress' | 'pending';
     priority: 'critical' | 'high' | 'medium' | 'low';
+    project: string;
+    tags: string[];
     description: string;
     sprint: string;
     estimated_hours: number;
@@ -62,11 +64,31 @@ export declare function getAgentProgress(agentName: string): {
     currentTask: string | null;
     currentSubtask: string | null | undefined;
 };
+export interface AgentScorecard {
+    agent: string;
+    role: string;
+    score: number;
+    grade: 'A' | 'B' | 'C' | 'D' | 'F';
+    status: 'working' | 'queued' | 'idle' | 'needs_attention';
+    completed: number;
+    inProgress: number;
+    pending: number;
+    total: number;
+    averageActiveProgress: number;
+    lastActivity: string | null;
+    blockerCount: number;
+    placeholderCount: number;
+    notes: string[];
+}
+export declare function getAgentScorecard(agentName: string): AgentScorecard;
+export declare function getAllAgentScorecards(): AgentScorecard[];
 export declare function getBacklogItems(): {
     id: string;
     title: string;
     priority: "low" | "medium" | "high" | "critical";
     assigned_to: string;
+    project: string;
+    tags: string[];
     sprint: string;
     status: string;
     created_at: string;
@@ -77,6 +99,8 @@ export declare function getTaskDetail(taskId: string): {
     title: string;
     priority: "low" | "medium" | "high" | "critical";
     assigned_to: string;
+    project: string;
+    tags: string[];
     status: "completed" | "pending" | "in-progress";
     sprint: string;
     description: string;
@@ -89,6 +113,17 @@ export declare function getTaskDetail(taskId: string): {
 } | null;
 export declare function setTaskStatus(taskId: string, next: Task['status']): Task | null;
 export declare function setTaskPriority(taskId: string, next: Task['priority']): Task | null;
+export declare function addTask(input: {
+    title: string;
+    description: string;
+    priority?: Task['priority'];
+    assigned_to: string;
+    project: string;
+    tags: string[];
+    estimated_hours?: number;
+    subtasks?: string[];
+    sprint?: string;
+}): Task | null;
 export declare function getGameMilestones(): GameMilestone[];
 export declare function getGameStats(): {
     sprint: string;
@@ -185,7 +220,7 @@ export declare function getAgentInProgressDetail(agent: string): {
 export declare function getAgentCliLog(agent: string, limit?: number): {
     ts: string;
     line: string;
-    level: "warn" | "ok" | "cmd" | "out" | "err";
+    level: "warn" | "out" | "ok" | "cmd" | "err";
 }[];
 interface SocialAgent {
     name: string;

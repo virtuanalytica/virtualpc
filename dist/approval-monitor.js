@@ -22,6 +22,9 @@ class ApprovalMonitor {
         this.pendingApprovals = new Map();
         this.approvalHistory = [];
         this.maxHistorySize = 100;
+        // Monotonic counter so two approvals from the same source in the same
+        // millisecond get distinct ids (otherwise they overwrite in the map).
+        this.idSeq = 0;
     }
     /**
      * Flag a new approval event
@@ -29,7 +32,7 @@ class ApprovalMonitor {
      */
     flagApproval(source, // terminal name
     question, options = ['yes', 'no'], urgency = 'high') {
-        const approvalId = `approval_${source}_${Date.now()}`;
+        const approvalId = `approval_${source}_${Date.now()}_${this.idSeq++}`;
         const approval = {
             id: approvalId,
             timestamp: new Date(),
@@ -190,7 +193,7 @@ exports.approvalMonitor = new ApprovalMonitor();
  * // Flag an approval
  * approvalMonitor.flagApproval(
  *   'Terminal B (Cleopatra)',
- *   'Continue MOLGANG development?',
+ *   'Continue the project development?',
  *   ['yes', 'no'],
  *   'high'
  * );

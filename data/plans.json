@@ -1,0 +1,117 @@
+{
+  "plans": [
+    {
+      "id": "plan-mpy61hdc-0",
+      "title": "Data maturity capability roadmap",
+      "author": "Athena",
+      "model": "claude-opus",
+      "createdAt": "2026-06-03T14:32:45.360Z",
+      "sections": [
+        {
+          "id": "goal",
+          "heading": "Goal",
+          "body": "Reach the data maturity + data literacy a real data-management department expects, so the agent company can support Quantum Chemistry & spectroscopy data and full cost/asset accounting.",
+          "status": "open"
+        },
+        {
+          "id": "data-architecture-engineering",
+          "heading": "Data architecture & engineering",
+          "body": "Lake/graph/relational tiers; pipelines with lineage; schema contracts at boundaries.",
+          "status": "open"
+        },
+        {
+          "id": "data-quality-governance",
+          "heading": "Data quality & governance",
+          "body": "Continuous profiling, outlier & relation discovery, remediation loop; governance registry owns lineage + owners.",
+          "status": "needs-changes"
+        },
+        {
+          "id": "knowledge-management-query-building",
+          "heading": "Knowledge management & query building",
+          "body": "Head/Hands/Heart wiki + LightRAG; saved queries; Paperclip models query the corpus.",
+          "status": "open"
+        },
+        {
+          "id": "domain-quantum-chemistry-spectroscopy",
+          "heading": "Domain: Quantum Chemistry & spectroscopy",
+          "body": "Engel-grade processing: spectra ingestion, peak detection, units, reproducible analysis.",
+          "status": "open"
+        },
+        {
+          "id": "business-cost-management-accounting",
+          "heading": "Business: cost & management accounting",
+          "body": "Account for all hours/effort (Horngren/Bhimani; Klaassen & Hoogendoorn) and capitalize delivered features as intangible assets (immateri\u00eble activa) on the balance sheet.",
+          "status": "open"
+        }
+      ],
+      "comments": [
+        {
+          "id": "c-mpy61hh3-1",
+          "sectionId": "data-quality-governance",
+          "author": "Operator",
+          "text": "Add saved-query versioning + a data-quality SLA per dataset",
+          "createdAt": "2026-06-03T14:32:45.495Z",
+          "resolved": false
+        }
+      ]
+    },
+    {
+      "id": "plan-numerai-ff-cross-asset-2026-06",
+      "title": "Numerai F&F cross-asset prediction execution",
+      "author": "Codex",
+      "model": "gpt-5-codex",
+      "createdAt": "2026-06-12T11:48:52+00:00",
+      "source": "/media/knight2/EDS2/projects/numerai-signals/reports/FF_CROSS_ASSET_PREDICTION_WORKFLOW.md",
+      "project": "numerai-signals",
+      "separatedFrom": [
+        "MOLGANG",
+        "molgang-web",
+        "roblox_molgang",
+        "molgang-godot",
+        "molgang-3d"
+      ],
+      "sections": [
+        {
+          "id": "boundary",
+          "heading": "Project boundary",
+          "body": "Execute in numerai-signals only. Do not route this work to MOLGANG repositories or assets.",
+          "status": "in-progress"
+        },
+        {
+          "id": "features",
+          "heading": "Feature build",
+          "body": "Build premium evolution, rolling beta, expected excess return, sparse premium-times-beta interactions, and news relevance/sentiment interactions.",
+          "status": "in-progress"
+        },
+        {
+          "id": "models",
+          "heading": "Individual models",
+          "body": "Train grouped equity and crypto models first, then individual per-asset models where history is sufficient.",
+          "status": "open"
+        },
+        {
+          "id": "validation",
+          "heading": "Validation gates",
+          "body": "Apply RMSE lower-better, era IC quantiles, alpha, MMC, hit rate, exposure and uniqueness checks before ranking-model promotion.",
+          "status": "open"
+        },
+        {
+          "id": "ranking",
+          "heading": "Ranking aggregation",
+          "body": "Feed only approved prediction vectors and expected excess return vectors into the final ranking model.",
+          "status": "open"
+        }
+      ],
+      "comments": [
+        {
+          "id": "c-numerai-ff-virtualpc-scope",
+          "sectionId": "boundary",
+          "author": "Codex",
+          "text": "Live VirtualPC tasks injected for Analyst, Kai, Kimi, Alexander, and MoneyGod on 2026-06-12. Scope explicitly excludes MOLGANG.",
+          "createdAt": "2026-06-12T11:48:52+00:00",
+          "resolved": false
+        }
+      ]
+    }
+  ]
+}

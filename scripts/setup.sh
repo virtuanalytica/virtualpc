@@ -3,7 +3,7 @@
 # ============================================================
 # SETUP SCRIPT - Initialize Custom Paperclip Development Environment
 # ============================================================
-# Sets up all dependencies, environment variables, and configuration
+# Sets up all dependencies, runtime configuration directories, and local state
 # for the autonomous agent system (LightRAG + Kafka + API Interceptor)
 # ============================================================
 
@@ -73,22 +73,10 @@ fi
 echo ""
 
 # ============================================================
-# 3. Setup Environment Variables
+# 3. Runtime configuration policy
 # ============================================================
-echo -e "${YELLOW}[3/5] Setting up environment configuration...${NC}"
-
-if [ ! -f ".env" ]; then
-    if [ -f ".env.example" ]; then
-        cp .env.example .env
-        echo -e "${GREEN}✓ Created .env from .env.example${NC}"
-        echo -e "${YELLOW}⚠ Please edit .env with your actual configuration values${NC}"
-    else
-        echo -e "${RED}✗ .env.example not found${NC}"
-        exit 1
-    fi
-else
-    echo -e "${GREEN}✓ .env already exists${NC}"
-fi
+echo -e "${YELLOW}[3/5] Checking runtime configuration policy...${NC}"
+echo -e "${GREEN}✓ No .env file is required. Use Infisical/key manager or process-manager injection for secrets.${NC}"
 
 echo ""
 
@@ -120,11 +108,10 @@ echo -e "${GREEN}✅ Setup Complete!${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════${NC}\n"
 
 echo -e "${YELLOW}Next Steps:${NC}"
-echo -e "  1. Edit ${BLUE}.env${NC} with your configuration:"
-echo -e "     - Neo4j connection (NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)"
-echo -e "     - Kafka broker (KAFKA_BROKERS)"
-echo -e "     - API keys (ANTHROPIC_API_KEY, etc.)"
-echo -e "     - Budget limits (DAILY_BUDGET_CENTS, MONTHLY_BUDGET_CENTS)"
+echo -e "  1. Provision secrets through Infisical/key manager or managed identity:"
+echo -e "     - INFISICAL_PROJECT_ID, INFISICAL_CLIENT_ID, INFISICAL_CLIENT_SECRET"
+echo -e "     - API keys, database passwords, and encryption keys in the secret manager"
+echo -e "     - Non-secret runtime flags through systemd, shell, or container config"
 echo ""
 echo -e "  2. Start Neo4j (if not running):"
 echo -e "     ${BLUE}docker run -d -p 7687:7687 -p 7474:7474 -e NEO4J_AUTH=none neo4j${NC}"

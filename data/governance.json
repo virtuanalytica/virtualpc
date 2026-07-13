@@ -70,6 +70,166 @@
         "quantum-chemistry",
         "documentation"
       ]
+    },
+    {
+      "id": "va-asset-a-raw-orders",
+      "name": "raw.orders",
+      "kind": "schema",
+      "owner": "Demo Data Steward",
+      "source": "virtuanalytica:generic:a_raw_orders",
+      "lineage": "Raw order events from the e-commerce platform.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "catalog",
+        "generic",
+        "raw",
+        "orders"
+      ]
+    },
+    {
+      "id": "va-asset-a-raw-customers",
+      "name": "raw.customers",
+      "kind": "schema",
+      "owner": "Demo Data Steward",
+      "source": "virtuanalytica:generic:a_raw_customers",
+      "lineage": "Raw customer master records.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "catalog",
+        "generic",
+        "raw",
+        "customers"
+      ]
+    },
+    {
+      "id": "va-asset-a-mart-orders",
+      "name": "mart.orders",
+      "kind": "schema",
+      "owner": "Demo Data Steward",
+      "source": "virtuanalytica:generic:a_mart_orders",
+      "lineage": "Curated, analytics-ready orders mart.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "catalog",
+        "generic",
+        "mart",
+        "certified"
+      ]
+    },
+    {
+      "id": "va-asset-a-mart-customer-360",
+      "name": "mart.customer_360",
+      "kind": "schema",
+      "owner": "Demo Data Steward",
+      "source": "virtuanalytica:generic:a_mart_customer_360",
+      "lineage": "Unified customer view used for analytics and churn modeling.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "catalog",
+        "generic",
+        "mart",
+        "certified",
+        "customer"
+      ]
+    },
+    {
+      "id": "va-asset-a-dash-revenue",
+      "name": "Revenue Overview (Tableau)",
+      "kind": "schema",
+      "owner": "Demo Data Steward",
+      "source": "virtuanalytica:generic:a_dash_revenue",
+      "lineage": "Executive revenue dashboard.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "catalog",
+        "generic",
+        "bi",
+        "dashboard"
+      ]
+    },
+    {
+      "id": "va-term-t-customer",
+      "name": "Customer",
+      "kind": "wiki-term",
+      "owner": "VirtuAnalytica",
+      "source": "virtuanalytica:generic:t_customer",
+      "lineage": "A person or organization that has placed at least one order.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "glossary",
+        "generic",
+        "Sales"
+      ]
+    },
+    {
+      "id": "va-term-t-order",
+      "name": "Order",
+      "kind": "wiki-term",
+      "owner": "VirtuAnalytica",
+      "source": "virtuanalytica:generic:t_order",
+      "lineage": "A confirmed purchase transaction.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "glossary",
+        "generic",
+        "Sales"
+      ]
+    },
+    {
+      "id": "va-term-t-revenue",
+      "name": "Revenue",
+      "kind": "wiki-term",
+      "owner": "VirtuAnalytica",
+      "source": "virtuanalytica:generic:t_revenue",
+      "lineage": "Net order amount in EUR, excluding tax and refunds.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "glossary",
+        "generic",
+        "Finance"
+      ]
+    },
+    {
+      "id": "va-term-t-churn",
+      "name": "Churn Rate",
+      "kind": "wiki-term",
+      "owner": "VirtuAnalytica",
+      "source": "virtuanalytica:generic:t_churn",
+      "lineage": "Share of customers who stop ordering within a 90-day window.",
+      "updatedAt": "2026-06-15T09:37:44.423Z",
+      "tags": [
+        "virtuanalytica",
+        "glossary",
+        "generic",
+        "Sales"
+      ]
+    },
+    {
+      "id": "artifact-ingest-knitweb_p2p_fabric_dossier",
+      "name": "Artifact ingest: Knitweb P2P Knowledge Fabric — Research Dossier (orig. 'Pulse / Loom')",
+      "kind": "knowledge-graph",
+      "owner": "Governor",
+      "project": "knitweb",
+      "source": "/home/knight2/knowledge_pit/lightrag/knitweb_p2p_fabric_dossier_facts.jsonl",
+      "source_url": "https://claude.ai/public/artifacts/b10526f8-a27b-40a5-b2e5-aae918448508",
+      "lineage": "External artifact 'Knitweb P2P Knowledge Fabric — Research Dossier (orig. 'Pulse / Loom')' (https://claude.ai/public/artifacts/b10526f8-a27b-40a5-b2e5-aae918448508) ingested into the knowledge_pit. 122 source-verified entities -> 142 GitNexus nodes / 452 edges, 136 LightRAG facts, 25 corpus chunks.",
+      "updatedAt": "2026-06-17T21:38:20+00:00",
+      "license": "research dossier; cite original sources",
+      "tags": [
+        "knowledge-graph",
+        "artifact-ingest",
+        "knitweb",
+        "lightrag",
+        "gitnexus"
+      ]
     }
   ]
 }

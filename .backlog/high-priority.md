@@ -3,6 +3,7 @@
 **Status**: Active Development  
 **Last Updated**: 2026-04-12  
 **Team**: All developers actively assigned
+**Default tags inherited by items**: `project:virtualpc-platform`, `priority:high`, `launch-critical`; Phase 2 items additionally inherit `project:molgang`.
 
 ---
 
@@ -216,4 +217,3 @@
 ---
 
 **Next Action**: Start Phase 1 immediately on Terminal A with GitHub repo creation
-

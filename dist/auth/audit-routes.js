@@ -165,6 +165,37 @@ function setupAuditRoutes(app, auditLogger, authMiddleware) {
             return res.status(500).json({ success: false, error: error.message });
         }
     });
+    /**
+     * Combined audit search (CEO only). All filters are optional query params and
+     * combine with AND semantics: username, ip, eventType, severity, outcome,
+     * action, start (ISO), end (ISO), limit.
+     */
+    app.get('/api/audit/search', authMiddleware.requireRole('ceo'), (req, res) => {
+        try {
+            const q = req.query;
+            const parseDate = (v) => {
+                if (!v)
+                    return undefined;
+                const d = new Date(v);
+                return isNaN(d.getTime()) ? undefined : d;
+            };
+            const limit = Math.min(Math.max(parseInt(q.limit) || 100, 1), 1000);
+            const events = auditLogger.search({
+                username: q.username || undefined,
+                ipAddress: q.ip || undefined,
+                eventType: q.eventType || undefined,
+                severity: q.severity || undefined,
+                outcome: q.outcome || undefined,
+                action: q.action || undefined,
+                startTime: parseDate(q.start),
+                endTime: parseDate(q.end),
+            }, limit);
+            return res.json({ success: true, count: events.length, events });
+        }
+        catch (error) {
+            return res.status(500).json({ success: false, error: error.message });
+        }
+    });
     logger_1.default.info('✓ Audit routes configured');
 }
 exports.default = setupAuditRoutes;

@@ -1,5 +1,8 @@
 # VirtuAnalytica — MVP backlog & acceptance log (sprint: va-mvp)
 
+**Project:** VirtuAnalytica
+**Default tags inherited by items:** `project:virtuanalytica`, `mvp`, `role-graph`, `knowledge-graph`
+
 Orchestrated by the Claude Coordinator (VirtuAnalytica Delivery Lead) across three
 sessions: **orchestrator** (ontology + integration + docs), **Codex** (backend
 routes), **Kimi** (frontend). Coordination lanes: `virtualpc/va-{coordination,backend,frontend}`.

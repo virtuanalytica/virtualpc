@@ -25,8 +25,9 @@ const key = secretOrEnv('api', 'ANTHROPIC_API_KEY');
 secrets?.for('trader').get('money', 'ALPACA_API_KEY');
 ```
 
-Go-live: provision Infisical (`INFISICAL_PROJECT_ID/CLIENT_ID/CLIENT_SECRET`),
-then delete `.env` + the `process.env` fallbacks. See `OWNERSHIP.md`.
+Go-live: provision Infisical (`INFISICAL_PROJECT_ID/CLIENT_ID/CLIENT_SECRET`)
+through the process manager or a managed identity flow, then remove transitional
+`process.env` secret fallbacks. See `OWNERSHIP.md`.
 
 ## Field encryption at rest — `src/security/fieldCrypto.ts` · WIRED
 

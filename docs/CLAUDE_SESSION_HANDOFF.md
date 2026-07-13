@@ -37,7 +37,8 @@ monitor, entity-model (Numerai), advanced-analytics, task-scheduler/-facilitator
 agent-registry invariants, lightrag (offline), deployment/backup managers.
 
 ## Owner to-dos (only these need a human)
-1. Provision **Infisical** (`INFISICAL_*`) → I delete `.env` + strip fallbacks.
+1. Provision **Infisical** (`INFISICAL_*`) through the process manager or a
+   managed identity flow, then strip transitional fallbacks.
 2. Apply **`apiKeyAuth`** to chosen routes (security decision).
 3. **6.5.16 Postgres** persistence — architecture decision.
 4. Fix the pipeline-owned `index.ts` ID sites (one-line suffix each).

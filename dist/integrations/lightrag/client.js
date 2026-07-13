@@ -18,6 +18,10 @@ const logger_1 = __importDefault(require("../../utils/logger"));
 class LightRAGClient {
     constructor(config) {
         this.queryCache = new Map();
+        // Monotonic suffix so two nodes added in the same millisecond get distinct
+        // ids — otherwise CREATE would produce duplicate-id graph nodes (corrupting
+        // the shared knowledge graph under bulk ingest).
+        this.nodeSeq = 0;
         this.connected = false;
         this.driver = neo4j_driver_1.default.driver(config.neo4j_url, neo4j_driver_1.default.auth.basic(config.neo4j_username, config.neo4j_password));
     }
@@ -90,7 +94,7 @@ class LightRAGClient {
      * Add a fact/decision to the graph
      */
     async addNode(node) {
-        const id = `node_${Date.now()}`;
+        const id = `node_${Date.now()}_${this.nodeSeq++}`;
         // Return in-memory node if not connected
         if (!this.connected) {
             logger_1.default.info(`✓ Fact added (offline): ${node.type}`);

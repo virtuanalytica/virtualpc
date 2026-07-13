@@ -10,13 +10,16 @@ class CollaborationManager {
         this.collaborations = new Map();
         this.workspaces = new Map();
         this.conversations = new Map();
+        // Monotonic suffix so ids created in the same millisecond don't collide
+        // (otherwise rapid create* calls overwrite in the maps / produce dup doc ids).
+        this.idSeq = 0;
     }
     /**
      * Start collaboration
      */
     startCollaboration(type, participants, priority = 'medium') {
         const collab = {
-            id: `collab_${Date.now()}`,
+            id: `collab_${Date.now()}_${this.idSeq++}`,
             type,
             participants,
             startTime: new Date(),
@@ -35,7 +38,7 @@ class CollaborationManager {
         if (!collab)
             return null;
         const message = {
-            id: `msg_${Date.now()}`,
+            id: `msg_${Date.now()}_${this.idSeq++}`,
             author,
             content,
             timestamp: new Date(),
@@ -50,7 +53,7 @@ class CollaborationManager {
      */
     createWorkspace(name, owner, members) {
         const workspace = {
-            id: `workspace_${Date.now()}`,
+            id: `workspace_${Date.now()}_${this.idSeq++}`,
             name,
             owner,
             members: [owner, ...members],
@@ -69,7 +72,7 @@ class CollaborationManager {
         if (!workspace)
             return null;
         const doc = {
-            id: `doc_${Date.now()}`,
+            id: `doc_${Date.now()}_${this.idSeq++}`,
             title,
             content,
             author,

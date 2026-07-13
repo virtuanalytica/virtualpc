@@ -8,6 +8,7 @@
  * - Artist (Visual design, assets)
  * - Tech Artist (Performance, shaders, optimization)
  */
+import FieldCrypto from '../security/fieldCrypto';
 export type UserRole = 'ceo' | 'cto' | 'developer' | 'artist' | 'tech_artist';
 export interface User {
     id: string;
@@ -56,7 +57,18 @@ export declare class AuthSystem {
     private sessions;
     private loginAttempts;
     private twoFactorChallenges;
-    constructor();
+    /** When set, TOTP secrets are encrypted at rest (backlog 6.5.20). */
+    private fieldCrypto?;
+    /** When non-empty, CEO logins are only allowed from these IPs. */
+    private ceoIpAllowlist;
+    constructor(opts?: {
+        fieldCrypto?: FieldCrypto;
+        ceoIpAllowlist?: string[];
+    });
+    /** Store form of a TOTP secret: encrypted when field encryption is enabled. */
+    private storeTotpSecret;
+    /** Usable plaintext TOTP secret for a user (decrypts at-rest ciphertext). */
+    private readTotpSecret;
     /**
      * Initialize default users (demo)
      */
@@ -91,6 +103,7 @@ export declare class AuthSystem {
         success: boolean;
         token?: AuthToken;
         error?: string;
+        username?: string;
     };
     /**
      * Begin TOTP setup for a user: generate a secret and otpauth URI. The user
@@ -138,6 +151,28 @@ export declare class AuthSystem {
      */
     logout(sessionId: string): void;
     /**
+     * List active (non-expired) sessions with safe metadata for admin views
+     * (backlog 6.5.14). Expired sessions are pruned as a side effect.
+     */
+    getActiveSessions(): Array<{
+        sessionId: string;
+        userId: string;
+        username: string;
+        role: UserRole;
+        issuedAt: Date;
+        expiresAt: Date;
+    }>;
+    /**
+     * Admin: revoke a single session by id. Returns true if a session was
+     * actually removed (false if the id was unknown / already gone).
+     */
+    revokeSession(sessionId: string): boolean;
+    /**
+     * Admin: revoke every active session for a username (e.g. on compromise).
+     * Returns the number of sessions removed.
+     */
+    revokeUserSessions(username: string): number;
+    /**
      * Get user by ID
      */
     getUser(userId: string): User | null;
@@ -159,6 +194,35 @@ export declare class AuthSystem {
     createUser(username: string, email: string, role: UserRole, password: string): {
         success: boolean;
         user?: User;
+        error?: string;
+    };
+    /**
+     * Role privilege levels for hierarchy enforcement. Higher = more privileged.
+     * A user may manage (suspend/delete) targets of equal-or-lower privilege but
+     * never one ranked above them — so a CTO cannot touch a CEO. The dangerous
+     * equal-rank case (a CEO acting on another CEO) is bounded separately by the
+     * last-active-CEO lockout guard below.
+     */
+    private static readonly PRIVILEGE;
+    /** True if actorRole may manage targetRole (equal or higher privilege than the target). */
+    canManage(actorRole: UserRole, targetRole: UserRole): boolean;
+    /** Count active users holding a given role (used for lockout protection). */
+    private countActiveByRole;
+    /**
+     * Change a user's status (active/inactive/suspended). Enforces role
+     * hierarchy and, when deactivating, revokes that user's active sessions so a
+     * suspended account can't keep using an existing token.
+     */
+    setUserStatus(actorRole: UserRole, userId: string, status: 'active' | 'inactive' | 'suspended'): {
+        success: boolean;
+        error?: string;
+    };
+    /**
+     * Delete a user. Enforces role hierarchy, blocks deleting the last active
+     * CEO, and revokes the user's sessions.
+     */
+    deleteUser(actorRole: UserRole, userId: string): {
+        success: boolean;
         error?: string;
     };
     /**

@@ -63,6 +63,32 @@ export declare class KafkaProducer {
      */
     publishHealthCheck(component: string, status: string, metrics?: any): Promise<void>;
     /**
+     * Publish a commit.audit event (recorded by post-commit git hook +
+     * /api/audit/commit endpoint).
+     */
+    publishCommitAudit(payload: {
+        sha: string;
+        shortSha: string;
+        author: string;
+        ts: string;
+        subject: string;
+        attributedAgent?: string;
+        taskRef?: string | null;
+        source?: string;
+    }): Promise<void>;
+    /**
+     * Publish a task.failed event when a task hits a non-recoverable error
+     * (LM Studio timeout, model load failure, artifact-gen exception).
+     */
+    publishTaskFailed(payload: {
+        task_id: string;
+        agent: string;
+        title?: string;
+        failure_stage: 'artifact-gen' | 'chat' | 'tool' | 'other';
+        error: string;
+        ts: string;
+    }): Promise<void>;
+    /**
      * Batch publish messages
      */
     publishBatch(topic: string, messages: any[]): Promise<void>;

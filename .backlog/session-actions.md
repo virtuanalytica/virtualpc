@@ -2,6 +2,7 @@
 **Date**: 2026-04-12  
 **Session**: VirtualPC Dashboard + Mira Design + System Admin Structure  
 **Duration**: ~2 hours elapsed  
+**Default tags inherited by items**: `project:virtualpc-platform`, `session-actions`, `dashboard`, `operations`; MOLGANG sections additionally inherit `project:molgang`.
 
 ---
 

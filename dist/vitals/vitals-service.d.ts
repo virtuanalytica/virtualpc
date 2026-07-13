@@ -6,6 +6,7 @@ export interface VitalsSnapshot {
         '15': number;
     };
     cpu_pct: number;
+    cpu_temp_c?: number;
     mem_mb: {
         total: number;
         used: number;
@@ -40,6 +41,7 @@ export interface VitalsSnapshot {
         virtualpc_3100: number;
         ollama_11434: number;
     };
+    resource_guard?: Record<string, any>;
 }
 export declare class VitalsService {
     private monitorChild;

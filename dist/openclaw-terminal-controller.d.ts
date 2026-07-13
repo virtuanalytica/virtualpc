@@ -3,7 +3,7 @@
  *
  * Controls dual Claude Code terminals:
  * - Terminal A (Primary): VirtualPC development
- * - Terminal B (Secondary): MOLGANG game development
+ * - Terminal B (Secondary): the project game development
  *
  * Features:
  * - Auto-answers approval prompts (selects "yes" by keyboard/mouse)

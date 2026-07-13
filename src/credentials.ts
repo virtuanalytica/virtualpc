@@ -19,15 +19,15 @@ const STATE_DIR = process.env.VIRTUALPC_STATE_DIR || '/media/knight2/EDS2/virtua
 const CRED_PATH = path.join(STATE_DIR, 'credentials.json');
 
 // Field encryption for api_key at rest. Mirrors AuthSystem's policy: enabled
-// only when FIELD_ENCRYPTION_KEY is present (via .env or the secrets bootstrap)
+// only when FIELD_ENCRYPTION_KEY is injected by the process manager or secret
+// bootstrap
 // and a no-op otherwise, so the app never breaks for lack of a key. The in-
 // memory `credentials` array always holds *plaintext* keys (so process.env,
 // masking, and listMasked keep working unchanged) — only the on-disk
 // serialization is encrypted.
 //
-// Resolved lazily because this module is imported before dotenv config() runs,
-// so the key may only appear in process.env later; callers (index.ts) re-invoke
-// loadCredentials() once secrets are loaded to pick it up and migrate at rest.
+// Resolved lazily so a key injected later by deployment bootstrap can still be
+// picked up by a later loadCredentials() call and migrate records at rest.
 let _fieldCrypto: FieldCrypto | null = null;
 function getFieldCrypto(): FieldCrypto | null {
   if (_fieldCrypto) return _fieldCrypto;

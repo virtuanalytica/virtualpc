@@ -204,7 +204,7 @@ class VitalsService {
                 status = 'ACTIVE — service in use';
             else if (/\/snap(\/|$)/.test(p))
                 status = 'snap-confined';
-            else if (/\/(molgang-roblox|agents)$/.test(p))
+            else if (/\/agents$/.test(p))
                 status = 'git repo';
             const size_mb = Math.round(bytes / (1024 * 1024));
             const size_human = bytes > 1024 ** 3 ? `${(bytes / 1024 ** 3).toFixed(1)}G` : `${size_mb}M`;

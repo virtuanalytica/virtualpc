@@ -5,7 +5,9 @@
  * Provides aggregations by hour, day, month, and combined totals
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MODEL_COSTS = void 0;
 exports.recordAgentTokens = recordAgentTokens;
+exports.recordRealEvent = recordRealEvent;
 exports.getHourlyUsage = getHourlyUsage;
 exports.getDailyUsage = getDailyUsage;
 exports.getAgentSummary = getAgentSummary;
@@ -14,13 +16,17 @@ const agent_registry_1 = require("./agent-registry");
 // Cost per 1K tokens.
 // All-local Gemma / Phi / Qwen / Devstral / DeepSeek (LM Studio on EDS2 RTX 3090) are
 // tier-1 free. Paid fallbacks kept for when a cloud call is genuinely needed.
-const MODEL_COSTS = {
+exports.MODEL_COSTS = {
     'gemma-4-26b': { prompt: 0, completion: 0, tier: 1 },
     'qwen3.5-27b': { prompt: 0, completion: 0, tier: 1 },
     'devstral': { prompt: 0, completion: 0, tier: 1 },
     'deepseek-r1-8b': { prompt: 0, completion: 0, tier: 1 },
     'phi-4': { prompt: 0, completion: 0, tier: 1 },
     'nomic-embed': { prompt: 0, completion: 0, tier: 1 },
+    // Moonshot Kimi via the paid CLI subscription (kimi --quiet -p).
+    // User has a flat-fee plan, so per-token cost is $0 from our accounting
+    // perspective. Marked tier 1 so it shows alongside the local roster.
+    'kimi-k2.6': { prompt: 0, completion: 0, tier: 1 },
     // Cloud fallbacks (used only when local is unreachable or context exceeds local ctx)
     'mistral-7b': { prompt: 0.0001, completion: 0.0003, tier: 2 },
     'llama-70b': { prompt: 0.0003, completion: 0.0008, tier: 2 },
@@ -35,8 +41,8 @@ const AGENT_MODELS = {
     Fill: ['phi-4', 'gemma-4-26b'],
     Kai: ['devstral', 'phi-4', 'qwen3.5-27b'],
     Zip: ['devstral', 'phi-4'],
-    Mira: ['phi-4', 'gemma-4-26b'],
-    Luna: ['devstral', 'phi-4', 'deepseek-r1-8b'],
+    Mira: ['claude-sonnet', 'phi-4', 'gemma-4-26b'], // designer agent, primary on Anthropic for taskType:'design'
+    Luna: ['claude-sonnet', 'devstral', 'phi-4', 'deepseek-r1-8b'],
     Cleopatra: ['deepseek-r1-8b', 'qwen3.5-27b'],
     Alexander: ['deepseek-r1-8b', 'qwen3.5-27b'],
     MoneyGod: ['deepseek-r1-8b', 'qwen3.5-27b'],
@@ -44,7 +50,7 @@ const AGENT_MODELS = {
     VideoProducer: ['phi-4', 'gemma-4-26b'],
     Vice: ['phi-4', 'gemma-4-26b'],
     Atlas: ['devstral', 'deepseek-r1-8b'],
-    Kimi: ['phi-4', 'gemma-4-26b', 'qwen3.5-27b'], // local fallbacks; routes to Moonshot Kimi when MOONSHOT_API_KEY is set
+    Kimi: ['kimi-k2.6', 'phi-4', 'gemma-4-26b', 'qwen3.5-27b'], // primary: Moonshot Kimi via paid CLI (~/.local/bin/kimi); local fallbacks if CLI missing
     Croesus: ['phi-4', 'deepseek-r1-8b'], // local fallbacks; routes to Kimi/DeepSeek for commercial reasoning
 };
 // Per-agent model preference by kind (for tier simulation on the dashboard).
@@ -67,16 +73,25 @@ function recordAgentTokens() {
             // 70% chance tier 1 (free), 20% tier 2, 10% tier 3
             const roll = Math.random();
             let model;
-            if (roll < 0.70) {
-                model = models.find(m => MODEL_COSTS[m]?.tier === 1) || models[0];
-            }
-            else if (roll < 0.90) {
-                model = models.find(m => MODEL_COSTS[m]?.tier === 2) || models[0];
-            }
-            else {
-                model = models.find(m => MODEL_COSTS[m]?.tier === 3) || models[0];
-            }
-            const mc = MODEL_COSTS[model] || { prompt: 0, completion: 0, tier: 1 };
+            // Pick UNIFORMLY at random among the agent's models that match the
+            // chosen tier. The previous implementation used Array.find which
+            // returned only the first matching entry — that meant agents with
+            // qwen3.5-27b as their 2nd/3rd tier-1 model (Kai, Cleopatra, Alexander,
+            // MoneyGod, Kimi) never logged a qwen call, even though the dashboard
+            // listed it as a preferred model. Reported as "QWEN tokens not updated".
+            const pickFromTier = (tier) => {
+                const matches = models.filter(m => exports.MODEL_COSTS[m]?.tier === tier);
+                if (matches.length === 0)
+                    return undefined;
+                return matches[Math.floor(Math.random() * matches.length)];
+            };
+            if (roll < 0.70)
+                model = pickFromTier(1) || models[0];
+            else if (roll < 0.90)
+                model = pickFromTier(2) || pickFromTier(1) || models[0];
+            else
+                model = pickFromTier(3) || pickFromTier(1) || models[0];
+            const mc = exports.MODEL_COSTS[model] || { prompt: 0, completion: 0, tier: 1 };
             const promptTokens = 200 + Math.floor(Math.random() * 1800);
             const completionTokens = 100 + Math.floor(Math.random() * 900);
             const totalTokens = promptTokens + completionTokens;
@@ -105,6 +120,26 @@ function recordAgentTokens() {
     if (events.length > 50000) {
         events.splice(0, events.length - 50000);
     }
+}
+// Real-call recorder — wired from lmstudio.chatAsAgent on every successful
+// completion. Adds a real event alongside the simulated stream, tagged with
+// action='real-llm' so dashboards can split if they want to.
+function recordRealEvent(input) {
+    const mc = exports.MODEL_COSTS[input.model] || { prompt: 0, completion: 0, tier: 1 };
+    const total = input.promptTokens + input.completionTokens;
+    events.push({
+        timestamp: Date.now(),
+        agent: input.agent,
+        model: input.model,
+        tier: mc.tier,
+        promptTokens: input.promptTokens,
+        completionTokens: input.completionTokens,
+        totalTokens: total,
+        cost: (input.promptTokens / 1000) * mc.prompt + (input.completionTokens / 1000) * mc.completion,
+        action: 'real-llm',
+    });
+    if (events.length > 50000)
+        events.splice(0, events.length - 50000);
 }
 // === AGGREGATION FUNCTIONS ===
 function filterByTime(from, to) {
@@ -200,7 +235,7 @@ function getAgentSummary() {
             costSavingsPercent: grandTotalCalls > 0 ? Math.round(events.filter(e => e.tier === 1).length / events.length * 100) : 0,
             uptimeSeconds: Math.round((now - startTime) / 1000),
         },
-        models: MODEL_COSTS,
+        models: exports.MODEL_COSTS,
     };
 }
 function getRecentEvents(agent, limit = 20) {

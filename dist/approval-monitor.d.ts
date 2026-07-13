@@ -24,6 +24,7 @@ export declare class ApprovalMonitor {
     private pendingApprovals;
     private approvalHistory;
     private maxHistorySize;
+    private idSeq;
     /**
      * Flag a new approval event
      * Called whenever a yes/no decision or permission is needed
@@ -68,7 +69,7 @@ export declare const approvalMonitor: ApprovalMonitor;
  * // Flag an approval
  * approvalMonitor.flagApproval(
  *   'Terminal B (Cleopatra)',
- *   'Continue MOLGANG development?',
+ *   'Continue the project development?',
  *   ['yes', 'no'],
  *   'high'
  * );

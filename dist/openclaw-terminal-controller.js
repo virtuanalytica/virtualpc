@@ -4,7 +4,7 @@
  *
  * Controls dual Claude Code terminals:
  * - Terminal A (Primary): VirtualPC development
- * - Terminal B (Secondary): MOLGANG game development
+ * - Terminal B (Secondary): the project game development
  *
  * Features:
  * - Auto-answers approval prompts (selects "yes" by keyboard/mouse)
@@ -50,6 +50,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.terminalController = exports.OpenClawTerminalController = void 0;
 const child_process_1 = require("child_process");
 const os = __importStar(require("os"));
+const containment_1 = require("./containment");
 class OpenClawTerminalController {
     constructor() {
         this.monitoringActive = false;
@@ -65,7 +66,7 @@ class OpenClawTerminalController {
                 id: 'secondary',
                 name: 'Terminal B (Secondary)',
                 type: 'secondary',
-                project: 'MOLGANG Game'
+                project: 'the project Game'
             }
         };
         this.approval = {
@@ -81,7 +82,7 @@ class OpenClawTerminalController {
     async initialize() {
         console.log('🎮 OpenClaw Terminal Controller Initialized');
         console.log('   Terminal A (Primary): VirtualPC development');
-        console.log('   Terminal B (Secondary): MOLGANG game development');
+        console.log('   Terminal B (Secondary): the project game development');
         console.log('   Max Instances: 2 (no new instances allowed)');
         console.log('');
         // Verify only 2 Claude Code instances running
@@ -365,6 +366,21 @@ class OpenClawTerminalController {
      * Execute command in specific terminal
      */
     async executeInTerminal(terminalId, command) {
+        // ── ContainmentGuard MEGA chokepoint ──────────────────────────────────
+        // Every command an agent runs through a terminal is evaluated against
+        // policy BEFORE execution. In enforce mode a denied command throws and is
+        // never run; in monitor mode the breach is logged and execution proceeds.
+        const agent = terminalId === 'primary' ? 'VirtualPC' : 'GameDev';
+        try {
+            containment_1.containmentGuard.assertAllowed({ kind: 'command', agent, command });
+        }
+        catch (e) {
+            if (e instanceof containment_1.ContainmentError) {
+                console.error(`⛔ ContainmentGuard blocked command in ${terminalId}: ${e.message}`);
+                return '';
+            }
+            throw e;
+        }
         try {
             // Build tmux/screen command
             const platform = os.platform();

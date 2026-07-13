@@ -59,12 +59,14 @@ async function listTasks(agent) {
 }
 
 async function addTask(agent, subject, description, priority) {
-  // /api/backlog/items uses { title, description, assigned_to, priority }
+  // /api/backlog/items requires project + tags so every item is attributable.
   return request('POST', '/api/backlog/items', {
     title: subject,
     description,
     assigned_to: agent,
     priority: priority || 'medium',
+    project: 'VirtualPC platform',
+    tags: ['project:virtualpc-platform', 'scrum', `agent:${agent}`, `priority:${priority || 'medium'}`],
   });
 }
 

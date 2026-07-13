@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnifiedExecutor = void 0;
 const logger_1 = __importDefault(require("../../utils/logger"));
+const secretsBootstrap_1 = require("../../security/secretsBootstrap");
 class UnifiedExecutor {
     constructor(ollama) {
         this.executionStats = new Map();
@@ -131,7 +132,7 @@ class UnifiedExecutor {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.ANTHROPIC_API_KEY || '',
+                    'x-api-key': (0, secretsBootstrap_1.secretOrEnv)('api', 'ANTHROPIC_API_KEY') || '',
                     'anthropic-version': '2023-06-01'
                 },
                 body: JSON.stringify({

@@ -40,6 +40,11 @@ export const PROTECTED_WRITE_PATHS: ReadonlySet<string> = new Set([
   '/api/mcp/call',
   '/api/kami/queue',
   '/api/backlog/items',
+  '/api/terminal-coordination/sessions/exchange',
+  '/api/terminal-coordination/sessions/heartbeat',
+  '/api/terminal-coordination/actions/acquire',
+  '/api/terminal-coordination/actions/release',
+  '/api/terminal-coordination/actions/force-release',
 ]);
 
 function isLoopback(ip: string | undefined): boolean {

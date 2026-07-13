@@ -1,3 +1,6 @@
+import { execFileSync } from 'child_process';
+import * as path from 'path';
+
 /**
  * OpenClaw Integration Handler
  * Autonomous agent command execution without approval
@@ -111,9 +114,51 @@ export class OpenClawHandler {
           uptime: process.uptime()
         };
 
+      case 'molgang-readiness':
+        return this.runVirtualPcScript('molgang-agent-readiness.sh', ['--json']);
+
+      case 'molgang-delegate-smartslag':
+        return this.runVirtualPcScript('delegate-smartslag-roadmap.js', params?.dryRun ? ['--dry-run'] : []);
+
+      case 'molgang-delegate-roadmap':
+        return this.runVirtualPcScript('delegate-molgang-roadmap.js', []);
+
       default:
         throw new Error(`Unknown command: ${command}`);
     }
+  }
+
+  /**
+   * Run a whitelisted VirtualPC operations script. These commands are the
+   * bridge between autonomous agents and local MOLGANG tooling; keep them
+   * narrow and deterministic.
+   */
+  private runVirtualPcScript(scriptName: string, args: string[]): any {
+    const repoRoot = path.resolve(__dirname, '..', '..');
+    const scriptPath = path.join(repoRoot, 'scripts', scriptName);
+    const runner = scriptName.endsWith('.js') ? 'node' : 'bash';
+    const output = execFileSync(runner, [scriptPath, ...args], {
+      cwd: repoRoot,
+      encoding: 'utf-8',
+      timeout: 120000,
+      maxBuffer: 1024 * 1024 * 4,
+      env: {
+        ...process.env,
+        VIRTUALPC_ROOT: repoRoot,
+        MOLGANG_ROOT: process.env.MOLGANG_ROOT || '/home/knight2/molgang-roblox'
+      }
+    });
+
+    const trimmed = output.trim();
+    if (scriptName === 'molgang-agent-readiness.sh') {
+      try {
+        return JSON.parse(trimmed);
+      } catch (error) {
+        return { raw: trimmed, parseError: (error as Error).message };
+      }
+    }
+
+    return { output: trimmed };
   }
 
   /**

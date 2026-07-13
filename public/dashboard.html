@@ -579,6 +579,10 @@
                     <div class="nav-icon">🕸️</div>
                     <div>Code Graph</div>
                 </div>
+                <div class="nav-item" data-page="graphify">
+                    <div class="nav-icon">🧭</div>
+                    <div>Graphify</div>
+                </div>
                 <div class="nav-item" data-page="autoresearch">
                     <div class="nav-icon">🔬</div>
                     <div>Auto-Research</div>
@@ -877,6 +881,57 @@
                 </div>
             </div>
 
+            <!-- GRAPHIFY PAGE — optional AI/codebase knowledge graph provider -->
+            <div class="content-section" id="graphify">
+                <div class="page-header">
+                    <div class="page-title">🧭 Graphify</div>
+                    <div class="page-subtitle">Optional AI/codebase knowledge graph for developer agents. Keeps Graphify separate from the built-in Code Graph renderer.</div>
+                </div>
+
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card"><div class="stat-label">Binary</div><div class="stat-value" id="gf-binary" style="font-size: 1em;">—</div></div>
+                    <div class="stat-card"><div class="stat-label">Management</div><div class="stat-value" id="gf-management" style="font-size: 1em;">—</div></div>
+                    <div class="stat-card"><div class="stat-label">Report</div><div class="stat-value" id="gf-report" style="font-size: 1em;">—</div></div>
+                    <div class="stat-card"><div class="stat-label">Graph</div><div class="stat-value" id="gf-graph" style="font-size: 1em;">—</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Management Commands</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                        Builds are disabled until <code>VIRTUALPC_GRAPHIFY_MANAGEMENT_ENABLED=true</code> is set. Code-only builds avoid semantic document extraction; semantic builds require a configured Graphify backend.
+                    </p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button type="button" id="gf-refresh" style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit;">Refresh</button>
+                        <button type="button" id="gf-build-code" style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--primary); background: rgba(96,165,250,0.18); color: var(--primary); cursor: pointer; font-family: inherit;">Build Code Graph</button>
+                        <button type="button" id="gf-build-semantic" style="padding: 9px 14px; border-radius: 8px; border: 1px solid var(--warning); background: rgba(251,191,36,0.14); color: var(--warning); cursor: pointer; font-family: inherit;">Build Semantic Graph</button>
+                    </div>
+                    <div id="gf-status" style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; color: var(--text-secondary); font-size: 0.85em;">Loading Graphify status…</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Developer Availability</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 12px;">
+                        Project-scoped installs make agents consult <code>graphify-out/GRAPH_REPORT.md</code> or <code>graphify query</code> before reading raw files. Keep this opt-in per developer surface.
+                    </p>
+                    <div style="display: grid; gap: 8px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.86em;">
+                        <div><code id="gf-cmd-install">uv tool install graphifyy</code></div>
+                        <div><code id="gf-cmd-claude">scripts/graphify-management.sh install-claude-project</code></div>
+                        <div><code id="gf-cmd-codex">scripts/graphify-management.sh install-codex-project</code></div>
+                        <div><code id="gf-cmd-claw">scripts/graphify-management.sh install-claw-project</code></div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                        <button type="button" id="gf-install-claude" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit;">Install Claude Code</button>
+                        <button type="button" id="gf-install-codex" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit;">Install Codex</button>
+                        <button type="button" id="gf-install-claw" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: inherit;">Install OpenClaw</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Latest Report</div>
+                    <pre id="gf-report-preview" style="white-space: pre-wrap; word-wrap: break-word; max-height: 420px; overflow-y: auto; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8em; line-height: 1.45; color: var(--text-secondary); background: var(--bg-darker); border: 1px solid var(--border); border-radius: 8px; padding: 12px;">No report loaded.</pre>
+                </div>
+            </div>
+
             <!-- AUTO-RESEARCH PAGE — Karpathy-style plan→probe→synthesize→critique loop -->
             <div class="content-section" id="autoresearch">
                 <div class="page-header">
@@ -984,6 +1039,22 @@
                                style="padding: 7px 14px; background: rgba(251,191,36,0.85); color: #1c1917; border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">📽 Investor deck</a>
                             <a href="/corpus.html"
                                style="padding: 7px 14px; background: rgba(96,165,250,0.18); color: var(--primary); border: 1px solid var(--primary); border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">🧠 Corpus search</a>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color: rgba(34,197,94,0.45);">
+                        <div class="stat-label" style="color: #86efac;">KnitNet · Hyperon Metagraph</div>
+                        <div class="stat-value" style="font-size: 1.1em;">Designer + Timmerman knowledge graph</div>
+                        <div style="margin-top: 6px; font-size: 0.78em; color: var(--text-secondary);">
+                            Rust P2P core · MeTTa export · RLM adapter · tagged backlog
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <a href="#" onclick="showPage('backlog'); loadBacklog(); return false;"
+                               style="padding: 7px 14px; background: rgba(34,197,94,0.18); color: #86efac; border: 1px solid #86efac; border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">📋 Tagged backlog</a>
+                            <a href="/api/graphify/report" target="_blank" rel="noopener"
+                               style="padding: 7px 14px; background: rgba(96,165,250,0.18); color: var(--primary); border: 1px solid var(--primary); border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">🕸 Graphify report</a>
+                            <a href="/corpus.html"
+                               style="padding: 7px 14px; background: var(--secondary); color: white; border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">🧠 Knowledge search</a>
                         </div>
                     </div>
                 </div>
@@ -1395,6 +1466,106 @@
         // Populate when the codegraph page becomes visible
         document.querySelectorAll('.nav-item[data-page="codegraph"]').forEach(el =>
             el.addEventListener('click', () => loadCodegraphStats()));
+
+        // === Graphify management panel =====================================
+        let graphifyLastStatus = null;
+
+        function graphifyArtifactLabel(artifact) {
+            if (!artifact || !artifact.exists) return 'missing';
+            const kb = Math.max(1, Math.round((artifact.sizeBytes || 0) / 1024));
+            const updated = artifact.updatedAt ? new Date(artifact.updatedAt).toLocaleTimeString() : 'unknown';
+            return `${kb} KB · ${updated}`;
+        }
+
+        async function loadGraphifyStatus() {
+            const statusEl = document.getElementById('gf-status');
+            statusEl.textContent = 'Loading Graphify status...';
+            try {
+                const r = await fetch('/api/graphify/status').then(r => r.json());
+                if (!r.success) throw new Error(r.error || 'status failed');
+                graphifyLastStatus = r;
+                document.getElementById('gf-binary').textContent = r.available ? (r.version || r.binary) : 'not installed';
+                document.getElementById('gf-management').textContent = r.managementEnabled ? 'enabled' : 'disabled';
+                document.getElementById('gf-report').textContent = graphifyArtifactLabel(r.artifacts.report);
+                document.getElementById('gf-graph').textContent = graphifyArtifactLabel(r.artifacts.graphJson);
+                document.getElementById('gf-cmd-install').textContent = r.commands.install;
+                document.getElementById('gf-cmd-claude').textContent = r.commands.installForClaudeCode;
+                document.getElementById('gf-cmd-codex').textContent = r.commands.installForCodex;
+                document.getElementById('gf-cmd-claw').textContent = r.commands.installForOpenClaw;
+                const state = r.state ? `${r.state.status || 'unknown'} · ${r.state.command || 'no command'} · ${r.state.updatedAt || ''}` : 'no run state yet';
+                statusEl.textContent = [
+                    `available: ${r.available}`,
+                    `output: ${r.outputDir}`,
+                    `state: ${state}`,
+                    `graph.html: ${graphifyArtifactLabel(r.artifacts.graphHtml)}`
+                ].join('\n');
+                await loadGraphifyReportPreview();
+            } catch (e) {
+                statusEl.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function loadGraphifyReportPreview() {
+            const out = document.getElementById('gf-report-preview');
+            try {
+                const response = await fetch('/api/graphify/report');
+                if (!response.ok) {
+                    out.textContent = graphifyLastStatus?.artifacts?.report?.exists
+                        ? 'Report exists but could not be loaded.'
+                        : 'No GRAPH_REPORT.md yet. Run a Graphify build first.';
+                    return;
+                }
+                const text = await response.text();
+                out.textContent = text.slice(0, 8000);
+            } catch (e) {
+                out.textContent = 'Report unavailable: ' + e.message;
+            }
+        }
+
+        async function startGraphifyBuild(mode) {
+            const statusEl = document.getElementById('gf-status');
+            statusEl.textContent = `Starting ${mode}...`;
+            try {
+                const response = await fetch('/api/graphify/build', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mode })
+                });
+                const r = await response.json();
+                if (!response.ok || !r.success) throw new Error(r.error || 'start failed');
+                statusEl.textContent = `Started ${r.started} (pid ${r.pid || 'unknown'}). Refresh for progress.`;
+                setTimeout(loadGraphifyStatus, 1200);
+            } catch (e) {
+                statusEl.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function startGraphifyDeveloperInstall(platform) {
+            const statusEl = document.getElementById('gf-status');
+            statusEl.textContent = `Starting ${platform} install...`;
+            try {
+                const response = await fetch('/api/graphify/developer-install', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ platform })
+                });
+                const r = await response.json();
+                if (!response.ok || !r.success) throw new Error(r.error || 'install failed');
+                statusEl.textContent = `Started ${r.started} (pid ${r.pid || 'unknown'}).`;
+                setTimeout(loadGraphifyStatus, 1200);
+            } catch (e) {
+                statusEl.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        document.getElementById('gf-refresh')?.addEventListener('click', loadGraphifyStatus);
+        document.getElementById('gf-build-code')?.addEventListener('click', () => startGraphifyBuild('build-code'));
+        document.getElementById('gf-build-semantic')?.addEventListener('click', () => startGraphifyBuild('build-semantic'));
+        document.getElementById('gf-install-claude')?.addEventListener('click', () => startGraphifyDeveloperInstall('install-claude-project'));
+        document.getElementById('gf-install-codex')?.addEventListener('click', () => startGraphifyDeveloperInstall('install-codex-project'));
+        document.getElementById('gf-install-claw')?.addEventListener('click', () => startGraphifyDeveloperInstall('install-claw-project'));
+        document.querySelectorAll('.nav-item[data-page="graphify"]').forEach(el =>
+            el.addEventListener('click', () => loadGraphifyStatus()));
 
         // === Scrum & Forum panel ===========================================
         function severityBadge(sev) {
@@ -1957,9 +2128,11 @@
                         <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.7em;">
                             <span style="padding: 2px 8px; border-radius: 6px; background: ${STATUS_COLORS[t.status] || '#94a3b8'}33; color: ${STATUS_COLORS[t.status] || '#94a3b8'}; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">${esc(t.status)}</span>
                             <span style="padding: 2px 8px; border-radius: 6px; background: ${PRI_COLORS[t.priority] || '#94a3b8'}33; color: ${PRI_COLORS[t.priority] || '#94a3b8'}; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">${esc(t.priority)}</span>
+                            ${t.project ? `<span style="padding: 2px 8px; border-radius: 6px; background: rgba(34,197,94,0.14); color: #86efac; font-weight: 600;">${esc(t.project)}</span>` : ''}
                             ${t.sprint ? `<span style="color: var(--text-secondary);">${esc(t.sprint)}</span>` : ''}
                             ${t.estimated_hours ? `<span style="color: var(--text-secondary);">${esc(t.estimated_hours)}h</span>` : ''}
                             ${t.progress != null ? `<span style="color: var(--text-secondary);">${esc(t.progress)}%</span>` : ''}
+                            ${(t.tags || []).slice(0, 6).map(tag => `<span style="padding: 2px 7px; border-radius: 5px; background: rgba(96,165,250,0.15); color: var(--primary);">${esc(tag)}</span>`).join('')}
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; min-width: 150px;">
@@ -2107,6 +2280,7 @@
             try {
                 const response = await fetch('/api/backlog');
                 const data = await response.json();
+                const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
                 const backlogHtml = `
                     <div class="card">
@@ -2136,10 +2310,14 @@
                         <div style="color: var(--text-secondary);">
                             ${data.priority_queue.map(item => `
                                 <div style="margin-bottom: 10px; padding: 8px; background: rgba(96, 165, 250, 0.1); border-left: 3px solid var(--primary); border-radius: 4px;">
-                                    <strong style="color: var(--primary);">#${item.rank}</strong> ${item.task}
+                                    <strong style="color: var(--primary);">#${item.rank}</strong> ${esc(item.task)}
                                     <span style="float: right; font-size: 0.85em; color: ${item.status === 'done' ? '#22c55e' : item.status === 'in-progress' ? '#f59e0b' : '#94a3b8'}">
-                                        ${item.status.toUpperCase()}
+                                        ${esc(item.status).toUpperCase()}
                                     </span>
+                                    <div style="margin-top: 5px; display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.75em;">
+                                        ${item.project ? `<span style="color: #86efac;">${esc(item.project)}</span>` : ''}
+                                        ${(item.tags || []).slice(0, 5).map(tag => `<span style="padding: 1px 6px; border-radius: 4px; background: rgba(96,165,250,0.16); color: var(--primary);">${esc(tag)}</span>`).join('')}
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
@@ -2216,6 +2394,7 @@
                 const r = await fetch('/api/backlog/per-person');
                 const data = await r.json();
                 container.innerHTML = '';
+                const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
                 for (const [name, info] of Object.entries(data)) {
                     const tasks = (info && info.tasks) || [];
                     if (!tasks.length) continue;
@@ -2228,7 +2407,8 @@
                         <ul style="list-style: none; color: var(--text-secondary);">
                             ${active.map(t => {
                                 const icon = t.status === 'in-progress' ? '🟢' : t.status === 'completed' ? '✅' : '⏳';
-                                return `<li style="margin-bottom: 8px;">${icon} ${t.title}</li>`;
+                                const tags = (t.tags || []).slice(0, 4).map(tag => `<span style="display:inline-block; margin-left: 5px; padding: 1px 6px; border-radius: 4px; background: rgba(96,165,250,0.16); color: var(--primary); font-size: 0.72em;">${esc(tag)}</span>`).join('');
+                                return `<li style="margin-bottom: 8px;">${icon} ${esc(t.title)}${t.project ? `<span style="margin-left: 6px; color: var(--text-secondary); font-size: 0.82em;">${esc(t.project)}</span>` : ''}${tags}</li>`;
                             }).join('')}
                         </ul>
                     `;

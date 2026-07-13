@@ -28,6 +28,7 @@ import * as scrum from '../scrum';
 import * as forum from '../forum';
 import * as kami from '../kami';
 import * as corpus from '../corpus';
+import { terminalCoordination } from '../../terminal-coordination';
 import * as fs from 'fs';
 import * as path from 'path';
 import logger from '../../utils/logger';
@@ -308,6 +309,52 @@ const TOOLS: ToolDefinition[] = [
       const r = forum.reply(a.threadId, a.author, a.body);
       return r ? { reply: r } : { error: `unknown thread: ${a.threadId}` };
     },
+  },
+
+  // ─── coordination.* — terminal active-action lease ───────────────────
+  {
+    name: 'coordination.status',
+    description: 'Read open terminal sessions and the current active-action lease.',
+    inputSchema: { type: 'object', properties: {} },
+    handler: async () => terminalCoordination.snapshot(),
+  },
+  {
+    name: 'coordination.acquire',
+    description: 'Claim the active-action lease for a terminal session. Returns blockedBy when another terminal owns it.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: { type: 'string' },
+        sessionKey: { type: 'string' },
+        title: { type: 'string' },
+        kind: { type: 'string', enum: ['code', 'design', 'review', 'deploy', 'coordination', 'other'] },
+        target: { type: 'string' },
+        notes: { type: 'string' },
+      },
+      required: ['sessionId', 'sessionKey', 'title'],
+    },
+    handler: async (a: any) => terminalCoordination.acquireAction(String(a.sessionId), String(a.sessionKey), {
+      title: String(a.title),
+      kind: a.kind,
+      target: a.target,
+      notes: a.notes,
+    }),
+  },
+  {
+    name: 'coordination.release',
+    description: 'Release the active-action lease owned by a terminal session.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        sessionId: { type: 'string' },
+        sessionKey: { type: 'string' },
+        actionId: { type: 'string' },
+      },
+      required: ['sessionId', 'sessionKey'],
+    },
+    handler: async (a: any) => ({
+      released: terminalCoordination.releaseAction(String(a.sessionId), String(a.sessionKey), a.actionId ? String(a.actionId) : undefined),
+    }),
   },
 
   // ─── corpus.* — semantic retrieval over the unified knowledge store ──

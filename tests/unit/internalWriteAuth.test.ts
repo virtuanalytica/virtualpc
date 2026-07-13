@@ -1,7 +1,7 @@
 import { internalWriteAuth, PROTECTED_WRITE_PATHS } from '../../src/middleware/internalWriteAuth';
 
 /**
- * Proof for TOP_100 #19 — the internal-write guard. The six write endpoints
+ * Proof for TOP_100 #19 — the internal-write guard. The internal write endpoints
  * were unauthenticated. The guard authorises localhost or a shared service
  * token, defaults to WARN (log-but-allow) so it's non-breaking, and rejects
  * only when INTERNAL_WRITE_ENFORCE is on.
@@ -31,13 +31,18 @@ function run(mw: any, req: any) {
 }
 
 describe('internalWriteAuth (TOP_100 #19)', () => {
-  it('protects exactly the six documented write paths', () => {
+  it('protects exactly the documented write paths', () => {
     expect([...PROTECTED_WRITE_PATHS].sort()).toEqual([
       '/api/backlog/items',
       '/api/corpus/ingest',
       '/api/governance/register',
       '/api/kami/queue',
       '/api/mcp/call',
+      '/api/terminal-coordination/actions/acquire',
+      '/api/terminal-coordination/actions/force-release',
+      '/api/terminal-coordination/actions/release',
+      '/api/terminal-coordination/sessions/exchange',
+      '/api/terminal-coordination/sessions/heartbeat',
       '/api/wiki',
     ]);
   });

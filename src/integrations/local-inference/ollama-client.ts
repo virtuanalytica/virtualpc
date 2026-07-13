@@ -126,6 +126,26 @@ export class OllamaClient {
   }
 
   /**
+   * Register an extra model at runtime (name may equal the Ollama tag).
+   * Callers that manage their own tier mapping (e.g. claudeclaw-core)
+   * use this instead of extending the hardcoded list above.
+   */
+  registerModel(config: Partial<OllamaModelConfig> & { name: string }): void {
+    const full: OllamaModelConfig = {
+      variant: config.variant || config.name,
+      max_tokens: config.max_tokens ?? 8192,
+      temperature: config.temperature ?? 0.7,
+      gpu_layers: config.gpu_layers ?? 0,
+      batch_size: config.batch_size ?? 1,
+      ...config,
+    } as OllamaModelConfig;
+    this.modelConfigs.set(full.name, full);
+    if (!this.inferenceStats.has(full.name)) {
+      this.inferenceStats.set(full.name, { count: 0, totalLatency: 0 });
+    }
+  }
+
+  /**
    * Check if Ollama is running
    */
   async checkHealth(): Promise<boolean> {

@@ -1,0 +1,28 @@
+{
+  "tools": [
+    {
+      "id": "tool-lineage-lookup",
+      "name": "Governance lineage lookup",
+      "kind": "governance",
+      "enabled": true,
+      "createdAt": "2026-06-15T09:37:44.410Z",
+      "runs": []
+    },
+    {
+      "id": "tool-quality-profile",
+      "name": "Data quality profile",
+      "kind": "data-quality",
+      "enabled": false,
+      "createdAt": "2026-06-15T09:37:44.410Z",
+      "runs": []
+    },
+    {
+      "id": "tool-access-review",
+      "name": "Access review draft",
+      "kind": "remediation",
+      "enabled": false,
+      "createdAt": "2026-06-15T09:37:44.410Z",
+      "runs": []
+    }
+  ]
+}

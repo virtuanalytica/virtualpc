@@ -26,7 +26,7 @@ import { MODEL_COSTS } from '../../token-tracker';
 
 const BROKERS  = (process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
 const GROUP_ID = process.env.KAFKA_AUDIT_GROUP || 'virtualpc-audit';
-// Read lazily — dotenv.config() runs after this module is imported.
+// Read lazily because deployment/runtime config may be injected after import.
 function isKafkaDisabled(): boolean {
   return /^(1|true|yes)$/i.test(process.env.KAFKA_DISABLED || '');
 }

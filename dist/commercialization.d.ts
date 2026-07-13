@@ -1,14 +1,14 @@
 /**
  * Commercialization — Croesus's promotion proposal engine.
  *
- * Croesus is an LLM agent that suggests promotional spend (Roblox sponsored
- * placements, Twitter/TikTok ads, Discord boosts) for the MOLGANG game. This
+ * Croesus is an LLM agent that suggests promotional spend (legacy sponsored
+ * placements, Twitter/TikTok ads, Discord boosts) for the the project game. This
  * module enforces three guardrails so an LLM never moves real money on its own:
  *
  *   1. Croesus can only PROPOSE. Status starts at "pending"; nothing is paid.
  *   2. A human with role ceo|cto|economy must approve via /approve before
  *      execute is even callable. Approval is recorded with username + ts.
- *   3. Execute calls Stripe / Roblox APIs only when PROMO_REAL_MONEY=1 and
+ *   3. Execute calls Stripe / legacy APIs only when PROMO_REAL_MONEY=1 and
  *      the per-proposal + per-day spend caps allow it. Otherwise it dry-runs
  *      and records "executed_dryrun".
  *
@@ -16,7 +16,7 @@
  * in credentials; charges are made through Stripe's API by customer id +
  * payment method id.
  */
-export type PromoChannel = 'roblox-sponsored' | 'twitter-ad' | 'tiktok-ad' | 'discord-boost' | 'youtube-shorts' | 'other';
+export type PromoChannel = 'sponsored-channel-1' | 'twitter-ad' | 'tiktok-ad' | 'discord-boost' | 'youtube-shorts' | 'other';
 export type PromoStatus = 'pending' | 'approved' | 'rejected' | 'executed_real' | 'executed_dryrun' | 'failed';
 export interface PromotionProposal {
     id: string;

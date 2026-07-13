@@ -40,6 +40,8 @@ const CHUNK_OVERLAP_CHARS = 150;
 // /v1/embeddings on :1234 against the loaded nomic-embed model.
 const EMBED_URL = process.env.EMBED_URL || 'http://127.0.0.1:1234/v1';
 const EMBED_MODEL = process.env.EMBED_MODEL || 'text-embedding-nomic-embed-text-v1.5';
+const OLLAMA_EMBED_URL = process.env.OLLAMA_EMBED_URL || 'http://127.0.0.1:11434/api/embeddings';
+const OLLAMA_EMBED_MODEL = process.env.OLLAMA_EMBED_MODEL || 'nomic-embed-text';
 
 /** Split text into ~CHUNK_TARGET_CHARS passages with overlap. Sentence-aware
  *  where possible (split on . ! ? newlines), falls back to char-window.  */
@@ -82,6 +84,7 @@ export async function embedTexts(texts: string[]): Promise<(number[] | null)[]> 
   const out: (number[] | null)[] = new Array(texts.length).fill(null);
   for (let i = 0; i < texts.length; i += 16) {
     const batch = texts.slice(i, i + 16);
+    let embeddedWithLmStudio = false;
     try {
       const r = await fetch(`${EMBED_URL}/embeddings`, {
         method: 'POST',
@@ -98,9 +101,33 @@ export async function embedTexts(texts: string[]): Promise<(number[] | null)[]> 
         for (let j = 0; j < batch.length; j++) {
           out[i + j] = data.data[j]?.embedding || null;
         }
+        embeddedWithLmStudio = true;
       }
     } catch (e: any) {
       logger.warn(`corpus.embedTexts batch failed: ${e.message}`);
+    }
+
+    if (embeddedWithLmStudio) continue;
+
+    // Local fallback: Alexander already keeps Ollama's nomic-embed-text warm.
+    // This keeps VirtualPC's corpus vectorized when LM Studio is closed.
+    for (let j = 0; j < batch.length; j++) {
+      try {
+        const r = await fetch(OLLAMA_EMBED_URL, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ model: OLLAMA_EMBED_MODEL, prompt: batch[j].slice(0, 8000) }),
+          signal: AbortSignal.timeout(30000),
+        });
+        if (!r.ok) {
+          logger.warn(`corpus.embedTexts Ollama fallback: ${r.status} ${await r.text()}`);
+          continue;
+        }
+        const data: any = await r.json();
+        out[i + j] = data.embedding || null;
+      } catch (e: any) {
+        logger.warn(`corpus.embedTexts Ollama fallback failed: ${e.message}`);
+      }
     }
   }
   return out;
@@ -185,7 +212,7 @@ export async function ingestChunks(client: LightRAGClient, chunks: CorpusChunk[]
   return { ingested, offline: false };
 }
 
-/** Hybrid search: vector similarity + BM25-ish keyword overlap.
+/** Hybrid search: vector similarity + lexical exact/term overlap.
  *  Returns top-k passages with scores. */
 export async function search(
   client: LightRAGClient,
@@ -202,39 +229,95 @@ export async function search(
   logger.info(`corpus.search(q="${query.slice(0,50)}", k=${k}) qVec=${qVec ? `dim=${qVec.length}` : 'null'}`);
   const session = driver.session();
   try {
-    let cypher: string;
-    let params: any = { k: neo4jInt(k) };
+    const merged = new Map<string, { id: string; source: string; source_kind: string; title?: string; content: string; score: number }>();
+    const upsert = (hit: { id: string; source: string; source_kind: string; title?: string; content: string; score: number }) => {
+      const existing = merged.get(hit.id);
+      if (!existing || hit.score > existing.score) merged.set(hit.id, hit);
+    };
+    const n = (v: any) => v?.toNumber?.() ?? Number(v || 0);
+    const sourceKind = opts.sourceKind || null;
+    const candidateLimit = neo4jInt(Math.max(k * 4, k));
+
     if (qVec) {
-      cypher = `
+      const result = await session.run(
+        `
         CALL db.index.vector.queryNodes('corpus_embedding', $k, $q)
         YIELD node, score
-        ${opts.sourceKind ? "WHERE node.source_kind = $sourceKind" : ""}
+        WHERE $sourceKind IS NULL OR node.source_kind = $sourceKind
         RETURN node.id AS id, node.source AS source, node.source_kind AS sk, node.title AS title, node.content AS content, score
         ORDER BY score DESC
-        LIMIT $k`;
-      params.q = qVec;
-      if (opts.sourceKind) params.sourceKind = opts.sourceKind;
-    } else {
-      // Fallback: substring keyword match (no vectors available)
-      cypher = `
-        MATCH (n:Corpus)
-        WHERE toLower(n.content) CONTAINS toLower($q)
-        ${opts.sourceKind ? "AND n.source_kind = $sourceKind" : ""}
-        RETURN n.id AS id, n.source AS source, n.source_kind AS sk, n.title AS title, n.content AS content, 0.5 AS score
-        LIMIT $k`;
-      params.q = query;
-      if (opts.sourceKind) params.sourceKind = opts.sourceKind;
+        LIMIT $k`,
+        { k: candidateLimit, q: qVec, sourceKind },
+      );
+      for (const r of result.records) {
+        upsert({
+          id: r.get('id'),
+          source: r.get('source'),
+          source_kind: r.get('sk'),
+          title: r.get('title') || undefined,
+          content: r.get('content'),
+          score: typeof r.get('score') === 'number' ? r.get('score') : n(r.get('score')),
+        });
+      }
     }
-    const result = await session.run(cypher, params);
-    logger.info(`corpus.search returned ${result.records.length} rows`);
-    return result.records.map((r: any) => ({
-      id: r.get('id'),
-      source: r.get('source'),
-      source_kind: r.get('sk'),
-      title: r.get('title') || undefined,
-      content: r.get('content'),
-      score: typeof r.get('score') === 'number' ? r.get('score') : (r.get('score')?.toNumber?.() ?? 0),
-    })).filter((x: { score: number }) => !opts.minScore || x.score >= opts.minScore);
+
+    const phrase = query.toLowerCase().trim();
+    const terms = Array.from(new Set((phrase.match(/[\p{L}\p{N}_:-]{3,}/gu) || []).slice(0, 16)));
+    if (phrase || terms.length > 0) {
+      const keyword = await session.run(
+        `
+        MATCH (n:Corpus)
+        WHERE ($sourceKind IS NULL OR n.source_kind = $sourceKind)
+          AND (
+            toLower(n.content) CONTAINS $phrase
+            OR toLower(n.source) CONTAINS $phrase
+            OR toLower(coalesce(n.title, '')) CONTAINS $phrase
+            OR any(term IN $terms WHERE
+              toLower(n.content) CONTAINS term
+              OR toLower(n.source) CONTAINS term
+              OR toLower(coalesce(n.title, '')) CONTAINS term
+            )
+          )
+        WITH n,
+          CASE WHEN
+            toLower(n.content) CONTAINS $phrase
+            OR toLower(n.source) CONTAINS $phrase
+            OR toLower(coalesce(n.title, '')) CONTAINS $phrase
+          THEN 1 ELSE 0 END AS exact,
+          size([term IN $terms WHERE
+            toLower(n.content) CONTAINS term
+            OR toLower(n.source) CONTAINS term
+            OR toLower(coalesce(n.title, '')) CONTAINS term
+          ]) AS hitCount
+        RETURN n.id AS id, n.source AS source, n.source_kind AS sk,
+               n.title AS title, n.content AS content, exact, hitCount
+        ORDER BY exact DESC, hitCount DESC, n.updated_at DESC
+        LIMIT $k`,
+        { k: candidateLimit, sourceKind, phrase, terms },
+      );
+      for (const r of keyword.records) {
+        const exact = n(r.get('exact'));
+        const hitCount = n(r.get('hitCount'));
+        const lexicalScore = exact
+          ? 1
+          : Math.min(0.98, 0.82 + Math.min(hitCount, 8) * 0.04);
+        upsert({
+          id: r.get('id'),
+          source: r.get('source'),
+          source_kind: r.get('sk'),
+          title: r.get('title') || undefined,
+          content: r.get('content'),
+          score: lexicalScore,
+        });
+      }
+    }
+
+    const results = Array.from(merged.values())
+      .filter((x) => !opts.minScore || x.score >= opts.minScore)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, k);
+    logger.info(`corpus.search returned ${results.length} rows`);
+    return results;
   } catch (e: any) {
     logger.warn(`corpus.search failed: ${e.message}`);
     return [];

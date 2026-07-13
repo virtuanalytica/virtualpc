@@ -1,0 +1,24 @@
+{
+  "runs": [
+    {
+      "id": "spec-mpya1iha-0",
+      "technique": "IR",
+      "units": "cm^-1",
+      "createdAt": "2026-06-03T16:24:45.262Z",
+      "summary": {
+        "points": 6,
+        "baseline": 53.5,
+        "noiseThreshold": 83.152,
+        "peaks": [
+          {
+            "index": 1,
+            "x": 1710,
+            "height": 95,
+            "prominence": 55
+          }
+        ],
+        "maxIntensity": 95
+      }
+    }
+  ]
+}

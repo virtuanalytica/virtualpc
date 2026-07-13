@@ -2,6 +2,7 @@
 
 **Status**: Secondary Development Focus  
 **Last Updated**: 2026-04-12
+**Default tags inherited by items**: `project:virtualpc-platform`, `priority:medium`, `enhancement`, `quality`
 
 ---
 
@@ -158,4 +159,3 @@
 ---
 
 **Estimated Timeline**: 4-6 weeks at current velocity
-

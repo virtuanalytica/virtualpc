@@ -10,13 +10,16 @@ class DeploymentManager {
         this.deployments = new Map();
         this.healthChecks = new Map();
         this.rollbackStack = [];
+        // Monotonic suffix: two deployments started in the same ms must not share an
+        // id (a collision would overwrite the first in the map and break rollback).
+        this.idSeq = 0;
     }
     /**
      * Start deployment
      */
     startDeployment(version, environment, services) {
         const deployment = {
-            id: `deploy_${Date.now()}`,
+            id: `deploy_${Date.now()}_${this.idSeq++}`,
             version,
             timestamp: new Date(),
             status: 'deploying',

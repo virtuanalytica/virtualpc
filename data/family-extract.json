@@ -1,0 +1,6117 @@
+{
+ "generated_from": "20260607data-4e64c290-c713-429c-b397-5fe8e34fde05-1780820328-168014f2-batch-0000",
+ "stats": {
+  "conversations": 809,
+  "entities": 176,
+  "chat_nodes": 220,
+  "edges": 430,
+  "gazetteer_hits": 76,
+  "candidates": 100
+ },
+ "entities": [
+  {
+   "name": "Edwin Hauwert",
+   "category": "persoon",
+   "mentions": 1527,
+   "chats": [
+    "a4c46c72-ea66-480c-87be-52977ce0af18",
+    "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+    "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Diederik Fierig",
+   "category": "persoon",
+   "mentions": 196,
+   "chats": [
+    "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+    "4361d830-5d47-4e01-8221-afa2345f0683",
+    "10cb3a75-2fdf-404d-a215-c3c7d50c49ed"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Witteveen",
+   "category": "persoon",
+   "mentions": 912,
+   "chats": [
+    "a4c46c72-ea66-480c-87be-52977ce0af18",
+    "6eb020ae-2920-415e-ab0e-a65bb4754a2d",
+    "18ba563f-0238-4fe4-a017-46f129f4aa17"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Mark Nooijen",
+   "category": "persoon",
+   "mentions": 3,
+   "chats": [
+    "92081120-e499-4a84-9bb0-4c80dce8208b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Colin Barrow",
+   "category": "persoon",
+   "mentions": 6,
+   "chats": [
+    "96ba04ca-ab84-4fe6-bca3-99e1f7eea41d",
+    "f2d1da7f-48c8-40d7-8874-4aec19946955",
+    "55aad9ba-2375-4a28-adea-b62277320395"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "VirtualV Holding B.V.",
+   "category": "bedrijf",
+   "mentions": 4138,
+   "chats": [
+    "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+    "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+    "165a716b-91a8-48b3-afbb-27091dcf8d2b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "EHMAC B.V.",
+   "category": "bedrijf",
+   "mentions": 2519,
+   "chats": [
+    "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+    "c212b259-ece1-4ff1-9f9d-57a198e8c361",
+    "6c31587f-48e8-4f23-a932-bd5c84835848"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "SLAG B.V.",
+   "category": "bedrijf",
+   "mentions": 2636,
+   "chats": [
+    "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "b144835d-8a23-487c-9375-b85bbc953b4c"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Slakkenspoor VOF",
+   "category": "bedrijf",
+   "mentions": 439,
+   "chats": [
+    "4361d830-5d47-4e01-8221-afa2345f0683",
+    "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+    "cd5976b9-6372-4fa0-bf69-4c553f2f470b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "VirtuAnalytica VOF",
+   "category": "bedrijf",
+   "mentions": 18,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Uniforce Group B.V.",
+   "category": "bedrijf",
+   "mentions": 1799,
+   "chats": [
+    "a4c46c72-ea66-480c-87be-52977ce0af18",
+    "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+    "891a065c-524e-4ca8-9b80-77344bada843"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Magnit",
+   "category": "bedrijf",
+   "mentions": 389,
+   "chats": [
+    "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+    "b144835d-8a23-487c-9375-b85bbc953b4c",
+    "d88c05de-226a-4b3a-b892-e0dc528da23f"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "APG",
+   "category": "bedrijf",
+   "mentions": 823,
+   "chats": [
+    "b144835d-8a23-487c-9375-b85bbc953b4c",
+    "d88c05de-226a-4b3a-b892-e0dc528da23f",
+    "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Tata Steel IJmuiden",
+   "category": "bedrijf",
+   "mentions": 1914,
+   "chats": [
+    "132fada5-3eff-4fba-9861-b8f7662ceb7e",
+    "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+    "64bf6895-ca48-4ebd-b5d6-b1f302996700"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Goldman Sachs",
+   "category": "bedrijf",
+   "mentions": 70,
+   "chats": [
+    "61af1455-e7f7-405a-bc97-086c2d3416a3",
+    "3138aa6d-aefa-491d-b2c2-9d78406b1825",
+    "f6b4c8b2-daf1-4e00-b5c8-2ab04bd8076b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Nike",
+   "category": "bedrijf",
+   "mentions": 76,
+   "chats": [
+    "e1a86d4c-6b72-4061-82a1-188813202c2a",
+    "3138aa6d-aefa-491d-b2c2-9d78406b1825",
+    "61af1455-e7f7-405a-bc97-086c2d3416a3"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Aegon",
+   "category": "bedrijf",
+   "mentions": 54,
+   "chats": [
+    "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+    "b229312e-b832-4b1e-b425-0e641ef3a917",
+    "61af1455-e7f7-405a-bc97-086c2d3416a3"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Numerai",
+   "category": "bedrijf",
+   "mentions": 1143,
+   "chats": [
+    "fe250681-4242-4a0b-878e-496be55c511c",
+    "210abe90-6ab8-4afc-8cee-455063d828ba",
+    "26bde168-ba4f-4cb5-8c02-84a26f614a0b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Science Park Spark",
+   "category": "bedrijf",
+   "mentions": 49,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+    "ffa0efb4-ccb5-4fe6-8614-4fae53897fa8"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "VITO",
+   "category": "bedrijf",
+   "mentions": 7,
+   "chats": [
+    "96ba04ca-ab84-4fe6-bca3-99e1f7eea41d",
+    "54685846-5112-4ff5-bae3-d74e8ae8ecc6",
+    "5244c3ae-741e-43f7-9d08-a42495cbe2b0"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "TNO",
+   "category": "bedrijf",
+   "mentions": 156,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+    "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Heraeus",
+   "category": "bedrijf",
+   "mentions": 249,
+   "chats": [
+    "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+    "953d2d78-a478-40ed-8b9c-c65e22593cb5",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Supermicro",
+   "category": "bedrijf",
+   "mentions": 38,
+   "chats": [
+    "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+    "297e3bc8-f225-4f92-a1fd-4f7b54c0677e",
+    "16bfcaa5-be7e-45a1-bc75-809d4b47b075"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "ABB",
+   "category": "bedrijf",
+   "mentions": 78,
+   "chats": [
+    "14f692f6-91bb-4f5e-8d90-dfb0ca601b56",
+    "5fc4c8d6-8b98-4db7-8cc7-2339a97a0a68",
+    "a4c46c72-ea66-480c-87be-52977ce0af18"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "FIMER",
+   "category": "bedrijf",
+   "mentions": 29,
+   "chats": [
+    "5fc4c8d6-8b98-4db7-8cc7-2339a97a0a68",
+    "14f692f6-91bb-4f5e-8d90-dfb0ca601b56"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Wyndham",
+   "category": "bedrijf",
+   "mentions": 26,
+   "chats": [
+    "92081120-e499-4a84-9bb0-4c80dce8208b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Amsterdam",
+   "category": "locatie",
+   "mentions": 746,
+   "chats": [
+    "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+    "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+    "67077403-6bd8-4ecc-81cf-d006b3570286"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "IJburg",
+   "category": "locatie",
+   "mentions": 341,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+    "e785f1d4-323b-42e5-87c1-929d9cf47b17"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Bergen NH",
+   "category": "locatie",
+   "mentions": 143,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+    "ae82f8fd-5f40-4a89-9980-3b8048f1b06d"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Zaandam",
+   "category": "locatie",
+   "mentions": 200,
+   "chats": [
+    "67077403-6bd8-4ecc-81cf-d006b3570286",
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+    "b4738ad4-cd00-40e8-83da-1ecfa4d378c6"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "IJmuiden",
+   "category": "locatie",
+   "mentions": 507,
+   "chats": [
+    "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+    "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+    "64bf6895-ca48-4ebd-b5d6-b1f302996700"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Delft",
+   "category": "locatie",
+   "mentions": 274,
+   "chats": [
+    "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+    "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+    "703ba31f-a347-4e50-aba8-9c780b1231b1"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "TU Delft",
+   "category": "locatie",
+   "mentions": 346,
+   "chats": [
+    "3d768609-85ec-4812-82e5-42e89d2239a6",
+    "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+    "747b25a3-d931-44f7-a50f-8c1700a6ca67"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Wognum",
+   "category": "locatie",
+   "mentions": 67,
+   "chats": [
+    "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+    "ded7ba7f-8294-4ac7-a808-2b585fa0bb61",
+    "b3c09e65-09b8-4f35-b833-3b9599ea4e71"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Rotterdam",
+   "category": "locatie",
+   "mentions": 157,
+   "chats": [
+    "67077403-6bd8-4ecc-81cf-d006b3570286",
+    "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+    "c5b6c4be-6999-4556-bab6-dbb28a795bdd"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Kanaaldijk 71",
+   "category": "locatie",
+   "mentions": 11,
+   "chats": [
+    "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Euronext Amsterdam",
+   "category": "locatie",
+   "mentions": 40,
+   "chats": [
+    "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+    "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+    "b2053bb4-3ae3-4f01-a007-8655c5e06e38"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Spanje",
+   "category": "locatie",
+   "mentions": 122,
+   "chats": [
+    "92081120-e499-4a84-9bb0-4c80dce8208b",
+    "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+    "f5b6b918-25c1-4dde-b3b5-e35647c74ca8"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "FA YIN",
+   "category": "locatie",
+   "mentions": 9,
+   "chats": [
+    "c0773085-817e-4e22-a462-374b3ab6f4aa",
+    "fdf5795f-cd69-4a7d-b33d-91eb0dfe7eac"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Python",
+   "category": "software",
+   "mentions": 5834,
+   "chats": [
+    "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+    "81688240-0365-45a9-a390-b49ca453f686",
+    "62cfce24-f071-42c3-b65e-2c19bd76a739"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Rust",
+   "category": "software",
+   "mentions": 129,
+   "chats": [
+    "dc0efa7c-b16e-456b-99f6-022f8631607c",
+    "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+    "b07d33f4-68d3-4171-acbd-7f7755d3ae8d"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Three.js",
+   "category": "software",
+   "mentions": 445,
+   "chats": [
+    "9f217c71-cab4-4d5c-af74-7c6c5d6f0edb",
+    "a2f412e1-87f9-409d-b189-c69351bb2032",
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "FastAPI",
+   "category": "software",
+   "mentions": 23,
+   "chats": [
+    "4997d993-31be-4ef4-95da-c3e1c182b898",
+    "195db2ab-67ce-4838-9960-97800c0b7a1e",
+    "1cccdf02-5fa6-4b39-b1bc-0315b4ef3eb0"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Neo4j",
+   "category": "software",
+   "mentions": 419,
+   "chats": [
+    "10fcc5ea-382e-42b6-9879-2a5c879d74ac",
+    "49e8e77f-a91e-4512-b18f-7b301fc9d159"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Kafka",
+   "category": "software",
+   "mentions": 12,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "0a81208e-8a94-4328-af8e-e23c2f5b3406",
+    "78bf1724-9afe-4768-bcc0-f877331bed05"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Roblox Studio",
+   "category": "tool",
+   "mentions": 188,
+   "chats": [
+    "00ffbb34-12d0-4880-bc99-75a94cd65b8b",
+    "ed55a95a-395a-4c94-adad-928693f12fd5",
+    "a9e5b980-5eef-443e-937b-89de65163ce2"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Unreal",
+   "category": "engine",
+   "mentions": 16,
+   "chats": [
+    "cad02832-8210-468e-b2eb-a979531cdd86",
+    "b229312e-b832-4b1e-b425-0e641ef3a917",
+    "1ebb0c7a-f1d8-45db-a282-27bb0b7c2858"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Roblox",
+   "category": "engine",
+   "mentions": 972,
+   "chats": [
+    "3d768609-85ec-4812-82e5-42e89d2239a6",
+    "00ffbb34-12d0-4880-bc99-75a94cd65b8b",
+    "b229312e-b832-4b1e-b425-0e641ef3a917"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Hedera",
+   "category": "software",
+   "mentions": 87,
+   "chats": [
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+    "b229312e-b832-4b1e-b425-0e641ef3a917",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "XRPL",
+   "category": "software",
+   "mentions": 51,
+   "chats": [
+    "b229312e-b832-4b1e-b425-0e641ef3a917",
+    "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+    "6b9af8eb-95fb-432c-a0b7-1daeaf49ba2a"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Ollama",
+   "category": "software",
+   "mentions": 37,
+   "chats": [
+    "71ce3211-290d-4b72-a50c-b0d8d0210231",
+    "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+    "aa10ca0c-3fc7-4009-bfeb-56772b155669"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "LiteLLM",
+   "category": "software",
+   "mentions": 23,
+   "chats": [
+    "2a5b4380-a0f1-4cc1-bd66-94013a05b467"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "FreeCAD",
+   "category": "software",
+   "mentions": 70,
+   "chats": [
+    "fc4ecc0c-e849-4669-8b36-2a9367741e79",
+    "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+    "30f4deac-6e1b-4074-89fb-3d1ffe0ff654"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "GPU Server 1",
+   "category": "hardware",
+   "mentions": 784,
+   "chats": [
+    "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+    "c7f2e8c2-41c2-4180-815b-0aa9438dc470",
+    "ef3b1569-2dbf-467c-a37e-a89f3c07773b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Optane nvram",
+   "category": "hardware",
+   "mentions": 168,
+   "chats": [
+    "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+    "297e3bc8-f225-4f92-a1fd-4f7b54c0677e",
+    "b6b20b8b-7e9a-4abe-915f-44e244faea9a"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Ratfisch RS55",
+   "category": "hardware",
+   "mentions": 19,
+   "chats": [
+    "a5ad3bae-ada0-4d16-b70d-c86e8c37e978"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "SmartSlag3",
+   "category": "project",
+   "mentions": 1996,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "cd5976b9-6372-4fa0-bf69-4c553f2f470b",
+    "e6543b32-06bc-48a9-ab94-9b61406db725"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "SlagBox",
+   "category": "project",
+   "mentions": 38,
+   "chats": [
+    "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+    "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+    "fc4ecc0c-e849-4669-8b36-2a9367741e79"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "MOLGANG",
+   "category": "project",
+   "mentions": 522,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "b229312e-b832-4b1e-b425-0e641ef3a917",
+    "2a5b4380-a0f1-4cc1-bd66-94013a05b467"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "MOLSI28",
+   "category": "project",
+   "mentions": 201,
+   "chats": [
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "5f54bddc-870a-4d9b-a7f9-a395ffec8775"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "QuantumSilica",
+   "category": "project",
+   "mentions": 20,
+   "chats": [
+    "6b9af8eb-95fb-432c-a0b7-1daeaf49ba2a",
+    "6c31587f-48e8-4f23-a932-bd5c84835848",
+    "10cb3a75-2fdf-404d-a215-c3c7d50c49ed"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Vanadium winning",
+   "category": "winning",
+   "mentions": 3971,
+   "chats": [
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+    "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+    "64bf6895-ca48-4ebd-b5d6-b1f302996700"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Silicium winning",
+   "category": "winning",
+   "mentions": 254,
+   "chats": [
+    "e6543b32-06bc-48a9-ab94-9b61406db725",
+    "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Titanium winning",
+   "category": "winning",
+   "mentions": 456,
+   "chats": [
+    "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+    "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+    "9f217c71-cab4-4d5c-af74-7c6c5d6f0edb"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Vanadium baar",
+   "category": "materiaal",
+   "mentions": 1,
+   "chats": [
+    "ea76fdb0-2d0a-41e2-9034-c117c50594da"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Vanadium elektrolyt",
+   "category": "materiaal",
+   "mentions": 43,
+   "chats": [
+    "17d5c116-35b3-4ac2-8330-be4e4353a05e",
+    "a9fd0750-ba18-4da7-864b-6d3530b97a0e",
+    "c73cd4bb-f033-4773-b091-585dcb72e3aa"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "BOF slak",
+   "category": "materiaal",
+   "mentions": 1042,
+   "chats": [
+    "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+    "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+    "b07d33f4-68d3-4171-acbd-7f7755d3ae8d"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "WBSO",
+   "category": "activiteit",
+   "mentions": 3936,
+   "chats": [
+    "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+    "b6a44793-bfa4-44dd-839c-c56c7da89611",
+    "8fd28deb-03ed-47bc-a4b4-95861ed38bd7"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Hydrometallurgie",
+   "category": "activiteit",
+   "mentions": 1235,
+   "chats": [
+    "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+    "1018d8a6-b768-41c5-94cb-55774fe637d4"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Ultrasoon disaggregatie",
+   "category": "activiteit",
+   "mentions": 503,
+   "chats": [
+    "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+    "bb791220-a7bb-478e-9a3f-5fbc14f37344",
+    "380256d8-ed93-4f9f-9acd-112a6ea8365d"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "XRF-meting",
+   "category": "activiteit",
+   "mentions": 793,
+   "chats": [
+    "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+    "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+    "1680ee03-e31f-4526-8bd2-4334815c1c90"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Dagvaarding",
+   "category": "activiteit",
+   "mentions": 883,
+   "chats": [
+    "a4c46c72-ea66-480c-87be-52977ce0af18",
+    "6eb020ae-2920-415e-ab0e-a65bb4754a2d",
+    "18ba563f-0238-4fe4-a017-46f129f4aa17"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "DCF-analyse",
+   "category": "activiteit",
+   "mentions": 201,
+   "chats": [
+    "e6543b32-06bc-48a9-ab94-9b61406db725",
+    "92081120-e499-4a84-9bb0-4c80dce8208b",
+    "cd5976b9-6372-4fa0-bf69-4c553f2f470b"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Numerai Signals",
+   "category": "activiteit",
+   "mentions": 776,
+   "chats": [
+    "c7764d58-7460-4d4b-997e-29b845d13e43",
+    "210abe90-6ab8-4afc-8cee-455063d828ba",
+    "b5c6baf4-7a39-4651-b26e-dbd0f4fee0f6"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Cantonees leren",
+   "category": "activiteit",
+   "mentions": 456,
+   "chats": [
+    "540c310e-c3c3-4fee-bd6e-7a89daac6190",
+    "c0773085-817e-4e22-a462-374b3ab6f4aa",
+    "67077403-6bd8-4ecc-81cf-d006b3570286"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Quantum computing",
+   "category": "onderwerp",
+   "mentions": 1842,
+   "chats": [
+    "64610500-e0fa-413d-8057-accb9ce4820e",
+    "95a25c25-1c9b-49c2-a7d3-bdd287d6fd55",
+    "03294620-0151-40c1-b338-6267ecf03459"
+   ],
+   "source": "chat"
+  },
+  {
+   "name": "Cell In",
+   "category": "onderwerp",
+   "mentions": 233,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Lion One",
+   "category": "onderwerp",
+   "mentions": 230,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Sparkling Water",
+   "category": "onderwerp",
+   "mentions": 208,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Phoenix Metals",
+   "category": "onderwerp",
+   "mentions": 155,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Jupyter Lab",
+   "category": "onderwerp",
+   "mentions": 153,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Yahoo Finance",
+   "category": "onderwerp",
+   "mentions": 143,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Lion One Metals",
+   "category": "onderwerp",
+   "mentions": 138,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Google Drive",
+   "category": "onderwerp",
+   "mentions": 121,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Synapse ML",
+   "category": "onderwerp",
+   "mentions": 119,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Wet LB",
+   "category": "onderwerp",
+   "mentions": 119,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Holding B.V",
+   "category": "bedrijf",
+   "mentions": 112,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Financial Modeling Prep",
+   "category": "onderwerp",
+   "mentions": 108,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Google Colab",
+   "category": "onderwerp",
+   "mentions": 107,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Google Sheets",
+   "category": "onderwerp",
+   "mentions": 93,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Initialize Spark",
+   "category": "onderwerp",
+   "mentions": 81,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "De Belastingdienst",
+   "category": "onderwerp",
+   "mentions": 78,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "IBM Quantum",
+   "category": "onderwerp",
+   "mentions": 70,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Key Features",
+   "category": "onderwerp",
+   "mentions": 70,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Innovation Box",
+   "category": "onderwerp",
+   "mentions": 69,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "RAPIDS Accelerator",
+   "category": "onderwerp",
+   "mentions": 68,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "AttributeError                            Traceback",
+   "category": "onderwerp",
+   "mentions": 66,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Windows NT",
+   "category": "onderwerp",
+   "mentions": 65,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Company Name",
+   "category": "onderwerp",
+   "mentions": 61,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "IBM Brisbane",
+   "category": "onderwerp",
+   "mentions": 58,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Numerai Crypto",
+   "category": "onderwerp",
+   "mentions": 57,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Stopping Spark",
+   "category": "onderwerp",
+   "mentions": 55,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Science Park",
+   "category": "onderwerp",
+   "mentions": 54,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "SmartSlag B.V",
+   "category": "onderwerp",
+   "mentions": 54,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "La Plata",
+   "category": "onderwerp",
+   "mentions": 53,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "TypeError                                 Traceback",
+   "category": "onderwerp",
+   "mentions": 52,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Paul Schuitemahof",
+   "category": "onderwerp",
+   "mentions": 52,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Command Bar",
+   "category": "onderwerp",
+   "mentions": 52,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Salaris DGA",
+   "category": "onderwerp",
+   "mentions": 51,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Solar Panel",
+   "category": "onderwerp",
+   "mentions": 50,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Modified Z-Score",
+   "category": "onderwerp",
+   "mentions": 50,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Edwin Hauwert MaChina",
+   "category": "onderwerp",
+   "mentions": 50,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Dolgellau Gold Belt",
+   "category": "onderwerp",
+   "mentions": 49,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Bruno Burger",
+   "category": "onderwerp",
+   "mentions": 47,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Light Dome",
+   "category": "onderwerp",
+   "mentions": 47,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Ventilation Pipe",
+   "category": "onderwerp",
+   "mentions": 47,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Chinese New Year",
+   "category": "onderwerp",
+   "mentions": 47,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "End Date",
+   "category": "onderwerp",
+   "mentions": 46,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Feature Engineering",
+   "category": "onderwerp",
+   "mentions": 45,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Wet IB",
+   "category": "onderwerp",
+   "mentions": 45,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Market Cap",
+   "category": "onderwerp",
+   "mentions": 44,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "KeyError                                  Traceback",
+   "category": "onderwerp",
+   "mentions": 43,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Bit Server VM",
+   "category": "onderwerp",
+   "mentions": 43,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Maturity Date",
+   "category": "onderwerp",
+   "mentions": 43,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "WARN RapidsPluginUtils",
+   "category": "onderwerp",
+   "mentions": 42,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Solar Panel Layout",
+   "category": "onderwerp",
+   "mentions": 42,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Mounting Rail",
+   "category": "onderwerp",
+   "mentions": 42,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Australian Vanadium",
+   "category": "onderwerp",
+   "mentions": 42,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "OpenJDK Runtime Environment",
+   "category": "onderwerp",
+   "mentions": 41,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "App Direct",
+   "category": "onderwerp",
+   "mentions": 41,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "El Roble",
+   "category": "onderwerp",
+   "mentions": 41,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Wikimedia Commons",
+   "category": "onderwerp",
+   "mentions": 39,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Type AC",
+   "category": "onderwerp",
+   "mentions": 39,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "FMP API Error",
+   "category": "onderwerp",
+   "mentions": 38,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Tata IJmuiden",
+   "category": "onderwerp",
+   "mentions": 38,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Burnt Sienna",
+   "category": "onderwerp",
+   "mentions": 38,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Alba Mineral Resources",
+   "category": "onderwerp",
+   "mentions": 38,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Spark DataFrame",
+   "category": "onderwerp",
+   "mentions": 37,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Xeon Platinum",
+   "category": "onderwerp",
+   "mentions": 37,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Fire Horse",
+   "category": "onderwerp",
+   "mentions": 37,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Wintershall Noordzee B.V",
+   "category": "onderwerp",
+   "mentions": 37,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Key Improvements",
+   "category": "onderwerp",
+   "mentions": 36,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Crown Estate",
+   "category": "onderwerp",
+   "mentions": 36,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Uitzondering WO-in",
+   "category": "onderwerp",
+   "mentions": 36,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "JetBrains Mono",
+   "category": "onderwerp",
+   "mentions": 36,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Numerai API",
+   "category": "onderwerp",
+   "mentions": 35,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Spark DataFrames",
+   "category": "onderwerp",
+   "mentions": 35,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Bottom Line",
+   "category": "onderwerp",
+   "mentions": 35,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Bloomberg Scraper",
+   "category": "onderwerp",
+   "mentions": 34,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "ValueError                                Traceback",
+   "category": "onderwerp",
+   "mentions": 34,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "NVIDIA GeForce RTX",
+   "category": "onderwerp",
+   "mentions": 34,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Private Key",
+   "category": "onderwerp",
+   "mentions": 34,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Bear Creek",
+   "category": "onderwerp",
+   "mentions": 34,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Credit Risk AIRB",
+   "category": "onderwerp",
+   "mentions": 33,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Den Haag",
+   "category": "onderwerp",
+   "mentions": 33,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Werk BV",
+   "category": "bedrijf",
+   "mentions": 33,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Client Error",
+   "category": "onderwerp",
+   "mentions": 32,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "NameError                                 Traceback",
+   "category": "onderwerp",
+   "mentions": 32,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Spaanse Villa",
+   "category": "onderwerp",
+   "mentions": 32,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Next Steps",
+   "category": "onderwerp",
+   "mentions": 31,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Hong Kong",
+   "category": "onderwerp",
+   "mentions": 31,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Memory Management",
+   "category": "onderwerp",
+   "mentions": 31,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "WFO Notarissen",
+   "category": "onderwerp",
+   "mentions": 31,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Azure DevOps",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Als DGA",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Expected Output",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Stack Begin",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Stack End",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Uncaught Error",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "EIC Accelerator",
+   "category": "onderwerp",
+   "mentions": 30,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Monte Carlo",
+   "category": "onderwerp",
+   "mentions": 29,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "CleanTech Vanadium",
+   "category": "onderwerp",
+   "mentions": 29,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Cosi See Baby",
+   "category": "onderwerp",
+   "mentions": 29,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "De BV",
+   "category": "bedrijf",
+   "mentions": 28,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Dual GPU",
+   "category": "onderwerp",
+   "mentions": 28,
+   "chats": [],
+   "source": "chat"
+  },
+  {
+   "name": "Plant One",
+   "category": "onderwerp",
+   "mentions": 28,
+   "chats": [],
+   "source": "chat"
+  }
+ ],
+ "chats": [
+  {
+   "name": "💬 Onderzoeksmethoden in Nederland uitvoeren",
+   "uuid": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "date": "2026-05-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 46
+  },
+  {
+   "name": "💬 Transitie naar crypto-inkomsten",
+   "uuid": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "date": "2026-04-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 44
+  },
+  {
+   "name": "💬 Ijzerfosfor uit ruwijzerslak isoleren",
+   "uuid": "6b9af8eb-95fb-432c-a0b7-1daeaf49ba2a",
+   "date": "2026-04-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 41
+  },
+  {
+   "name": "💬 WBSO-optimalisatie en consulting winst structurering",
+   "uuid": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "date": "2026-05-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 34
+  },
+  {
+   "name": "💬 Bannerman fundamentele analyse en sentiment score",
+   "uuid": "e6543b32-06bc-48a9-ab94-9b61406db725",
+   "date": "2026-05-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 33
+  },
+  {
+   "name": "💬 Thuisproductie NaSiO biostimulans op labschaal",
+   "uuid": "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+   "date": "2026-04-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 33
+  },
+  {
+   "name": "💬 Bedrijfsplan VirtualV Holding en dochterondernemingen",
+   "uuid": "96ba04ca-ab84-4fe6-bca3-99e1f7eea41d",
+   "date": "2026-02-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 30
+  },
+  {
+   "name": "💬 Vanadium uit staalslakken: gefaseerd bedrijfsmodel",
+   "uuid": "a9fd0750-ba18-4da7-864b-6d3530b97a0e",
+   "date": "2026-02-01",
+   "category": "chat",
+   "source": "chat",
+   "entities": 27
+  },
+  {
+   "name": "💬 Kilometerregistratie voor zakelijke ritten",
+   "uuid": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "date": "2026-04-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 27
+  },
+  {
+   "name": "💬 Atico mining NPV and share price analysis",
+   "uuid": "cd5976b9-6372-4fa0-bf69-4c553f2f470b",
+   "date": "2026-02-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 26
+  },
+  {
+   "name": "💬 Geautomatiseerde slakverwerking machine 100 ton",
+   "uuid": "380256d8-ed93-4f9f-9acd-112a6ea8365d",
+   "date": "2025-12-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 25
+  },
+  {
+   "name": "💬 MKI Reactor topologie clarificatie",
+   "uuid": "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+   "date": "2026-05-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 25
+  },
+  {
+   "name": "💬 WBSO-aanvraag uitbreiding hydrometallurgisch Soft-Leach systeem",
+   "uuid": "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+   "date": "2026-03-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 25
+  },
+  {
+   "name": "💬 CV verbeteren voor Anthropic Fellow",
+   "uuid": "297e3bc8-f225-4f92-a1fd-4f7b54c0677e",
+   "date": "2026-05-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 24
+  },
+  {
+   "name": "💬 Softwarekosten voor ultrasoon reactor TRL4 lab",
+   "uuid": "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+   "date": "2026-05-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 24
+  },
+  {
+   "name": "💬 Dutch jewelry business concept and WBSO grant application",
+   "uuid": "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+   "date": "2025-11-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 23
+  },
+  {
+   "name": "💬 Guangzhou northwest property price outlook and €300k investment options",
+   "uuid": "5f54bddc-870a-4d9b-a7f9-a395ffec8775",
+   "date": "2026-04-26",
+   "category": "chat",
+   "source": "chat",
+   "entities": 23
+  },
+  {
+   "name": "💬 Jaarverslag 2023-2024 geruisloze inbreng",
+   "uuid": "6c31587f-48e8-4f23-a932-bd5c84835848",
+   "date": "2025-10-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 22
+  },
+  {
+   "name": "💬 Chemische analyse zware metalen in ijzerslakken",
+   "uuid": "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+   "date": "2026-04-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 22
+  },
+  {
+   "name": "💬 Massabalans ruwijzer slak Tata Steel",
+   "uuid": "0bc40816-cb56-46de-ba47-d36d0ba3219b",
+   "date": "2026-03-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 22
+  },
+  {
+   "name": "💬 Metaalconcentraties in staalslak versus Noord-Hollandse klei",
+   "uuid": "4361d830-5d47-4e01-8221-afa2345f0683",
+   "date": "2026-01-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 21
+  },
+  {
+   "name": "💬 Dagvaarding loonheffing AWf mandaatoverschrijding",
+   "uuid": "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+   "date": "2026-05-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 21
+  },
+  {
+   "name": "💬 SLIM-V",
+   "uuid": "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+   "date": "2026-05-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 21
+  },
+  {
+   "name": "💬 Loonbelasting aangifte for self-employed researcher",
+   "uuid": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "date": "2024-10-07",
+   "category": "chat",
+   "source": "chat",
+   "entities": 20
+  },
+  {
+   "name": "💬 Vanadium batterij productie uit staalslakken",
+   "uuid": "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+   "date": "2025-12-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 Nederlandse IPO-strategie voor rare earth bedrijf",
+   "uuid": "5f4f931e-d05c-4c48-b961-2cf856b0d0b5",
+   "date": "2026-01-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 Circulaire economie in Assendelft met rijstvelden en staalslak",
+   "uuid": "c2b26ffb-be05-41cf-bf5a-af08b1ba1ec9",
+   "date": "2026-02-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 Winstgevend bedrijfsmodel voor edelmetaalwinning uit industrieel afval",
+   "uuid": "54685846-5112-4ff5-bae3-d74e8ae8ecc6",
+   "date": "2026-02-20",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 Cycloon e-waste recycling kostenbesparing en blockchain tracking",
+   "uuid": "1018d8a6-b768-41c5-94cb-55774fe637d4",
+   "date": "2026-02-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 V2 fabrieksbegroting met vereenvoudigd proces",
+   "uuid": "2b35f916-b4fd-4c13-b7b2-a92237d2b7ac",
+   "date": "2026-02-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 19
+  },
+  {
+   "name": "💬 Describing Business Activities for Tax Purposes",
+   "uuid": "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+   "date": "2024-08-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Spinels openbreken met staalslakken slib",
+   "uuid": "56408dad-dbfb-47cd-a6fe-f79db234e071",
+   "date": "2025-12-20",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 CMA productie uit staalslak: kosten en investeringen",
+   "uuid": "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+   "date": "2026-01-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Finale dagvaarding consistent",
+   "uuid": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "date": "2026-05-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Juridische procedure tegen Uniforce starten",
+   "uuid": "18ba563f-0238-4fe4-a017-46f129f4aa17",
+   "date": "2026-05-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 AI Server build project specifications",
+   "uuid": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "date": "2026-05-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Brief naar Uniforce en productievoorbereiding",
+   "uuid": "891a065c-524e-4ca8-9b80-77344bada843",
+   "date": "2026-04-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 SmartSlag1 attritiemolen en cavitatie-reactor ontwerp",
+   "uuid": "0a81208e-8a94-4328-af8e-e23c2f5b3406",
+   "date": "2026-04-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Data steward consultant met ondernemersambities",
+   "uuid": "296d8066-5b97-42c6-b91f-1f8f00bc9fc7",
+   "date": "2026-03-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 SmartSlag proces voor 1 ton dagverwerking",
+   "uuid": "9f217c71-cab4-4d5c-af74-7c6c5d6f0edb",
+   "date": "2026-03-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Staalproductie zonder vanadium",
+   "uuid": "99b02dee-1f22-416d-93fd-699370bba4ab",
+   "date": "2026-03-07",
+   "category": "chat",
+   "source": "chat",
+   "entities": 18
+  },
+  {
+   "name": "💬 Loog cycli verdriedubbelen en verdeling berekenen",
+   "uuid": "d15e1060-8188-4ed5-8333-83d3f8d3c930",
+   "date": "2026-01-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 17
+  },
+  {
+   "name": "💬 Aansprakelijkstelling Witteveen en dagvaarding mondelinge overeenkomst",
+   "uuid": "6eb020ae-2920-415e-ab0e-a65bb4754a2d",
+   "date": "2026-05-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 17
+  },
+  {
+   "name": "💬 Lab protocol voor staalslak verwerking naar Fe, Ti en V concentraten",
+   "uuid": "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+   "date": "2026-03-07",
+   "category": "chat",
+   "source": "chat",
+   "entities": 17
+  },
+  {
+   "name": "💬 Calculating Required Amounts and Fiscal Profit",
+   "uuid": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "date": "2025-05-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 16
+  },
+  {
+   "name": "💬 Ondergrondse klei-zand uitwisselingsrobot",
+   "uuid": "ca233bc9-5734-4542-b96c-8d722e4734f3",
+   "date": "2026-01-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 16
+  },
+  {
+   "name": "💬 Kostprijs elektrolyt productie-installatie 20L/dag",
+   "uuid": "17d5c116-35b3-4ac2-8330-be4e4353a05e",
+   "date": "2026-01-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 16
+  },
+  {
+   "name": "💬 Vanadium ontsluiting uit staalslakkenpoeder",
+   "uuid": "c260a9dc-7fab-4b70-8175-0951cb400a8d",
+   "date": "2026-03-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 16
+  },
+  {
+   "name": "💬 Pilot factory setup for material processing",
+   "uuid": "132fada5-3eff-4fba-9861-b8f7662ceb7e",
+   "date": "2025-11-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Doelstellingen week 26 opstellen",
+   "uuid": "ec32d816-a6a5-4259-adb5-2de1e8298efd",
+   "date": "2025-12-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Microbiële uitlooging van staalslak in Nederlandse universiteiten",
+   "uuid": "703ba31f-a347-4e50-aba8-9c780b1231b1",
+   "date": "2026-02-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Sequentieel extractieprotocol met water-hydratatiefase",
+   "uuid": "695ef247-c123-4caa-ae05-922a5496427c",
+   "date": "2026-02-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Tweedehands SciAps Z-200 prijzen",
+   "uuid": "d31c1a47-70a8-43c9-a0e6-eb158cdc691c",
+   "date": "2026-03-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Circulaire terugwinning van materialen uit staalslak",
+   "uuid": "1b1e47f6-a346-42b9-8685-5a2d7bef1a02",
+   "date": "2026-03-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 Realistische fabriek ontwerp",
+   "uuid": "9b56eb13-6049-4ad4-a48e-22b44d85efd6",
+   "date": "2026-02-24",
+   "category": "chat",
+   "source": "chat",
+   "entities": 15
+  },
+  {
+   "name": "💬 DGA-salaris vaststellen met vergelijkbare functie",
+   "uuid": "980e4fe6-99cd-40f6-9c72-25b92cfcac73",
+   "date": "2026-04-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 14
+  },
+  {
+   "name": "💬 Slag en chromic in EU Horizon",
+   "uuid": "42ac3163-fc1d-44d8-b43f-1f42edc06a09",
+   "date": "2026-03-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 14
+  },
+  {
+   "name": "💬 Quantum AI innovations for MaChina",
+   "uuid": "3d768609-85ec-4812-82e5-42e89d2239a6",
+   "date": "2025-10-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Magnetische scheiding experiment voor staalslak verwerking",
+   "uuid": "bb791220-a7bb-478e-9a3f-5fbc14f37344",
+   "date": "2025-12-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Strategisch 12-maanden plan voor maximale groei",
+   "uuid": "cfd53389-8f68-4d83-aba2-c1fb746c1266",
+   "date": "2026-01-01",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Vanadium en CMA winning uit staalslakken",
+   "uuid": "953d2d78-a478-40ed-8b9c-c65e22593cb5",
+   "date": "2026-01-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Maalmiddelen voor e-waste en staalslakken",
+   "uuid": "2f4338a2-370b-4221-9500-05f4f6270dd8",
+   "date": "2026-02-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Notaris Contract reorganisatie en tariefaanpassingen Slag B.V.",
+   "uuid": "80ef5c5b-94c0-4dec-9370-db4528d6308d",
+   "date": "2026-04-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 13
+  },
+  {
+   "name": "💬 Vandemonia: Vanadium Steel Slag Project",
+   "uuid": "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+   "date": "2025-06-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Zeoliet productie uit staalslakken bij Tata Steel IJmuiden",
+   "uuid": "f5b6b918-25c1-4dde-b3b5-e35647c74ca8",
+   "date": "2026-01-01",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Mahjong en staalslak simulatie in Roblox",
+   "uuid": "db00e1aa-fc03-48f4-856c-598dab33012f",
+   "date": "2026-01-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Waarde- en kostenanalyse vanadium uit staalslakken",
+   "uuid": "76c78ab4-d556-4657-8eb9-61d9ead84c90",
+   "date": "2026-02-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Slib pH-aanpassing en schimmelsporen voor pioenen",
+   "uuid": "ded7ba7f-8294-4ac7-a808-2b585fa0bb61",
+   "date": "2026-03-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Interactieve 3D-wereld voor verhaalvertelling",
+   "uuid": "a2f412e1-87f9-409d-b189-c69351bb2032",
+   "date": "2026-03-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Bedrijfsplan opstellen",
+   "uuid": "f2d1da7f-48c8-40d7-8874-4aec19946955",
+   "date": "2026-02-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Staalslakvalorisatie fabriek met CO2-vastlegging",
+   "uuid": "edaa6585-28af-4524-8e1f-bc5edc7c9035",
+   "date": "2026-02-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 12
+  },
+  {
+   "name": "💬 Mechanische ontkoppeling voor trillingsoverdracht onder druk",
+   "uuid": "75a1d956-603c-47d2-9e3e-2975bb9c3090",
+   "date": "2025-12-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Boekhouding vereisten voor DUBV-certificering via Uniforce",
+   "uuid": "b144835d-8a23-487c-9375-b85bbc953b4c",
+   "date": "2025-12-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Minerale reserves op Spitsbergen: vanadium en zilver",
+   "uuid": "de49bb6f-2b2f-4729-be96-ac70ebdcbd65",
+   "date": "2026-01-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 WBSO werkboek",
+   "uuid": "bf9ea9ec-b16f-44a3-b942-88e4f348c325",
+   "date": "2026-04-23",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Belastingoptimalisatie voor vrachtwagens 2025",
+   "uuid": "1ae8cad2-998a-41eb-924d-b9511eca24f5",
+   "date": "2026-04-19",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Schadevergoeding berekening bij hoger loon",
+   "uuid": "d332aa9e-04e1-4b0c-bf05-d8b253e6265a",
+   "date": "2026-04-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Uniforce DUBV-structuur beëindigen en salarisregeling aanvechten",
+   "uuid": "0feba58d-c75f-49bb-a847-c2c4f0ec152b",
+   "date": "2026-04-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 Elektrolyse van verdund staalslakken slib",
+   "uuid": "d7d9357f-ae22-4c8f-9f55-54a82ef101e7",
+   "date": "2026-03-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 11
+  },
+  {
+   "name": "💬 CRMA Strategic Project documentatie voorbereiden",
+   "uuid": "f35a062e-0306-4c6d-91cc-85e20311514b",
+   "date": "2025-11-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Slag processing optimization with chemical regeneration",
+   "uuid": "f16ed12e-1551-4856-b022-1e56cba1d830",
+   "date": "2025-12-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 P&ID diagram voor 100-ton machine met staggered vloeistofstromen",
+   "uuid": "bef0b6bb-0503-4c2a-8561-b7812e3e07f9",
+   "date": "2025-12-30",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Stortplaats Doonweg Eerbeek staalslakken locatie",
+   "uuid": "caaa9e9f-b68b-4e7b-abc6-5866525080d5",
+   "date": "2026-01-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Rubidium, hafnium en scandium meting in staalslak fracties",
+   "uuid": "707e64db-c553-49f8-9b2b-69433368f07d",
+   "date": "2026-01-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Accountantsonderzoek verplichting voor B.V.",
+   "uuid": "08a5c642-62c5-4d41-86d2-63254443e016",
+   "date": "2026-01-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Staalslak verwerking op industriële schaal",
+   "uuid": "2f8ab341-6f29-402f-afc2-d4111d5bccbb",
+   "date": "2026-05-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Relevantie RVO-subsidies voor 2026-2028",
+   "uuid": "e9dc7efa-d79f-47bf-9627-0790905b8488",
+   "date": "2026-04-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 SmartSlag Ti-Max v7.0 geoptimaliseerd businessplan",
+   "uuid": "0260d00b-318c-42ee-8f31-6d72b4724187",
+   "date": "2026-02-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 10
+  },
+  {
+   "name": "💬 Comprehensive Data Collection and Preparation for Quantile Forecasting",
+   "uuid": "16bfcaa5-be7e-45a1-bc75-809d4b47b075",
+   "date": "2025-03-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Quantum Blockchain Breakthrough for Crypto Security",
+   "uuid": "b55de81d-58f2-4495-a280-3d0bc33a2d65",
+   "date": "2025-05-24",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Steel Slag Magnetic Separation Analysis",
+   "uuid": "d9eea8fa-e712-4d8e-b8dc-b2e2c1ed7e1b",
+   "date": "2025-06-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Call option pension structure with floor protection",
+   "uuid": "c14fc285-1787-4729-8b96-6ea7b2300d49",
+   "date": "2025-11-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Structurele chelatie voor staalslakdesintegratie",
+   "uuid": "dc0efa7c-b16e-456b-99f6-022f8631607c",
+   "date": "2025-12-20",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Weekplan: zoon, Mahjong-game en Chinees Nieuwjaar",
+   "uuid": "cad02832-8210-468e-b2eb-a979531cdd86",
+   "date": "2026-02-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 XRF analyzer selectie voor slakkenanalyse",
+   "uuid": "1680ee03-e31f-4526-8bd2-4334815c1c90",
+   "date": "2026-02-23",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Staalslakslib scheiden voor grondwaterzuivering",
+   "uuid": "ffa0efb4-ccb5-4fe6-8614-4fae53897fa8",
+   "date": "2026-05-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Proces werkbaar maken op 10 graden",
+   "uuid": "677b7900-bee4-4455-b667-7382b8cd630b",
+   "date": "2026-03-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 9
+  },
+  {
+   "name": "💬 Data Analyst Work Experience Update",
+   "uuid": "f6b4c8b2-daf1-4e00-b5c8-2ab04bd8076b",
+   "date": "2024-11-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Steel production decline during historical recessions",
+   "uuid": "57caa129-af04-457c-b805-05a9d371fe14",
+   "date": "2025-11-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Separating metals from Tata steel slag by hardness",
+   "uuid": "a12ba8c9-1722-4d14-9cec-282b07f915d0",
+   "date": "2025-11-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 KOH temperatuurstijging in extractiebak",
+   "uuid": "0f74bbe3-024c-455b-aaab-61a0bf84c427",
+   "date": "2026-01-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Verschil SGEC-200-500 en SGEC-060-500 silicagel",
+   "uuid": "3217295d-6a1a-47e4-b0b4-0bde6f0e761d",
+   "date": "2026-02-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 HORIBA XGT-1000WR versus Skyray EDX 2800",
+   "uuid": "6b1af87c-1a8d-4a74-b9b0-c5bd5b0f5b8e",
+   "date": "2026-05-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Loonheffingnummer registratie voor EHMAC B.V.",
+   "uuid": "4a34edb2-c8ae-4cdd-8196-d78d3887d696",
+   "date": "2026-04-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Quantum energy patterns in market behavior",
+   "uuid": "6e2ebb7d-9b6b-469d-85a3-c4cb78a2386e",
+   "date": "2026-04-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 FreeCAD design and DIY construction manual",
+   "uuid": "fc4ecc0c-e849-4669-8b36-2a9367741e79",
+   "date": "2026-05-23",
+   "category": "chat",
+   "source": "chat",
+   "entities": 8
+  },
+  {
+   "name": "💬 Slag Metal Recovery Business Case",
+   "uuid": "c5b6c4be-6999-4556-bab6-dbb28a795bdd",
+   "date": "2025-06-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Silver Nuggets on Sint Benedictusberg",
+   "uuid": "188c9fcb-4e23-4d52-8477-fc7da7c6f2bf",
+   "date": "2025-07-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Quantum AI innovations for MaChina",
+   "uuid": "2f3c5d40-5a5c-45e3-8aae-e48eb5f4d743",
+   "date": "2025-10-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Vanadium demand CAGR and high-multiple investment opportunities",
+   "uuid": "888848d7-da9e-42d4-acf3-e6a1936a4bab",
+   "date": "2025-11-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Waardevolle eindproducten uit staalslakken",
+   "uuid": "c73cd4bb-f033-4773-b091-585dcb72e3aa",
+   "date": "2026-01-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 CEMVision Tata valorisatieprocessen voor lab implementatie",
+   "uuid": "dcbefdf7-ce9a-4966-bc4b-d0d3d99b4dd6",
+   "date": "2026-01-10",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Koffiefiltratie versnellen voor grotere hoeveelheden",
+   "uuid": "8119fec2-17f8-42db-a3b6-9a10dfed8acb",
+   "date": "2026-01-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Quantum computing projectvoorstel voor Microsoft Pioneers Program",
+   "uuid": "c8e1cc6f-5f5e-4ffb-9327-6e5499997028",
+   "date": "2026-01-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Steel slag malen tot 10 µm: apparatuur selectie",
+   "uuid": "d80cca4e-103d-4150-b340-3eff93ffd682",
+   "date": "2026-02-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Maximale temperatuur laboratoriumflesdoppen",
+   "uuid": "4f74cadd-36e8-49b5-9cb6-11e75e7d2d36",
+   "date": "2026-02-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Slib naar slakkenspoor kunstmest conversie",
+   "uuid": "195b2558-04e2-40d0-a33b-eb5606ebf7f0",
+   "date": "2026-03-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Staalslakken poeder fijn malen",
+   "uuid": "4c0560ba-a25a-4016-9135-4906ac79bc96",
+   "date": "2026-03-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 100 stappen naar massabalans en metaalextractie",
+   "uuid": "5042435b-c215-4859-8284-ae11cc631a10",
+   "date": "2026-03-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Kantonrechter uitspraak en hoger beroep kansen",
+   "uuid": "fbd14a96-af82-46e4-b8d0-a3b71e71782f",
+   "date": "2026-06-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 7
+  },
+  {
+   "name": "💬 Motherboard for Intel Xeon LGA4189 with multiple PCIe 4.0 x16 slots",
+   "uuid": "2da4cc45-ad81-47d0-9653-aef6f4dd29a0",
+   "date": "2024-10-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Secp256k1 using 127 qubit",
+   "uuid": "195db2ab-67ce-4838-9960-97800c0b7a1e",
+   "date": "2024-12-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Discounted Cash Flow Analysis 2025-2030",
+   "uuid": "37b1fa23-2d18-4324-9257-b85140799c5e",
+   "date": "2025-03-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Demonstrating DevOps and Data Governance Expertise for APG Asset Management",
+   "uuid": "bc589a77-0799-495f-9611-6bfa1df01de7",
+   "date": "2025-04-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Goldman Sachs Sollicitatiebrief",
+   "uuid": "61af1455-e7f7-405a-bc97-086c2d3416a3",
+   "date": "2025-06-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Ijstad development with space launch and energy infrastructure",
+   "uuid": "d1130c4e-a0c8-4120-ab9e-52dee54513e7",
+   "date": "2025-11-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Numerai ticker mapping service business plan",
+   "uuid": "ce13d6d8-1646-40ff-8db0-c43505fa3b71",
+   "date": "2025-11-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 OpenBB strategy with MySQL connection fix",
+   "uuid": "1cccdf02-5fa6-4b39-b1bc-0315b4ef3eb0",
+   "date": "2025-11-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Welke van deze RVO regelingen/...",
+   "uuid": "0612caeb-f7e2-4b28-91e5-081824d0516b",
+   "date": "2025-11-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 NI 43-101 rapport zeldzame aardmetalen winning Friesland-Flevoland",
+   "uuid": "0fe2237e-7678-4069-ab16-2b88b3496540",
+   "date": "2026-01-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Dutch settlement agreement review and risks",
+   "uuid": "686c4e63-c710-4c40-8ca9-ba9d5c688ae9",
+   "date": "2026-05-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Staalslakkenslib verwerking tot tuinaarde",
+   "uuid": "b236bae5-d1b7-4689-aa64-a95a117c60e6",
+   "date": "2026-03-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Holding-structuur en managementfee fiscaal voordeel",
+   "uuid": "711246a4-e205-4240-9c2a-fb418e403676",
+   "date": "2026-03-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 6
+  },
+  {
+   "name": "💬 Explaining Material Fixed Assets with Depreciation on Balance Sheets",
+   "uuid": "f4ae804a-fe71-4331-9590-25cc622c7ccd",
+   "date": "2024-12-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Setting up Kaggle environment for Numerai cryptocurrency competition",
+   "uuid": "245a8b26-1aeb-4162-8c28-2bfc003762e8",
+   "date": "2025-04-10",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Analyzing FIRE Plan with €200K in BV and €50K Investments",
+   "uuid": "95e10bc0-6275-491f-a034-9381ab4382d7",
+   "date": "2025-04-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Quantum OS Interface for Web3 Acceleration",
+   "uuid": "53c877dc-d972-4d28-a52a-387f6f75fb27",
+   "date": "2025-03-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Resolving AttributeError in H2OContext setup",
+   "uuid": "484ee417-865a-4318-8441-2643800af5c9",
+   "date": "2025-01-24",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Request to Treat Two BVs as Fiscal Unity",
+   "uuid": "c589c550-ee09-4207-b10f-311c8b124ebe",
+   "date": "2025-05-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Terminal-Driven AI Code Assistants with Modular Design",
+   "uuid": "71ce3211-290d-4b72-a50c-b0d8d0210231",
+   "date": "2025-05-19",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Steel Slag Precious Metal Content",
+   "uuid": "adc981a4-6cd8-4251-9d3d-5bbf7794aaa6",
+   "date": "2025-06-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Zzp contract clause interpretation",
+   "uuid": "d88c05de-226a-4b3a-b892-e0dc528da23f",
+   "date": "2025-10-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 NEN-certificaat vereisten voor DUBV",
+   "uuid": "2cc5199e-3694-4a5a-aead-2e1ad1f3b087",
+   "date": "2025-12-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Fabrieksindeling slakverwerking uitwerken",
+   "uuid": "3edb9c8e-c469-4d8b-85d7-dcaf882574d8",
+   "date": "2025-12-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Hydrometallurgisch procesrapport optimalisatie",
+   "uuid": "81443468-3877-4b26-9673-278ecd4c037f",
+   "date": "2025-12-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Jaarrekening 2024 EHMAC B.V. opstellen",
+   "uuid": "eff8c4a2-5f76-475e-898e-5f1c90d4c618",
+   "date": "2026-01-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Ziekte van vijver identificeren",
+   "uuid": "ea76fdb0-2d0a-41e2-9034-c117c50594da",
+   "date": "2026-02-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Psycholoog in IJburg voor impulsief koopgedrag",
+   "uuid": "e785f1d4-323b-42e5-87c1-929d9cf47b17",
+   "date": "2026-02-10",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Perilex bedrading ventilator vervangen",
+   "uuid": "3624ee26-3935-43e6-9e87-cfd65b13b9f6",
+   "date": "2026-02-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 RVO-subsidies relevantie en bijdrage 2026-2028",
+   "uuid": "384b61f9-bc81-4bea-81ef-e1792b0af4f8",
+   "date": "2026-04-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Suske en Wiske series overzicht Noord-Holland",
+   "uuid": "d359ed62-bb5d-4ab9-a9fc-411f90e0c81c",
+   "date": "2026-04-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Claude command not found after system diagnostic",
+   "uuid": "d4091ca7-0847-46f6-9f29-96cf04877bbc",
+   "date": "2026-04-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Chromatografie test voor chromium in balmolen slib",
+   "uuid": "299f54ac-27c6-41c3-b217-62b46f8f4e38",
+   "date": "2026-03-30",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Chromium test voor balmolen slip",
+   "uuid": "7c7eabd5-5618-4253-a66f-777210c1bd53",
+   "date": "2026-03-30",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Afmetingen en bouwtekening Zuiddijk 103 Zaandam",
+   "uuid": "b4738ad4-cd00-40e8-83da-1ecfa4d378c6",
+   "date": "2026-03-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Classificatie en samenstelling van BOF-slak",
+   "uuid": "bd009b82-5084-4466-a3ba-be6a85730fee",
+   "date": "2026-03-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 (zonder titel)",
+   "uuid": "09e739eb-804f-4f3a-8098-9ddef79a12ae",
+   "date": "2026-03-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Overbruggingsfinanciering nieuw huis 24 maanden",
+   "uuid": "67077403-6bd8-4ecc-81cf-d006b3570286",
+   "date": "2026-02-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 RS55 analyser opstelling voor staalslakkenverwerking",
+   "uuid": "a5ad3bae-ada0-4d16-b70d-c86e8c37e978",
+   "date": "2026-06-03",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Oprichtingsdatum oudste onderneming",
+   "uuid": "402c2a3f-1633-4b35-88f7-509870993738",
+   "date": "2026-05-31",
+   "category": "chat",
+   "source": "chat",
+   "entities": 5
+  },
+  {
+   "name": "💬 Advice on Geruisloze Omzetting Tax Provision",
+   "uuid": "a3da5789-1c95-4b19-8eea-487ea3993d80",
+   "date": "2024-09-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Requesting Seamless Transition of Sole Proprietorship to Holding Company",
+   "uuid": "4098d3f3-56c9-44e3-9b38-37c61a24dbaf",
+   "date": "2024-09-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Python Data Science Toolkit Setup",
+   "uuid": "f7612b9c-2e5c-45b7-8d1d-ee8b07551d14",
+   "date": "2024-09-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Breakdown of 4486 VAT Debt",
+   "uuid": "ee4a797e-0086-4090-9000-4ed8abd4d4e7",
+   "date": "2024-09-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Revamp Resume and Cover Letter for Data Scientist Role",
+   "uuid": "6ede1886-01f2-425e-acb4-59d67b97ca59",
+   "date": "2024-09-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Web-Connected LLM Assistant \"Watchers\"",
+   "uuid": "4997d993-31be-4ef4-95da-c3e1c182b898",
+   "date": "2024-11-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 AI Tools for Tech Job Interview Prep",
+   "uuid": "6887f2a2-83f1-4ae5-9e22-70584375be67",
+   "date": "2024-11-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Affordable SXM4 Server Options for €5000 Budget",
+   "uuid": "1f32271b-1d46-4daa-8a42-be9b90793171",
+   "date": "2025-01-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Preparing WBSO Declaration and Payroll Tax Deduction for Startup",
+   "uuid": "b6a44793-bfa4-44dd-839c-c56c7da89611",
+   "date": "2025-03-27",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Quantum Circuit Simulator with Hadamard, X, and CNOT Gates",
+   "uuid": "ff526d64-d248-4588-ab8f-ebd0c94378b7",
+   "date": "2025-03-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Stellar's Encryption and Protocols",
+   "uuid": "48c0585d-7f68-410a-98c5-78871cd3fb2f",
+   "date": "2025-02-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Calculating Variability for 10 Cells with Percentages from -20% to 20%",
+   "uuid": "1ebb0c7a-f1d8-45db-a282-27bb0b7c2858",
+   "date": "2025-04-23",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 5 stappenplan van WBSO naar innovatiewinst",
+   "uuid": "1645315d-ca52-4cf0-a4cd-433447d397e2",
+   "date": "2025-05-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Troubleshooting Parquet File Corruption in Cryptocurrency Data Analysis",
+   "uuid": "fe250681-4242-4a0b-878e-496be55c511c",
+   "date": "2025-05-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Interactive 3D Mahjong Table for Roblox",
+   "uuid": "ed55a95a-395a-4c94-adad-928693f12fd5",
+   "date": "2025-09-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Automated Onchain Data Pipeline Setup",
+   "uuid": "93307eda-825f-4eac-a54f-44672b818d42",
+   "date": "2025-08-24",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 PySpark Local GPU Parallel Processing Setup",
+   "uuid": "94b5939f-17a2-4fc3-a4fb-f2d115527978",
+   "date": "2025-07-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Crypto Model Feature Engineering Optimization",
+   "uuid": "7e10fb73-c03f-436b-a8d8-486a40c8f33f",
+   "date": "2025-07-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 GPU Feature Selection Performance Optimization",
+   "uuid": "21c87603-2d44-499d-b428-793aab01afd9",
+   "date": "2025-07-12",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Global Blockchain Market Tokenization Strategy",
+   "uuid": "47dce448-23ec-42a0-9a27-f539fe15fe8c",
+   "date": "2025-07-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Sole proprietorship tax filing quarters confusion",
+   "uuid": "c212b259-ece1-4ff1-9f9d-57a198e8c361",
+   "date": "2025-10-22",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 RDW fine appeal for uninsured leased vehicle",
+   "uuid": "20cddc21-6b60-46fd-a1c7-4a0eb545dc89",
+   "date": "2025-11-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Zonnepark op voormalige vuilstortplaats bij Linne",
+   "uuid": "09853544-a735-4bea-ba1a-639679b69482",
+   "date": "2026-01-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Vanadium price surge in 2018",
+   "uuid": "52ab6bc3-50ef-4850-adce-793ba0b419b6",
+   "date": "2026-02-02",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Onderwater mijnbouwrechten voor goud en vanadium",
+   "uuid": "c94aad49-339d-46cd-bded-b26d30c3e64e",
+   "date": "2026-02-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Voorspelbare situaties en aandeelbewegingen",
+   "uuid": "74949a8c-e43e-485f-9024-865a6f24f6b0",
+   "date": "2026-05-14",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Te veel in één emmer",
+   "uuid": "eb4e8662-c2b9-4e1d-9fa7-6badf7b4f7bc",
+   "date": "2026-04-08",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Hyperscale GPU asset allocation strategy",
+   "uuid": "76ba3b9e-4514-4e5c-8347-402adfdb4b93",
+   "date": "2026-03-06",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Grid fail W003 stop spring probleem",
+   "uuid": "14f692f6-91bb-4f5e-8d90-dfb0ca601b56",
+   "date": "2026-03-01",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Slakkenzand extractie- en scheidingsprotocol",
+   "uuid": "1e63ba8d-6c7d-41a1-8251-9c83f459d30d",
+   "date": "2026-02-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Murcia vastgoedanalyse en koopcontract opzet",
+   "uuid": "92081120-e499-4a84-9bb0-4c80dce8208b",
+   "date": "2026-05-26",
+   "category": "chat",
+   "source": "chat",
+   "entities": 4
+  },
+  {
+   "name": "💬 Adding EWMA function to overlap_studies.py",
+   "uuid": "81688240-0365-45a9-a390-b49ca453f686",
+   "date": "2024-08-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Checking Spark Pool Version",
+   "uuid": "4a832731-2ddc-4692-a5c7-34d1875e7a31",
+   "date": "2024-09-09",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 The Future of Crypto and Quantum Finance",
+   "uuid": "86e202d4-a484-425c-8568-407e7b770543",
+   "date": "2024-09-18",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Lazy and Accomplished in Cantonese",
+   "uuid": "b08cfc7b-a1f3-4464-98d6-359248bc474d",
+   "date": "2024-11-23",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Quantum Circuit Puzzle",
+   "uuid": "64610500-e0fa-413d-8057-accb9ce4820e",
+   "date": "2024-11-25",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Resolving Timestamp Incompatibility in Parquet Files",
+   "uuid": "c7764d58-7460-4d4b-997e-29b845d13e43",
+   "date": "2024-11-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Troubleshooting Spark Preprocessing Error",
+   "uuid": "210abe90-6ab8-4afc-8cee-455063d828ba",
+   "date": "2024-11-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 💬 instead of prices.parquet i wa...",
+   "uuid": "0d7be2a6-8dbb-46d8-a145-0592f45a5082",
+   "date": "2024-11-29",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Accessing and Printing Google Spreadsheet Details",
+   "uuid": "d4b6e414-7d6f-4d4d-b4c0-8b271cafd126",
+   "date": "2024-12-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Quantum Computing and Smart Contract Implementation",
+   "uuid": "c4221a1d-76cc-4fe2-9d02-ee189672904c",
+   "date": "2025-01-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Winning a Machine Learning Competition with AutoML",
+   "uuid": "9010d0be-06d9-4004-b2ec-1c388503cc8a",
+   "date": "2025-01-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Configuring Spark and HDFS for Data Preprocessing",
+   "uuid": "f435e21f-8c2d-4500-a3bd-b176e9afe9d2",
+   "date": "2025-01-19",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Quantum-Powered Cryptography Validation",
+   "uuid": "c6ce58d1-4e5a-49cf-9080-2157ce7edef4",
+   "date": "2025-04-04",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Improving Stock Rank Prediction Model",
+   "uuid": "d2356903-32a3-4845-b648-60bb17f98215",
+   "date": "2025-03-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Brute-Force Bitcoin Private Key Recovery",
+   "uuid": "0b41b4e5-c384-49ec-94c6-a9e09fbc7877",
+   "date": "2025-03-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Populate Index and Ticker from Google Spreadsheet",
+   "uuid": "26d7e402-5b5d-446b-94c7-708259d7dc4f",
+   "date": "2025-03-11",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Avoiding Dividend Taxes with Quantum Trustee Services",
+   "uuid": "49e8e77f-a91e-4512-b18f-7b301fc9d159",
+   "date": "2025-03-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Fixing H2OFrame.rename() TypeError in Ensemble Model",
+   "uuid": "55306c3e-5acb-42b3-bcf8-2324e0518b4c",
+   "date": "2025-03-01",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Silver Mining Investments for 1oz Daily Yield",
+   "uuid": "41bb5174-a39c-416b-add6-e8eab8c29191",
+   "date": "2025-02-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Stakings-Lijfrenteovereenkomst voor Belastingaanslag",
+   "uuid": "ed7f1f25-f103-4496-a4d8-2902062db089",
+   "date": "2025-04-21",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Retrieve Numerai Tickers and Match to FMP Tickers",
+   "uuid": "22af2228-6207-4f70-9837-b551dffa8e1c",
+   "date": "2025-04-28",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Exploratory Data Analysis of Yiedl_latest Dataset",
+   "uuid": "df50377c-9744-439a-b772-7ff01cb9e940",
+   "date": "2025-05-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Translating Information Theory to Financial Machine Learning",
+   "uuid": "8a287bc1-b5b6-476f-9b1d-96c58a795116",
+   "date": "2025-05-15",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Comparing Polars to LightGBM and XGBoost for Feature Selection",
+   "uuid": "58b0ae46-f0c0-4d93-94a3-395ba225f89e",
+   "date": "2025-05-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Calculating Fiscal Profit for 2024 Tax Filing",
+   "uuid": "f3e5e5f4-6b16-4ccd-9c08-355bd78f729b",
+   "date": "2025-05-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Calculating Fiscal Profit for B.V. Tax Filing",
+   "uuid": "cb631138-81e6-4b76-8a1e-8e57c84ffc47",
+   "date": "2025-05-17",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Roblox Mahjong System Implementation",
+   "uuid": "00ffbb34-12d0-4880-bc99-75a94cd65b8b",
+   "date": "2025-09-05",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Synapse ML LightGBM Feature Engineering",
+   "uuid": "d053608b-7142-4637-a78c-06c577b742fd",
+   "date": "2025-07-16",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  },
+  {
+   "name": "💬 Machine Learning Pipeline Debugging",
+   "uuid": "c7f2e8c2-41c2-4180-815b-0aa9438dc470",
+   "date": "2025-07-13",
+   "category": "chat",
+   "source": "chat",
+   "entities": 3
+  }
+ ],
+ "edges": [
+  {
+   "from": "Edwin Hauwert",
+   "to": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Diederik Fierig",
+   "to": "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Diederik Fierig",
+   "to": "4361d830-5d47-4e01-8221-afa2345f0683",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Diederik Fierig",
+   "to": "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Witteveen",
+   "to": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Witteveen",
+   "to": "6eb020ae-2920-415e-ab0e-a65bb4754a2d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Witteveen",
+   "to": "18ba563f-0238-4fe4-a017-46f129f4aa17",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Mark Nooijen",
+   "to": "92081120-e499-4a84-9bb0-4c80dce8208b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Colin Barrow",
+   "to": "96ba04ca-ab84-4fe6-bca3-99e1f7eea41d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Colin Barrow",
+   "to": "f2d1da7f-48c8-40d7-8874-4aec19946955",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VirtualV Holding B.V.",
+   "to": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VirtualV Holding B.V.",
+   "to": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VirtualV Holding B.V.",
+   "to": "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "c212b259-ece1-4ff1-9f9d-57a198e8c361",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "6c31587f-48e8-4f23-a932-bd5c84835848",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "b144835d-8a23-487c-9375-b85bbc953b4c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "4361d830-5d47-4e01-8221-afa2345f0683",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "cd5976b9-6372-4fa0-bf69-4c553f2f470b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VirtuAnalytica VOF",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Uniforce Group B.V.",
+   "to": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Uniforce Group B.V.",
+   "to": "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Uniforce Group B.V.",
+   "to": "891a065c-524e-4ca8-9b80-77344bada843",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Magnit",
+   "to": "165a716b-91a8-48b3-afbb-27091dcf8d2b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Magnit",
+   "to": "b144835d-8a23-487c-9375-b85bbc953b4c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Magnit",
+   "to": "d88c05de-226a-4b3a-b892-e0dc528da23f",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "APG",
+   "to": "b144835d-8a23-487c-9375-b85bbc953b4c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "APG",
+   "to": "d88c05de-226a-4b3a-b892-e0dc528da23f",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "APG",
+   "to": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "132fada5-3eff-4fba-9861-b8f7662ceb7e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Goldman Sachs",
+   "to": "61af1455-e7f7-405a-bc97-086c2d3416a3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Goldman Sachs",
+   "to": "f6b4c8b2-daf1-4e00-b5c8-2ab04bd8076b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Nike",
+   "to": "61af1455-e7f7-405a-bc97-086c2d3416a3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Aegon",
+   "to": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Aegon",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Aegon",
+   "to": "61af1455-e7f7-405a-bc97-086c2d3416a3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Numerai",
+   "to": "fe250681-4242-4a0b-878e-496be55c511c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Numerai",
+   "to": "210abe90-6ab8-4afc-8cee-455063d828ba",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Science Park Spark",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Science Park Spark",
+   "to": "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Science Park Spark",
+   "to": "ffa0efb4-ccb5-4fe6-8614-4fae53897fa8",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VITO",
+   "to": "96ba04ca-ab84-4fe6-bca3-99e1f7eea41d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VITO",
+   "to": "54685846-5112-4ff5-bae3-d74e8ae8ecc6",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "VITO",
+   "to": "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TNO",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TNO",
+   "to": "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TNO",
+   "to": "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Heraeus",
+   "to": "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Heraeus",
+   "to": "953d2d78-a478-40ed-8b9c-c65e22593cb5",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Heraeus",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Supermicro",
+   "to": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Supermicro",
+   "to": "297e3bc8-f225-4f92-a1fd-4f7b54c0677e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Supermicro",
+   "to": "16bfcaa5-be7e-45a1-bc75-809d4b47b075",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "ABB",
+   "to": "14f692f6-91bb-4f5e-8d90-dfb0ca601b56",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "ABB",
+   "to": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FIMER",
+   "to": "14f692f6-91bb-4f5e-8d90-dfb0ca601b56",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Wyndham",
+   "to": "92081120-e499-4a84-9bb0-4c80dce8208b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "67077403-6bd8-4ecc-81cf-d006b3570286",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJburg",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJburg",
+   "to": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJburg",
+   "to": "e785f1d4-323b-42e5-87c1-929d9cf47b17",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Bergen NH",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Bergen NH",
+   "to": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Bergen NH",
+   "to": "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Zaandam",
+   "to": "67077403-6bd8-4ecc-81cf-d006b3570286",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Zaandam",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Zaandam",
+   "to": "b4738ad4-cd00-40e8-83da-1ecfa4d378c6",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Delft",
+   "to": "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Delft",
+   "to": "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Delft",
+   "to": "703ba31f-a347-4e50-aba8-9c780b1231b1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TU Delft",
+   "to": "3d768609-85ec-4812-82e5-42e89d2239a6",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TU Delft",
+   "to": "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "TU Delft",
+   "to": "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Wognum",
+   "to": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Wognum",
+   "to": "ded7ba7f-8294-4ac7-a808-2b585fa0bb61",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Wognum",
+   "to": "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "67077403-6bd8-4ecc-81cf-d006b3570286",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "b64aa205-7c49-46a1-9ebf-f7940e0bc7a0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "c5b6c4be-6999-4556-bab6-dbb28a795bdd",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Kanaaldijk 71",
+   "to": "b1710b9e-2d38-415a-a2f2-f26a8dfe0616",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Kanaaldijk 71",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Euronext Amsterdam",
+   "to": "b3c09e65-09b8-4f35-b833-3b9599ea4e71",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Euronext Amsterdam",
+   "to": "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Spanje",
+   "to": "92081120-e499-4a84-9bb0-4c80dce8208b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Spanje",
+   "to": "b80c91b3-02b1-48d7-b2ab-50d6f5b734ae",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Spanje",
+   "to": "f5b6b918-25c1-4dde-b3b5-e35647c74ca8",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Python",
+   "to": "ae82f8fd-5f40-4a89-9980-3b8048f1b06d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Python",
+   "to": "81688240-0365-45a9-a390-b49ca453f686",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rust",
+   "to": "dc0efa7c-b16e-456b-99f6-022f8631607c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rust",
+   "to": "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Rust",
+   "to": "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Three.js",
+   "to": "9f217c71-cab4-4d5c-af74-7c6c5d6f0edb",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Three.js",
+   "to": "a2f412e1-87f9-409d-b189-c69351bb2032",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Three.js",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FastAPI",
+   "to": "4997d993-31be-4ef4-95da-c3e1c182b898",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FastAPI",
+   "to": "195db2ab-67ce-4838-9960-97800c0b7a1e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FastAPI",
+   "to": "1cccdf02-5fa6-4b39-b1bc-0315b4ef3eb0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Neo4j",
+   "to": "49e8e77f-a91e-4512-b18f-7b301fc9d159",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Kafka",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Kafka",
+   "to": "0a81208e-8a94-4328-af8e-e23c2f5b3406",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Roblox Studio",
+   "to": "00ffbb34-12d0-4880-bc99-75a94cd65b8b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Roblox Studio",
+   "to": "ed55a95a-395a-4c94-adad-928693f12fd5",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Unreal",
+   "to": "cad02832-8210-468e-b2eb-a979531cdd86",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Unreal",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Unreal",
+   "to": "1ebb0c7a-f1d8-45db-a282-27bb0b7c2858",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Roblox",
+   "to": "3d768609-85ec-4812-82e5-42e89d2239a6",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Roblox",
+   "to": "00ffbb34-12d0-4880-bc99-75a94cd65b8b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Roblox",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hedera",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hedera",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hedera",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRPL",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRPL",
+   "to": "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRPL",
+   "to": "6b9af8eb-95fb-432c-a0b7-1daeaf49ba2a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ollama",
+   "to": "71ce3211-290d-4b72-a50c-b0d8d0210231",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ollama",
+   "to": "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "LiteLLM",
+   "to": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FreeCAD",
+   "to": "fc4ecc0c-e849-4669-8b36-2a9367741e79",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FreeCAD",
+   "to": "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "FreeCAD",
+   "to": "30f4deac-6e1b-4074-89fb-3d1ffe0ff654",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "GPU Server 1",
+   "to": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "GPU Server 1",
+   "to": "c7f2e8c2-41c2-4180-815b-0aa9438dc470",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Optane nvram",
+   "to": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Optane nvram",
+   "to": "297e3bc8-f225-4f92-a1fd-4f7b54c0677e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ratfisch RS55",
+   "to": "a5ad3bae-ada0-4d16-b70d-c86e8c37e978",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "cd5976b9-6372-4fa0-bf69-4c553f2f470b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "e6543b32-06bc-48a9-ab94-9b61406db725",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SlagBox",
+   "to": "4677d9a5-73b3-43f7-a8fe-af8f9f2dc40c",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SlagBox",
+   "to": "5244c3ae-741e-43f7-9d08-a42495cbe2b0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SlagBox",
+   "to": "fc4ecc0c-e849-4669-8b36-2a9367741e79",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "b229312e-b832-4b1e-b425-0e641ef3a917",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLGANG",
+   "to": "2a5b4380-a0f1-4cc1-bd66-94013a05b467",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLSI28",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLSI28",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "MOLSI28",
+   "to": "5f54bddc-870a-4d9b-a7f9-a395ffec8775",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "QuantumSilica",
+   "to": "6b9af8eb-95fb-432c-a0b7-1daeaf49ba2a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "QuantumSilica",
+   "to": "6c31587f-48e8-4f23-a932-bd5c84835848",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "QuantumSilica",
+   "to": "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "e6543b32-06bc-48a9-ab94-9b61406db725",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "9f217c71-cab4-4d5c-af74-7c6c5d6f0edb",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium baar",
+   "to": "ea76fdb0-2d0a-41e2-9034-c117c50594da",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium elektrolyt",
+   "to": "17d5c116-35b3-4ac2-8330-be4e4353a05e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium elektrolyt",
+   "to": "a9fd0750-ba18-4da7-864b-6d3530b97a0e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Vanadium elektrolyt",
+   "to": "c73cd4bb-f033-4773-b091-585dcb72e3aa",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "BOF slak",
+   "to": "5db3d4a5-7b8d-45fd-8d6a-d1c7ecbc20f3",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "BOF slak",
+   "to": "64bf6895-ca48-4ebd-b5d6-b1f302996700",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "BOF slak",
+   "to": "b07d33f4-68d3-4171-acbd-7f7755d3ae8d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "WBSO",
+   "to": "78ed8ecf-d706-4bcc-81cc-0fa85131ed0a",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "WBSO",
+   "to": "b6a44793-bfa4-44dd-839c-c56c7da89611",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "WBSO",
+   "to": "8fd28deb-03ed-47bc-a4b4-95861ed38bd7",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "a4cd65ba-69ff-4cff-b885-35e5c67fb7f0",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "1018d8a6-b768-41c5-94cb-55774fe637d4",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "c737c0c1-ff24-4f7a-b9df-f358aa8ab7c1",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "bb791220-a7bb-478e-9a3f-5fbc14f37344",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "380256d8-ed93-4f9f-9acd-112a6ea8365d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRF-meting",
+   "to": "747b25a3-d931-44f7-a50f-8c1700a6ca67",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRF-meting",
+   "to": "10cb3a75-2fdf-404d-a215-c3c7d50c49ed",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "XRF-meting",
+   "to": "1680ee03-e31f-4526-8bd2-4334815c1c90",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Dagvaarding",
+   "to": "a4c46c72-ea66-480c-87be-52977ce0af18",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Dagvaarding",
+   "to": "6eb020ae-2920-415e-ab0e-a65bb4754a2d",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Dagvaarding",
+   "to": "18ba563f-0238-4fe4-a017-46f129f4aa17",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "DCF-analyse",
+   "to": "e6543b32-06bc-48a9-ab94-9b61406db725",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "DCF-analyse",
+   "to": "92081120-e499-4a84-9bb0-4c80dce8208b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "DCF-analyse",
+   "to": "cd5976b9-6372-4fa0-bf69-4c553f2f470b",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Numerai Signals",
+   "to": "c7764d58-7460-4d4b-997e-29b845d13e43",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Numerai Signals",
+   "to": "210abe90-6ab8-4afc-8cee-455063d828ba",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Cantonees leren",
+   "to": "67077403-6bd8-4ecc-81cf-d006b3570286",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "64610500-e0fa-413d-8057-accb9ce4820e",
+   "rel": "GENOEMD_IN",
+   "kind": "mention"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 91,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 84,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 84,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 83,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 81,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 75,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 74,
+   "kind": "cooc"
+  },
+  {
+   "from": "VirtualV Holding B.V.",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 72,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 70,
+   "kind": "cooc"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 68,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Hydrometallurgie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 67,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 66,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 65,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 63,
+   "kind": "cooc"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 63,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 62,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 62,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 61,
+   "kind": "cooc"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 61,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 61,
+   "kind": "cooc"
+  },
+  {
+   "from": "Numerai",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 60,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 59,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 58,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 57,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 56,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 56,
+   "kind": "cooc"
+  },
+  {
+   "from": "Vanadium winning",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 55,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 55,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 54,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 54,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 54,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 53,
+   "kind": "cooc"
+  },
+  {
+   "from": "WBSO",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 53,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 53,
+   "kind": "cooc"
+  },
+  {
+   "from": "Numerai Signals",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 52,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 52,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 51,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Quantum computing",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 50,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 49,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 48,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 47,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 46,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 46,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 46,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 46,
+   "kind": "cooc"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 46,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 45,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "EHMAC B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 45,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 44,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 44,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 44,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 43,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 42,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 41,
+   "kind": "cooc"
+  },
+  {
+   "from": "Tata Steel IJmuiden",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 41,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 41,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Edwin Hauwert",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 41,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 41,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 40,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 39,
+   "kind": "cooc"
+  },
+  {
+   "from": "GPU Server 1",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 39,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 39,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 39,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Edwin Hauwert",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "BOF slak",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 38,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 37,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 37,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 37,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 37,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Hydrometallurgie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 37,
+   "kind": "cooc"
+  },
+  {
+   "from": "VirtualV Holding B.V.",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 36,
+   "kind": "cooc"
+  },
+  {
+   "from": "Numerai",
+   "to": "Numerai Signals",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 35,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 35,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 35,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 35,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 34,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 34,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Hydrometallurgie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 34,
+   "kind": "cooc"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 34,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 34,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 33,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 33,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 33,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 33,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 33,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "EHMAC B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 32,
+   "kind": "cooc"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 31,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 30,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 30,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 30,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 30,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 30,
+   "kind": "cooc"
+  },
+  {
+   "from": "Ultrasoon disaggregatie",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 29,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 28,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 28,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 28,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 28,
+   "kind": "cooc"
+  },
+  {
+   "from": "Titanium winning",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 28,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Amsterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 27,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Edwin Hauwert",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "EHMAC B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 26,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Uniforce Group B.V.",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rust",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "TNO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "TNO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 25,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Python",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "TU Delft",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rust",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "TNO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 24,
+   "kind": "cooc"
+  },
+  {
+   "from": "Slakkenspoor VOF",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "Uniforce Group B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Uniforce Group B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rust",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Rotterdam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 23,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "SmartSlag3",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "TNO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Silicium winning",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "IJmuiden",
+   "to": "TNO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 22,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Hydrometallurgie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Quantum computing",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Edwin Hauwert",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rust",
+   "to": "VirtualV Holding B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rust",
+   "to": "Tata Steel IJmuiden",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "TU Delft",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 21,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "XRF-meting",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Uniforce Group B.V.",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Uniforce Group B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Numerai",
+   "to": "Quantum computing",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Python",
+   "to": "Silicium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Delft",
+   "to": "Quantum computing",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Numerai",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Roblox",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "TNO",
+   "to": "Titanium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 20,
+   "kind": "cooc"
+  },
+  {
+   "from": "Diederik Fierig",
+   "to": "WBSO",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Slakkenspoor VOF",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "SLAG B.V.",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "EHMAC B.V.",
+   "to": "Ultrasoon disaggregatie",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "Quantum computing",
+   "to": "Vanadium winning",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Edwin Hauwert",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "SmartSlag3",
+   "to": "Zaandam",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Aegon",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "APG",
+   "to": "Nike",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "Rotterdam",
+   "to": "SLAG B.V.",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "Amsterdam",
+   "to": "Rust",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "BOF slak",
+   "to": "Rust",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  },
+  {
+   "from": "Hydrometallurgie",
+   "to": "Rust",
+   "rel": "SAMEN_GENOEMD",
+   "weight": 19,
+   "kind": "cooc"
+  }
+ ]
+}

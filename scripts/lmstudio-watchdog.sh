@@ -26,11 +26,41 @@ log() {
   echo "$(date '+%F %T') $*" | tee -a "$LOG"
 }
 
+start_server() {
+  if command -v systemd-run >/dev/null 2>&1; then
+    systemd-run --user --scope --quiet --collect \
+      --property=KillMode=process \
+      --setenv=ELECTRON_DISABLE_GPU=1 \
+      --setenv=LIBGL_ALWAYS_SOFTWARE=1 \
+      lms server start >> "$LOG" 2>&1
+  else
+    ELECTRON_DISABLE_GPU=1 LIBGL_ALWAYS_SOFTWARE=1 lms server start >> "$LOG" 2>&1
+  fi
+}
+
+load_model() {
+  local ttl_seconds="$((TTL_MINUTES * 60))"
+
+  if command -v systemd-run >/dev/null 2>&1; then
+    systemd-run --user --quiet --collect \
+      --unit="lmstudio-load-$(date +%s)-$$" \
+      --property=KillMode=process \
+      --property="StandardOutput=append:$LOG" \
+      --property="StandardError=append:$LOG" \
+      --setenv=ELECTRON_DISABLE_GPU=1 \
+      --setenv=LIBGL_ALWAYS_SOFTWARE=1 \
+      lms load "$BASELINE_MODEL" --ttl "$ttl_seconds"
+  else
+    ELECTRON_DISABLE_GPU=1 LIBGL_ALWAYS_SOFTWARE=1 \
+      lms load "$BASELINE_MODEL" --ttl "$ttl_seconds" >> "$LOG" 2>&1 &
+  fi
+}
+
 check_and_heal() {
   # Step 1: is the server listening?
   if ! ss -lnt 2>/dev/null | grep -q ":$PORT "; then
     log "server not listening on $PORT — starting"
-    lms server start >> "$LOG" 2>&1 || log "  lms server start FAILED"
+    start_server || log "  lms server start FAILED"
     sleep 2
   fi
 
@@ -39,7 +69,7 @@ check_and_heal() {
     log "server unhealthy (no 200 from /v1/models) — restarting"
     lms server stop >> "$LOG" 2>&1 || true
     sleep 1
-    lms server start >> "$LOG" 2>&1
+    start_server
     sleep 3
   fi
 
@@ -48,8 +78,7 @@ check_and_heal() {
   LOADED_COUNT=$(lms ps 2>/dev/null | tail -n +2 | grep -cE 'IDLE|LOADED|LOADING' || true)
   if [ "${LOADED_COUNT:-0}" -eq 0 ]; then
     log "no models loaded — loading baseline $BASELINE_MODEL"
-    lms load "$BASELINE_MODEL" --ttl "$((TTL_MINUTES * 60))" >> "$LOG" 2>&1 &
-    # don't block the watchdog on the load
+    load_model || log "  lms load FAILED"
   fi
 }
 

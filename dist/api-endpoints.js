@@ -1,6 +1,6 @@
 "use strict";
 /**
- * MOLGANG Phase 5 API Endpoints
+ * VirtualPC API Endpoints
  * Comprehensive game system integration
  */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -172,7 +172,7 @@ function registerGameEndpoints(app) {
         });
     });
     // ========== METRICS & ANALYTICS ==========
-    app.get('/api/molgang/metrics', (req, res) => {
+    app.get('/api/project/metrics', (req, res) => {
         res.json({
             success: true,
             players_online: Math.floor(Math.random() * 100000),

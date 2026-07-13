@@ -24,6 +24,7 @@ export interface QueryResult {
 export declare class LightRAGClient {
     private driver;
     private queryCache;
+    private nodeSeq;
     constructor(config: {
         neo4j_url: string;
         neo4j_username: string;

@@ -146,7 +146,6 @@ class OpenClawKillSwitch {
         console.log('');
         console.log('Recovery options:');
         console.log('  • npm run dev (resume normal development)');
-        console.log('  • npm run demo:molgang (restart game demo)');
         console.log('  • npm run demo:interactive (restart VirtualPC demo)');
         console.log('');
         // Reset kill switch flag after 2 seconds
@@ -161,7 +160,6 @@ class OpenClawKillSwitch {
         console.log('🔪 Terminating automation processes...');
         const killTargets = [
             'selenium-launcher',
-            'molgang-game-demo',
             'interactive-demo',
             'chrome.*webdriver',
             'firefox.*webdriver',

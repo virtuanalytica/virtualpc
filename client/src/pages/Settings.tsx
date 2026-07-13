@@ -1,37 +1,109 @@
 import React, { useEffect, useState } from 'react';
 import './Settings.css';
 
+type ResourceControls = {
+  enabled: boolean;
+  cpuTemperatureLimitC: number;
+  gpuTemperatureLimitC: number;
+  totalThreadPct: number;
+  perAgentThreadPct: number;
+  ramUtilizationPct: number;
+  gpuClockPctWhenHot: number;
+  gpuMemoryPctPerSystem: number;
+  targets: string[];
+};
+
+type SettingsState = {
+  theme: string;
+  refreshRate: string;
+  notifications: boolean;
+  autoBackup: boolean;
+  resourceControls: ResourceControls;
+};
+
+const defaultSettings: SettingsState = {
+  theme: 'dark',
+  refreshRate: '5000',
+  notifications: true,
+  autoBackup: true,
+  resourceControls: {
+    enabled: true,
+    cpuTemperatureLimitC: 60,
+    gpuTemperatureLimitC: 60,
+    totalThreadPct: 25,
+    perAgentThreadPct: 25,
+    ramUtilizationPct: 75,
+    gpuClockPctWhenHot: 50,
+    gpuMemoryPctPerSystem: 50,
+    targets: ['virtualpc', 'alexander'],
+  },
+};
+
 export default function Settings() {
-  const [settings, setSettings] = useState({
-    theme: 'dark',
-    refreshRate: '5000',
-    notifications: true,
-    autoBackup: true,
-  });
+  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+  const [status, setStatus] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('virtualpc-settings');
-    if (!saved) return;
-    try {
-      setSettings((current) => ({ ...current, ...JSON.parse(saved) }));
-    } catch {
-      // Ignore invalid local storage and keep defaults.
-    }
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && data.settings) {
+          setSettings((current) => ({
+            ...current,
+            ...data.settings,
+            resourceControls: { ...current.resourceControls, ...data.settings.resourceControls },
+          }));
+        }
+      })
+      .catch(() => setStatus('Settings API unavailable; local defaults are shown.'));
   }, []);
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: 'theme' | 'refreshRate' | 'notifications' | 'autoBackup', value: string | boolean) => {
     setSettings((current) => ({ ...current, [field]: value }));
   };
 
-  const handleSave = () => {
-    localStorage.setItem('virtualpc-settings', JSON.stringify(settings));
-    alert('Settings saved');
+  const handleResourceChange = (field: keyof ResourceControls, value: number | boolean | string[]) => {
+    setSettings((current) => ({
+      ...current,
+      resourceControls: { ...current.resourceControls, [field]: value },
+    }));
   };
 
-  const resetSettings = () => {
+  const handleSave = async () => {
+    setSaving(true);
+    setStatus('');
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'save failed');
+      setSettings(data.settings);
+      setStatus('Settings saved.');
+    } catch (e: any) {
+      setStatus(e.message || 'Settings save failed.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetSettings = async () => {
     if (!confirm('Reset all settings to defaults?')) return;
-    setSettings({ theme: 'dark', refreshRate: '5000', notifications: true, autoBackup: true });
-    alert('Settings reset');
+    setSaving(true);
+    try {
+      const res = await fetch('/api/settings/reset', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'reset failed');
+      setSettings(data.settings);
+      setStatus('Settings reset.');
+    } catch (e: any) {
+      setStatus(e.message || 'Settings reset failed.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const clearLocalData = () => {
@@ -102,6 +174,93 @@ export default function Settings() {
         </section>
 
         <section className="settings-section">
+          <h2>Resource Controls</h2>
+          <div className="setting-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={settings.resourceControls.enabled}
+                onChange={(e) => handleResourceChange('enabled', e.target.checked)}
+              />
+              <span>Enable resource guard</span>
+            </label>
+          </div>
+
+          <div className="settings-grid">
+            <div className="setting-group">
+              <label>CPU temperature limit (C)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.cpuTemperatureLimitC}
+                onChange={(e) => handleResourceChange('cpuTemperatureLimitC', Number(e.target.value))}
+                min="30"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>GPU temperature limit (C)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.gpuTemperatureLimitC}
+                onChange={(e) => handleResourceChange('gpuTemperatureLimitC', Number(e.target.value))}
+                min="30"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>Total system threads (%)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.totalThreadPct}
+                onChange={(e) => handleResourceChange('totalThreadPct', Number(e.target.value))}
+                min="1"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>Threads per agent (%)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.perAgentThreadPct}
+                onChange={(e) => handleResourceChange('perAgentThreadPct', Number(e.target.value))}
+                min="1"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>RAM utilization (%)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.ramUtilizationPct}
+                onChange={(e) => handleResourceChange('ramUtilizationPct', Number(e.target.value))}
+                min="1"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>GPU MHz limit when hot (%)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.gpuClockPctWhenHot}
+                onChange={(e) => handleResourceChange('gpuClockPctWhenHot', Number(e.target.value))}
+                min="1"
+                max="100"
+              />
+            </div>
+            <div className="setting-group">
+              <label>GPU memory per system (%)</label>
+              <input
+                type="number"
+                value={settings.resourceControls.gpuMemoryPctPerSystem}
+                onChange={(e) => handleResourceChange('gpuMemoryPctPerSystem', Number(e.target.value))}
+                min="1"
+                max="100"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="settings-section">
           <h2>System Information</h2>
           <div className="info-group">
             <div className="info-item">
@@ -137,7 +296,8 @@ export default function Settings() {
       </div>
 
       <div className="settings-footer">
-        <button className="btn-primary" onClick={handleSave}>
+        {status && <span className="settings-status">{status}</span>}
+        <button className="btn-primary" onClick={handleSave} disabled={saving}>
           Save Settings
         </button>
       </div>

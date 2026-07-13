@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthSystem = exports.ROLE_PERMISSIONS = void 0;
 const crypto_1 = require("crypto");
 const totp_1 = require("./totp");
+const fieldCrypto_1 = __importDefault(require("../security/fieldCrypto"));
 const logger_1 = __importDefault(require("../utils/logger"));
 const SCRYPT_KEYLEN = 64;
 const SCRYPT_SALT_BYTES = 16;
@@ -80,12 +81,41 @@ exports.ROLE_PERMISSIONS = {
     }
 };
 class AuthSystem {
-    constructor() {
+    constructor(opts) {
         this.users = new Map();
         this.sessions = new Map();
         this.loginAttempts = new Map();
         this.twoFactorChallenges = new Map();
+        // Explicit injection wins; otherwise auto-enable if FIELD_ENCRYPTION_KEY is set.
+        this.fieldCrypto = opts?.fieldCrypto ?? (process.env.FIELD_ENCRYPTION_KEY ? fieldCrypto_1.default.fromEnv() : undefined);
+        // CEO IP allowlist: injected, else CEO_IP_ALLOWLIST (comma-separated), else off.
+        this.ceoIpAllowlist =
+            opts?.ceoIpAllowlist ??
+                (process.env.CEO_IP_ALLOWLIST || '')
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean);
         this.initializeDefaultUsers();
+    }
+    /** Store form of a TOTP secret: encrypted when field encryption is enabled. */
+    storeTotpSecret(secret) {
+        return this.fieldCrypto ? this.fieldCrypto.encrypt(secret) : secret;
+    }
+    /** Usable plaintext TOTP secret for a user (decrypts at-rest ciphertext). */
+    readTotpSecret(user) {
+        if (!user.totpSecret)
+            return undefined;
+        if (!this.fieldCrypto)
+            return user.totpSecret;
+        try {
+            return this.fieldCrypto.decryptField(user.totpSecret);
+        }
+        catch (error) {
+            // Corrupted/undecryptable secret at rest: fail closed (treated as no
+            // secret -> "Invalid 2FA state") rather than throwing a 500.
+            logger_1.default.error('readTotpSecret: failed to decrypt stored TOTP secret', error);
+            return undefined;
+        }
     }
     /**
      * Initialize default users (demo)
@@ -202,6 +232,13 @@ class AuthSystem {
         }
         // Clear failed-attempt counter — password was correct.
         this.loginAttempts.delete(username);
+        // CEO IP allowlist: even with valid credentials, a CEO may only sign in
+        // from an approved network when an allowlist is configured. Checked after
+        // password verification so the policy isn't revealed to wrong-password probes.
+        if (user.role === 'ceo' && this.ceoIpAllowlist.length > 0 && !this.ceoIpAllowlist.includes(ipAddress || '')) {
+            logger_1.default.warn(`🚫 CEO login from non-allowlisted IP: ${username} from ${ipAddress}`);
+            return { success: false, error: 'Access denied from this network' };
+        }
         // If 2FA is enabled, do not issue a session yet — return a challenge.
         if (user.totpEnabled && user.totpSecret) {
             const challengeId = `2fa_${Date.now()}_${(0, crypto_1.randomBytes)(12).toString('hex')}`;
@@ -233,14 +270,17 @@ class AuthSystem {
         }
         const user = this.users.get(challenge.userId);
         if (!user || !user.totpEnabled || !user.totpSecret) {
-            return { success: false, error: 'Invalid 2FA state' };
+            return { success: false, error: 'Invalid 2FA state', username: user?.username };
         }
-        if (!(0, totp_1.verifyTotp)(user.totpSecret, code)) {
+        const secret = this.readTotpSecret(user);
+        // username is surfaced on both paths so the caller can feed the attempt to
+        // anomaly monitoring even when the code is wrong (TOTP brute-force defence).
+        if (!secret || !(0, totp_1.verifyTotp)(secret, code)) {
             logger_1.default.warn(`❌ 2FA failed for ${user.username} from ${challenge.ipAddress}`);
-            return { success: false, error: 'Invalid 2FA code' };
+            return { success: false, error: 'Invalid 2FA code', username: user.username };
         }
         logger_1.default.info(`✅ 2FA passed: ${user.username} from ${challenge.ipAddress} [${challenge.deviceId}]`);
-        return { success: true, token: this.issueSession(user) };
+        return { success: true, token: this.issueSession(user), username: user.username };
     }
     /**
      * Begin TOTP setup for a user: generate a secret and otpauth URI. The user
@@ -252,7 +292,7 @@ class AuthSystem {
         if (!user)
             return { success: false, error: 'User not found' };
         const secret = (0, totp_1.generateSecret)();
-        user.totpSecret = secret;
+        user.totpSecret = this.storeTotpSecret(secret);
         user.totpEnabled = false;
         return {
             success: true,
@@ -270,7 +310,7 @@ class AuthSystem {
             return { success: false, error: 'User not found' };
         if (!user.totpSecret)
             return { success: false, error: 'Run setupTotp first' };
-        if (!(0, totp_1.verifyTotp)(user.totpSecret, code)) {
+        if (!(0, totp_1.verifyTotp)(this.readTotpSecret(user), code)) {
             return { success: false, error: 'Invalid 2FA code' };
         }
         user.totpEnabled = true;
@@ -289,7 +329,7 @@ class AuthSystem {
         if (!this.verifyPassword(password, user.passwordHash)) {
             return { success: false, error: 'Password incorrect' };
         }
-        if (!user.totpSecret || !(0, totp_1.verifyTotp)(user.totpSecret, code)) {
+        if (!user.totpSecret || !(0, totp_1.verifyTotp)(this.readTotpSecret(user), code)) {
             return { success: false, error: 'Invalid 2FA code' };
         }
         user.totpSecret = undefined;
@@ -346,6 +386,55 @@ class AuthSystem {
         logger_1.default.info(`✓ Logout: ${sessionId}`);
     }
     /**
+     * List active (non-expired) sessions with safe metadata for admin views
+     * (backlog 6.5.14). Expired sessions are pruned as a side effect.
+     */
+    getActiveSessions() {
+        const now = Date.now();
+        const active = [];
+        for (const [sessionId, token] of this.sessions.entries()) {
+            if (token.expiresAt.getTime() <= now) {
+                this.sessions.delete(sessionId); // prune expired
+                continue;
+            }
+            active.push({
+                sessionId,
+                userId: token.userId,
+                username: token.username,
+                role: token.role,
+                issuedAt: token.issuedAt,
+                expiresAt: token.expiresAt,
+            });
+        }
+        return active;
+    }
+    /**
+     * Admin: revoke a single session by id. Returns true if a session was
+     * actually removed (false if the id was unknown / already gone).
+     */
+    revokeSession(sessionId) {
+        const existed = this.sessions.delete(sessionId);
+        if (existed)
+            logger_1.default.info(`✓ Session revoked: ${sessionId}`);
+        return existed;
+    }
+    /**
+     * Admin: revoke every active session for a username (e.g. on compromise).
+     * Returns the number of sessions removed.
+     */
+    revokeUserSessions(username) {
+        let removed = 0;
+        for (const [sessionId, token] of this.sessions.entries()) {
+            if (token.username === username) {
+                this.sessions.delete(sessionId);
+                removed++;
+            }
+        }
+        if (removed)
+            logger_1.default.info(`✓ Revoked ${removed} session(s) for user: ${username}`);
+        return removed;
+    }
+    /**
      * Get user by ID
      */
     getUser(userId) {
@@ -389,6 +478,56 @@ class AuthSystem {
         this.users.set(user.id, user);
         logger_1.default.info(`✓ User created: ${username} (${role})`);
         return { success: true, user };
+    }
+    /** True if actorRole may manage targetRole (equal or higher privilege than the target). */
+    canManage(actorRole, targetRole) {
+        return AuthSystem.PRIVILEGE[actorRole] >= AuthSystem.PRIVILEGE[targetRole];
+    }
+    /** Count active users holding a given role (used for lockout protection). */
+    countActiveByRole(role) {
+        return Array.from(this.users.values()).filter(u => u.role === role && u.status === 'active').length;
+    }
+    /**
+     * Change a user's status (active/inactive/suspended). Enforces role
+     * hierarchy and, when deactivating, revokes that user's active sessions so a
+     * suspended account can't keep using an existing token.
+     */
+    setUserStatus(actorRole, userId, status) {
+        const user = this.users.get(userId);
+        if (!user)
+            return { success: false, error: 'User not found' };
+        if (!this.canManage(actorRole, user.role)) {
+            return { success: false, error: 'Insufficient privilege to manage this user' };
+        }
+        // Don't allow deactivating the last active CEO (lockout protection).
+        if (user.role === 'ceo' && status !== 'active' && this.countActiveByRole('ceo') <= 1) {
+            return { success: false, error: 'Cannot deactivate the last active CEO' };
+        }
+        user.status = status;
+        if (status !== 'active') {
+            this.revokeUserSessions(user.username);
+        }
+        logger_1.default.info(`✓ User status changed: ${user.username} -> ${status}`);
+        return { success: true };
+    }
+    /**
+     * Delete a user. Enforces role hierarchy, blocks deleting the last active
+     * CEO, and revokes the user's sessions.
+     */
+    deleteUser(actorRole, userId) {
+        const user = this.users.get(userId);
+        if (!user)
+            return { success: false, error: 'User not found' };
+        if (!this.canManage(actorRole, user.role)) {
+            return { success: false, error: 'Insufficient privilege to delete this user' };
+        }
+        if (user.role === 'ceo' && this.countActiveByRole('ceo') <= 1) {
+            return { success: false, error: 'Cannot delete the last active CEO' };
+        }
+        this.revokeUserSessions(user.username);
+        this.users.delete(userId);
+        logger_1.default.info(`✓ User deleted: ${user.username}`);
+        return { success: true };
     }
     /**
      * Change password
@@ -434,5 +573,19 @@ class AuthSystem {
     }
 }
 exports.AuthSystem = AuthSystem;
+/**
+ * Role privilege levels for hierarchy enforcement. Higher = more privileged.
+ * A user may manage (suspend/delete) targets of equal-or-lower privilege but
+ * never one ranked above them — so a CTO cannot touch a CEO. The dangerous
+ * equal-rank case (a CEO acting on another CEO) is bounded separately by the
+ * last-active-CEO lockout guard below.
+ */
+AuthSystem.PRIVILEGE = {
+    ceo: 3,
+    cto: 2,
+    developer: 1,
+    artist: 1,
+    tech_artist: 1,
+};
 exports.default = AuthSystem;
 //# sourceMappingURL=auth-system.js.map

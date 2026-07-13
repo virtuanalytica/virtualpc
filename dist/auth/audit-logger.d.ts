@@ -58,6 +58,12 @@ export declare class CEOAuditLogger {
      */
     onCriticalEvent(callback: (event: AuditEvent) => void): void;
     /**
+     * Clamp a caller-supplied limit to a safe [1, maxEvents] integer. Guards the
+     * slice(-limit) accessors against negative/NaN/oversized limits — a negative
+     * limit would otherwise turn slice(-limit) into slice(+n) and bypass the cap.
+     */
+    private clampLimit;
+    /**
      * Get events by user
      */
     getEventsByUser(username: string, limit?: number): AuditEvent[];
@@ -81,6 +87,21 @@ export declare class CEOAuditLogger {
      * Get all events
      */
     getAllEvents(limit?: number): AuditEvent[];
+    /**
+     * Combined audit search: filter by any subset of criteria (AND semantics),
+     * returning the most recent `limit` matches. Powers the CEO audit search UI
+     * (username / IP / action / type / severity / outcome + date range).
+     */
+    search(filter?: {
+        username?: string;
+        ipAddress?: string;
+        eventType?: AuditEventType;
+        severity?: AuditEventSeverity;
+        outcome?: 'success' | 'failure';
+        action?: string;
+        startTime?: Date;
+        endTime?: Date;
+    }, limit?: number): AuditEvent[];
     /**
      * Get audit statistics
      */

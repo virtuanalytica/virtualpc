@@ -28,6 +28,12 @@ export declare class OpenClawHandler {
      */
     private processCommand;
     /**
+     * Run a whitelisted VirtualPC operations script. These commands are the
+     * bridge between autonomous agents and local MOLGANG tooling; keep them
+     * narrow and deterministic.
+     */
+    private runVirtualPcScript;
+    /**
      * Get command status
      */
     getCommandStatus(commandId: string): AgentCommand | undefined;

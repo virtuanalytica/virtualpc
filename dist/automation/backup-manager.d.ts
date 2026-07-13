@@ -27,6 +27,7 @@ export declare class BackupManager {
     private backups;
     private recoveryPlans;
     private backupSchedule;
+    private idSeq;
     constructor();
     /**
      * Initialize backup schedule

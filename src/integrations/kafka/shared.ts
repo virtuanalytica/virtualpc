@@ -20,7 +20,7 @@ const CLIENT_ID = process.env.KAFKA_CLIENT_ID || 'virtualpc-shared';
 // docker-compose drops kafka+zookeeper for single-box dev), set
 // KAFKA_DISABLED=1 to skip all connect attempts and silence the
 // otherwise-cascading ECONNREFUSED retry logs from kafkajs. Read
-// lazily inside the function — dotenv.config() runs after this
+// Read lazily because deployment/runtime config may be injected after import.
 // module is imported, so reading at module-load time misses the flag.
 function isKafkaDisabled(): boolean {
   return /^(1|true|yes)$/i.test(process.env.KAFKA_DISABLED || '');

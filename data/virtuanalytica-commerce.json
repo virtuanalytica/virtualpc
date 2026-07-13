@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "testMode": false,
+  "tokensRemaining": 5000,
+  "tokensPurchased": 5000,
+  "tokensConsumed": 0,
+  "paymentStatus": "paid",
+  "selectedRoles": [],
+  "selectedCapabilities": [],
+  "pendingPaymentIntentId": null
+}

@@ -2,11 +2,9 @@
  * Secrets bootstrap — wires the SecretsManager into app startup.
  *
  * `loadSecrets()` returns a fully-loaded SecretsManager when Infisical
- * bootstrap creds are present, or `null` when they are not (transitional:
- * before Infisical is provisioned the app keeps its existing behavior, with a
- * loud warning — so this is safe to deploy ahead of provisioning and does not
- * break startup). Once Infisical is populated, secrets source from there and
- * the legacy `.env` reads can be removed.
+ * bootstrap creds are present, or `null` when they are not. Open-source
+ * VirtualPC never reads `.env` files; production secrets must come from a
+ * secret manager, managed identity, or encrypted local credential store.
  */
 
 import { SecretsManager, InfisicalSecretsProvider, SecretLayer } from './secrets';
@@ -20,14 +18,15 @@ export function isInfisicalConfigured(env: NodeJS.ProcessEnv = process.env): boo
 
 /**
  * Build + load all secret layers from Infisical. Returns null (with a warning)
- * when Infisical is not configured, rather than throwing — so deploying this
- * before provisioning Infisical leaves the app on its existing env behavior.
+ * when Infisical is not configured, rather than throwing. Non-secret runtime
+ * configuration may still come from injected process environment variables,
+ * but application secrets should be provisioned through the secret manager.
  */
 export async function loadSecrets(env: NodeJS.ProcessEnv = process.env): Promise<SecretsManager | null> {
   if (!isInfisicalConfigured(env)) {
     logger.warn(
-      '⚠️ Infisical not configured (INFISICAL_* unset) — secrets fall back to legacy env. ' +
-        'Provision Infisical to complete the .env migration (see docs/OWNERSHIP.md).'
+      '⚠️ Infisical not configured (INFISICAL_* unset). ' +
+        'Provision Infisical or another managed secret source for production secrets.'
     );
     return null;
   }
@@ -74,7 +73,8 @@ export function getActiveSecrets(): SecretsManager | null {
 
 /**
  * Trusted-core secret read: prefer the active SecretsManager (Infisical), and
- * fall back to process.env during the migration (removed once .env is dropped).
+ * fall back to process.env for injected deployment/runtime values. Do not use
+ * `.env` files in the open-source repository.
  *
  * Unscoped on purpose — the core server process is trusted and may hold all
  * layers; the per-agent access model (`SecretsManager.for(role)`) is what gates

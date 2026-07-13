@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskFacilitator = void 0;
 const logger_1 = __importDefault(require("../utils/logger"));
+const agent_registry_1 = require("../agent-registry");
 class TaskFacilitator {
     constructor(config) {
         this.facilitations = new Map();
@@ -35,8 +36,7 @@ class TaskFacilitator {
      * Initialize agent workload tracking
      */
     initializeAgents() {
-        const agents = ['fill', 'kai', 'zip', 'mira', 'luna'];
-        agents.forEach(agent => {
+        agent_registry_1.AGENT_NAMES.forEach(agent => {
             this.agentWorkload.set(agent, 0);
         });
     }
@@ -183,7 +183,7 @@ class TaskFacilitator {
             return; // Already escalated
         const previousAgent = facilitation.agent;
         facilitation.status = 'escalated';
-        facilitation.agent = 'fill'; // CEO takes over
+        facilitation.agent = 'Fill'; // CEO takes over
         logger_1.default.warn(`📢 Escalated task ${taskId} to CEO: ` +
             `${previousAgent} unable to complete after ${(facilitation.time_elapsed_ms / 1000).toFixed(1)}s`);
     }

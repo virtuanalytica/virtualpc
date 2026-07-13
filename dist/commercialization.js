@@ -2,14 +2,14 @@
 /**
  * Commercialization — Croesus's promotion proposal engine.
  *
- * Croesus is an LLM agent that suggests promotional spend (Roblox sponsored
- * placements, Twitter/TikTok ads, Discord boosts) for the MOLGANG game. This
+ * Croesus is an LLM agent that suggests promotional spend (legacy sponsored
+ * placements, Twitter/TikTok ads, Discord boosts) for the the project game. This
  * module enforces three guardrails so an LLM never moves real money on its own:
  *
  *   1. Croesus can only PROPOSE. Status starts at "pending"; nothing is paid.
  *   2. A human with role ceo|cto|economy must approve via /approve before
  *      execute is even callable. Approval is recorded with username + ts.
- *   3. Execute calls Stripe / Roblox APIs only when PROMO_REAL_MONEY=1 and
+ *   3. Execute calls Stripe / legacy APIs only when PROMO_REAL_MONEY=1 and
  *      the per-proposal + per-day spend caps allow it. Otherwise it dry-runs
  *      and records "executed_dryrun".
  *
@@ -60,6 +60,7 @@ exports.budget = budget;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const crypto_1 = require("crypto");
+const secretsBootstrap_1 = require("./security/secretsBootstrap");
 // Lazy-required so the module loads on a build that skipped `npm install`
 // or in an environment that explicitly sets PROMO_REAL_MONEY=0 and never
 // touches Stripe. The real-money path falls back to "stripe sdk not
@@ -77,7 +78,7 @@ function getStripe() {
             return null;
         }
     }
-    const key = process.env.STRIPE_API_KEY;
+    const key = (0, secretsBootstrap_1.secretOrEnv)('money', 'STRIPE_API_KEY');
     if (!key)
         return null;
     // typescript: _stripeModule is the constructor, called with the secret key.
@@ -93,9 +94,12 @@ const REAL_MONEY = process.env.PROMO_REAL_MONEY === '1';
 // land in git. STRIPE_CUSTOMER_ID is the Stripe customer (cus_...) and
 // STRIPE_PAYMENT_METHOD_ID is the saved card (pm_...). Both are required
 // when REAL_MONEY=1.
-const STRIPE_CUSTOMER_ID = process.env.STRIPE_CUSTOMER_ID || '';
-const STRIPE_PAYMENT_METHOD_ID = process.env.STRIPE_PAYMENT_METHOD_ID || '';
-const STRIPE_STATEMENT_DESCRIPTOR = (process.env.STRIPE_STATEMENT_DESCRIPTOR || 'VIRTUALV PROMO').slice(0, 22);
+// Lazy getters (not top-level consts): secrets are loaded into the active
+// SecretsManager at startup, AFTER this module is imported, so reads must defer
+// to call time. Source from the money layer (Infisical) with env fallback.
+const stripeCustomerId = () => (0, secretsBootstrap_1.secretOrEnv)('money', 'STRIPE_CUSTOMER_ID') || '';
+const stripePaymentMethodId = () => (0, secretsBootstrap_1.secretOrEnv)('money', 'STRIPE_PAYMENT_METHOD_ID') || '';
+const stripeStatementDescriptor = () => ((0, secretsBootstrap_1.secretOrEnv)('money', 'STRIPE_STATEMENT_DESCRIPTOR') || 'VIRTUALV PROMO').slice(0, 22);
 function ensureState() {
     try {
         if (!fs.existsSync(STATE_DIR))
@@ -229,9 +233,9 @@ async function execute(id) {
         writeState(s);
         return { ok: false, mode: 'real', proposal: p, error: p.failure_reason };
     }
-    if (!STRIPE_CUSTOMER_ID || !STRIPE_PAYMENT_METHOD_ID) {
+    if (!stripeCustomerId() || !stripePaymentMethodId()) {
         p.status = 'failed';
-        p.failure_reason = 'STRIPE_CUSTOMER_ID and STRIPE_PAYMENT_METHOD_ID env vars are required for real-money execution';
+        p.failure_reason = 'STRIPE_CUSTOMER_ID and STRIPE_PAYMENT_METHOD_ID (money-layer secrets) are required for real-money execution';
         p.executed_at = new Date().toISOString();
         writeState(s);
         return { ok: false, mode: 'real', proposal: p, error: p.failure_reason };
@@ -240,12 +244,12 @@ async function execute(id) {
         const intent = await stripe.paymentIntents.create({
             amount: Math.round(p.budget_usd * 100), // Stripe takes integer cents
             currency: 'usd',
-            customer: STRIPE_CUSTOMER_ID,
-            payment_method: STRIPE_PAYMENT_METHOD_ID,
+            customer: stripeCustomerId(),
+            payment_method: stripePaymentMethodId(),
             off_session: true,
             confirm: true,
-            statement_descriptor: STRIPE_STATEMENT_DESCRIPTOR,
-            description: `MOLGANG promo ${p.id} · ${p.channel} · ${p.duration_hours}h`,
+            statement_descriptor: stripeStatementDescriptor(),
+            description: `the project promo ${p.id} · ${p.channel} · ${p.duration_hours}h`,
             metadata: {
                 proposal_id: p.id,
                 channel: p.channel,

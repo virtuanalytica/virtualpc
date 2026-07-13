@@ -28,6 +28,7 @@ export declare class DeploymentManager {
     private deployments;
     private healthChecks;
     private rollbackStack;
+    private idSeq;
     /**
      * Start deployment
      */

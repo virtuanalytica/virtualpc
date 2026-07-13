@@ -43,6 +43,9 @@ test-data/
 # Cache
 .cache/
 .eslintcache
+graphify-out/
+data/graphify-management-state.json
+reports/graphify-*.log
 
 # Temporary
 tmp/
