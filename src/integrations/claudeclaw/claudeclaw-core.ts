@@ -28,6 +28,8 @@ export type ModelTier = 'light' | 'standard' | 'coder' | 'judge';
 
 export interface ClaudeClawCoreConfig {
   ollamaBaseUrl?: string;
+  /** Per-inference wall clock cap. Default 360s (CPU-only inference is slow). */
+  ollamaTimeoutMs?: number;
   auditDir?: string;
   models?: Partial<Record<ModelTier, string>>;
   /** Judge score in [0,1] below which output is rejected. Default 0.6 */
@@ -89,7 +91,10 @@ export class ClaudeClawCore {
   private escalateOnReject: boolean;
 
   constructor(config: ClaudeClawCoreConfig = {}) {
-    this.ollama = new OllamaClient(config.ollamaBaseUrl);
+    this.ollama = new OllamaClient(
+      config.ollamaBaseUrl,
+      config.ollamaTimeoutMs ?? 360_000
+    );
     this.models = { ...DEFAULT_MODELS, ...(config.models || {}) };
     this.auditDir =
       config.auditDir || path.join(process.cwd(), 'data', 'claudeclaw');

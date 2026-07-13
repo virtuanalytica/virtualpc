@@ -11,14 +11,11 @@
  * Run: npx ts-node scripts/claudeclaw-benchmark.ts
  */
 
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import { ClaudeClawCore } from '../src/integrations/claudeclaw';
 import { checkHealth } from '../src/integrations/claudeclaw';
-
-const execFileAsync = promisify(execFile);
 
 interface TestCase {
   name: string;
@@ -59,14 +56,39 @@ const CASES: TestCase[] = [
   },
 ];
 
+/**
+ * Reference call to claude-haiku-4-5 via the Messages API, authenticated
+ * with the local `claude login` OAuth credential. (The `claude -p` CLI
+ * hangs when spawned from inside a running Claude Code session, so the
+ * benchmark talks to the API directly.)
+ */
 async function callHaiku(prompt: string): Promise<{ output: string; latencyMs: number }> {
+  const credsPath = path.join(os.homedir(), '.claude', '.credentials.json');
+  const token = JSON.parse(fs.readFileSync(credsPath, 'utf-8')).claudeAiOauth
+    .accessToken as string;
   const started = Date.now();
-  const { stdout } = await execFileAsync(
-    'claude',
-    ['-p', '--model', 'claude-haiku-4-5-20251001', prompt],
-    { timeout: 120_000, maxBuffer: 1024 * 1024 }
-  );
-  return { output: stdout.trim(), latencyMs: Date.now() - started };
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'oauth-2025-04-20',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+    signal: AbortSignal.timeout(120_000),
+  });
+  const data: any = await resp.json();
+  if (!resp.ok) throw new Error(`haiku API ${resp.status}: ${JSON.stringify(data)}`);
+  const text = (data.content || [])
+    .filter((b: any) => b.type === 'text')
+    .map((b: any) => b.text)
+    .join('\n');
+  return { output: text.trim(), latencyMs: Date.now() - started };
 }
 
 async function main() {
@@ -75,6 +97,10 @@ async function main() {
 
   const core = new ClaudeClawCore({
     auditDir: path.join(__dirname, '..', 'data', 'claudeclaw'),
+    // CPU-only profile while the GPU driver is down: deepseek-r1's <think>
+    // phase exceeds practical CPU latency, so judge on qwen (no thinking,
+    // disciplined JSON). Revert to the deepseek default once GPU is back.
+    models: { judge: 'qwen2.5-coder:7b' },
   });
   if (!(await core.health())) {
     console.error('Ollama unreachable — start it with: systemctl --user start ollama');
@@ -89,6 +115,7 @@ async function main() {
     const local = await core.run({
       prompt: tc.prompt,
       tier: tc.tier,
+      maxTokens: 512,
       context: `benchmark:${tc.name}`,
     });
     console.log(

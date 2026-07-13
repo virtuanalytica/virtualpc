@@ -70,7 +70,17 @@ upgrade path to paid models later is one config change (e.g. `standard:
 Note: Ollama currently runs **CPU-only** (NVIDIA driver down, known
 Xid-79 issue; GPU returns after reboot). The 96-core box handles the 3–8B
 models fine; latencies in §4 are CPU latencies and will drop substantially
-on GPU.
+on GPU. Under the CPU profile the benchmark judges on `qwen2.5-coder:7b`
+(deepseek-r1's `<think>` phase exceeds practical CPU latency); the
+deepseek default returns with the GPU.
+
+**Fail-closed proven in testing.** During the first benchmark run the
+judge call itself timed out (undici's 300s default; deepseek on CPU).
+The core did exactly what it is designed to do: scored the output 0,
+flagged `judge_unparseable`, rejected it, escalated to the next tier and
+audited the whole chain — an unverified answer never left the pipeline.
+The timeout itself was then fixed (explicit `AbortSignal` + configurable
+timeout in `OllamaClient`).
 
 ## 3. Audit trail: what we have now that plain claude-haiku did not give us
 

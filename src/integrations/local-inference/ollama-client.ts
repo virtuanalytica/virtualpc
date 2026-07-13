@@ -45,9 +45,10 @@ export class OllamaClient {
 
   constructor(baseUrl: string = process.env.OLLAMA_HOST
     ? (process.env.OLLAMA_HOST.startsWith('http') ? process.env.OLLAMA_HOST : `http://${process.env.OLLAMA_HOST}`)
-    : 'http://localhost:11434') {
+    : 'http://localhost:11434', timeoutMs?: number) {
     this.baseUrl = baseUrl;
-    this.timeout = 120000; // 2 minutes for long inference
+    // Default 2 min; CPU-only inference callers pass a larger value
+    this.timeout = timeoutMs ?? 120000;
     this.initializeModels();
     this.checkHealth();
   }
@@ -191,6 +192,7 @@ export class OllamaClient {
       const response = await fetch(`${this.baseUrl}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(this.timeout),
         body: JSON.stringify({
           model: config.variant,
           prompt: request.prompt,

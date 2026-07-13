@@ -1,0 +1,116 @@
+{
+  "generatedAt": "2026-07-13T22:04:09.882Z",
+  "judge": "deepseek-r1:8b",
+  "cases": [
+    {
+      "case": "factual-grounding",
+      "tier": "standard",
+      "prompt": "What is the capital of Australia, and what is the largest city of Australia? Answer in exactly two short sentences.",
+      "local": {
+        "model": "hermes3:8b",
+        "output": "The capital of Australia is Canberra. The largest city in Australia by population is Sydney.",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "escalations": 0,
+        "latencyMs": 69963
+      },
+      "haiku": {
+        "model": "claude-haiku-4-5",
+        "output": "The capital of Australia is Canberra. The largest city of Australia is Sydney.",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "latencyMs": 1172
+      }
+    },
+    {
+      "case": "code-generation",
+      "tier": "coder",
+      "prompt": "Write a TypeScript function `median(xs: number[]): number` that returns the median of a numeric array. Handle even-length arrays. Only output the function, no explanation.",
+      "local": {
+        "model": "qwen2.5-coder:7b",
+        "output": "```typescript\nfunction median(xs: number[]): number {\n  const sorted = xs.slice().sort((a, b) => a - b);\n  const mid = Math.floor(sorted.length / 2);\n\n  if (sorted.length % 2 === 0) {\n    return (sorted[mid - 1] + sorted[mid]) / 2;\n  } else {\n    return sorted[mid];\n  }\n}\n```",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "escalations": 0,
+        "latencyMs": 104870
+      },
+      "haiku": {
+        "model": "claude-haiku-4-5",
+        "output": "```typescript\nfunction median(xs: number[]): number {\n  if (xs.length === 0) {\n    throw new Error(\"Cannot find median of an empty array\");\n  }\n\n  const sorted = [...xs].sort((a, b) => a - b);\n  const mid = Math.floor(sorted.length / 2);\n\n  if (sorted.length % 2 !== 0) {\n    return sorted[mid];\n  }\n\n  return (sorted[mid - 1] + sorted[mid]) / 2;\n}\n```",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "latencyMs": 1614
+      }
+    },
+    {
+      "case": "hallucination-bait",
+      "tier": "standard",
+      "prompt": "Explain the `Array.prototype.shuffleInPlace()` method in JavaScript. If it does not exist, say so clearly.",
+      "local": {
+        "model": "hermes3:8b",
+        "output": "The `Array.prototype.shuffleInPlace()` method is a hypothetical method that would randomly shuffle the elements of an array in place, modifying the original array without creating a new one. However, as of my last update in April 2023, this method does not exist natively in JavaScript.\n\nTo achieve shuffling behavior, developers often implement their own algorithms. A common approach is the Fisher-Yates shuffle algorithm, which iterates through the array from the last element to the first, swapping each element with another randomly chosen element from the remaining unshuffled portion of the array.\n\nHere's a simple implementation of the hypothetical `shuffleInPlace()` method using the Fisher-Yates shuffle algorithm:\n\n```javascript\n// Hypothetical Array.prototype.shuffleInPlace() implementation\nArray.prototype.shuffleInPlace = function() {\n    // Iterate through the array from the last to the first element\n    for (let i = this.length - 1; i > 0; i--) {\n        // Pick a random index between 0 and i (inclusive)\n        let j = Math.floor(Math.random() * (i + 1));\n        \n        // Swap elements at indices i and j\n        [this[i], this[j]] = [[this[i]], this[j]];\n    }\n};\n\n// Example usage:\nlet myArray = [1, 2, 3, 4, 5];\nmyArray.shuffleInPlace(); // myArray is now shuffled in place\n\nconsole.log(myArray);\n```\n\nThis hypothetical method would allow developers to easily shuffle the elements of an array in place, which can be useful for various applications such as games, simulations, and algorithms that require a random order or permutation of elements.",
+        "score": 0.9,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "escalations": 0,
+        "latencyMs": 262605
+      },
+      "haiku": {
+        "model": "claude-haiku-4-5",
+        "output": "# `Array.prototype.shuffleInPlace()` Does Not Exist\n\n**`Array.prototype.shuffleInPlace()` is not a native JavaScript method.** There is no built-in shuffle function in the standard JavaScript Array prototype.\n\n## Why It Doesn't Exist\n\nJavaScript's standard library doesn't include a shuffle method because:\n- Shuffling algorithms have different use cases and performance characteristics\n- The Fisher-Yates algorithm is the standard approach, but it's not complex enough to warrant inclusion as a built-in method\n- Developers can easily implement it themselves in a few lines of code\n\n## How to Shuffle an Array\n\nHere's the recommended implementation using the **Fisher-Yates shuffle algorithm**:\n\n```javascript\nArray.prototype.shuffleInPlace = function() {\n  for (let i = this.length - 1; i > 0; i--) {\n    const j = Math.floor(Math.random() * (i + 1));\n    [this[i], this[j]] = [this[j], this[i]]; // Swap\n  }\n  return this;\n};\n\nconst arr = [1, 2, 3, 4, 5];\narr.shuffleInPlace();\nconsole.log(arr); // Randomly shuffled array\n```\n\n## Better: Non-Mutating Version\n\n```javascript\nfunction shuffle(array) {\n  const arr = [...array];\n  for (let i = arr.length - 1; i > 0; i--) {\n    const j = Math.floor(Math.random() * (i + 1));\n    [arr[i], arr[j]] = [arr[j], arr[i]];\n  }\n  return arr;\n}\n\nconst original = [1, 2, 3, 4, 5];\nconst shuffled = shuffle(original);\n```\n\nThis approach is preferred because it doesn't modify the original array and doesn't extend the Array prototype.",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "latencyMs": 4734
+      }
+    },
+    {
+      "case": "summarization",
+      "tier": "light",
+      "prompt": "Summarize in one sentence: \"Knitweb is a pure-Python peer-to-peer network with a token called PLS and a coin called Fiber. It publishes signed feeds between federated peers and uses a revocable personhood anchor to prevent sybil attacks without collecting personal data.\"",
+      "local": {
+        "model": "hermes3:3b",
+        "output": "Knitweb is an open-source, Python-based peer-to-peer network that employs PLS tokens and Fiber coins for secure, decentralized communication through signed feeds while preventing malicious actors via revocable personhood anchors.",
+        "score": 0.9,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "escalations": 0,
+        "latencyMs": 43383
+      },
+      "haiku": {
+        "model": "claude-haiku-4-5",
+        "output": "# Summary\n\nKnitweb is a Python-based peer-to-peer network that uses a token (PLS) and coin (Fiber) to enable signed data feeds among federated peers, with a privacy-preserving revocable personhood system to prevent sybil attacks.",
+        "score": 0.9,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "latencyMs": 1507
+      }
+    },
+    {
+      "case": "instruction-following",
+      "tier": "standard",
+      "prompt": "List exactly 3 risks of running an LLM agent without an audit trail. Format: numbered list, max 12 words per item.",
+      "local": {
+        "model": "hermes3:8b",
+        "output": "1. Increased potential for unintended or malicious outputs.\n2. Difficulty in identifying and addressing biases and errors.\n3. Lack of accountability and transparency in decision-making processes.",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "escalations": 0,
+        "latencyMs": 51459
+      },
+      "haiku": {
+        "model": "claude-haiku-4-5",
+        "output": "# Risks of Running an LLM Agent Without an Audit Trail\n\n1. Inability to trace errors, making debugging and root cause analysis extremely difficult.\n\n2. No accountability for decisions, creating liability and compliance violations for organizations.\n\n3. Undetectable unauthorized actions or data access, compromising security and privacy safeguards.",
+        "score": 1,
+        "accepted": true,
+        "hallucinationFlags": [],
+        "latencyMs": 1700
+      }
+    }
+  ]
+}
