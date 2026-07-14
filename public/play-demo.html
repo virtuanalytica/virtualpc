@@ -110,9 +110,9 @@
 <script type="importmap">
 {
   "imports": {
-    "three":              "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/":      "https://unpkg.com/three@0.160.0/examples/jsm/",
-    "PointerLockControls":"https://unpkg.com/three@0.160.0/examples/jsm/controls/PointerLockControls.js"
+    "three":              "/vendor/three/three.module.js",
+    "three/addons/":      "/vendor/three/addons/",
+    "PointerLockControls":"/vendor/three/addons/controls/PointerLockControls.js"
   }
 }
 </script>
@@ -179,6 +179,12 @@ scene.add(new THREE.AmbientLight(0x40506a, 0.18));  // moodier baseline
 // recommendation #1 (highest-leverage cheap upgrade).
 const fluorescentColor = 0xe8f0ff;  // cool office-white
 const taskColor = 0xffe2a8;          // warm task light
+// ROOM dimensions must be declared before addFluorescent() is called below
+// (it reads ROOM.h). Previously declared at line ~343, which put it in the
+// temporal dead zone here and threw "Cannot access 'ROOM' before
+// initialization" — aborting the module before the Enter-the-lab button
+// handler attached, so the button did nothing.
+const ROOM = { w: 18, d: 14, h: 4.5 };
 function addFluorescent(x, z) {
   const ral = new THREE.RectAreaLight(fluorescentColor, 6.5, 3.4, 0.4);
   ral.position.set(x, ROOM.h - 0.15, z);
@@ -340,7 +346,7 @@ const benchNormal = deriveNormalMap(benchAlbedo, 0.2);
 benchAlbedo.repeat.set(2, 1); benchNormal.repeat.set(2, 1);
 
 // ─── lab room ─────────────────────────────────────────────────────────
-const ROOM = { w: 18, d: 14, h: 4.5 };
+// (ROOM declared earlier, before addFluorescent's first use)
 function makeRoom() {
   const wallMat = new THREE.MeshStandardMaterial({ map: wallAlbedo, normalMap: wallNormal, normalScale: new THREE.Vector2(0.4, 0.4), roughness: 0.92, metalness: 0.0 });
   const floorMat = new THREE.MeshStandardMaterial({ map: floorAlbedo, normalMap: floorNormal, normalScale: new THREE.Vector2(0.6, 0.6), roughness: 0.55, metalness: 0.05 });
