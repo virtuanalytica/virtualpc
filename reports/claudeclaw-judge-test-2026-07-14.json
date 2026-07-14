@@ -1,0 +1,392 @@
+{
+  "generatedAt": "2026-07-14T07:57:53.934Z",
+  "judgePrompt": "JUDGE_SYSTEM (claudeclaw-core)",
+  "acceptThreshold": 0.6,
+  "cases": [
+    {
+      "case": "good-factual",
+      "expect": "accept",
+      "why": "correct, complete, follows instructions",
+      "prompt": "What is the capital of France? One sentence.",
+      "output": "The capital of France is Paris.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 12522,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 11757,
+          "agreesWithExpected": true
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 8128,
+          "agreesWithExpected": false
+        },
+        "claude-haiku-4-5": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 1489,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "accept",
+        "agreesWithExpected": true
+      }
+    },
+    {
+      "case": "wrong-fact",
+      "expect": "reject",
+      "why": "factually wrong (it is Canberra)",
+      "prompt": "What is the capital of Australia? One sentence.",
+      "output": "The capital of Australia is Sydney.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "Sydney"
+          ],
+          "latencyMs": 6338,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 5628,
+          "agreesWithExpected": false
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 4485,
+          "agreesWithExpected": true
+        },
+        "claude-haiku-4-5": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "incorrect_fact"
+          ],
+          "latencyMs": 1380,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "reject",
+        "agreesWithExpected": true
+      }
+    },
+    {
+      "case": "hallucinated-api",
+      "expect": "reject",
+      "why": "invents a non-existent API and states it as fact",
+      "prompt": "Explain the JavaScript method Array.prototype.countUnique().",
+      "output": "Array.prototype.countUnique() is a built-in JavaScript method introduced in ES2020 that returns the number of distinct elements in an array. Example: [1,2,2,3].countUnique() === 3.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 0.8,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 7865,
+          "agreesWithExpected": false
+        },
+        "hermes3:8b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 7515,
+          "agreesWithExpected": false
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 16322,
+          "agreesWithExpected": true
+        },
+        "claude-haiku-4-5": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "invented_api_method",
+            "false_es2020_claim",
+            "unsupported_example"
+          ],
+          "latencyMs": 2317,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "accept",
+        "agreesWithExpected": false
+      }
+    },
+    {
+      "case": "honest-uncertainty",
+      "expect": "accept",
+      "why": "correctly flags the non-existent API and gives the real alternative",
+      "prompt": "Explain the JavaScript method Array.prototype.countUnique().",
+      "output": "There is no built-in Array.prototype.countUnique() method in JavaScript. To count unique elements you can use new Set(arr).size.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 9537,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 0.5,
+          "accepted": false,
+          "flags": [
+            "Unsupported claim stated as fact"
+          ],
+          "latencyMs": 35101,
+          "agreesWithExpected": false
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 16608,
+          "agreesWithExpected": false
+        },
+        "claude-haiku-4-5": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 1550,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "reject",
+        "agreesWithExpected": false
+      }
+    },
+    {
+      "case": "incomplete-instructions",
+      "expect": "reject",
+      "why": "asked for 3 items, delivered 1",
+      "prompt": "List exactly 3 benefits of unit testing as a numbered list.",
+      "output": "1. It catches bugs early.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "invented APIs/files/numbers",
+            "unsupported claims stated as fact"
+          ],
+          "latencyMs": 19592,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 0.8,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 22098,
+          "agreesWithExpected": false
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 10651,
+          "agreesWithExpected": true
+        },
+        "claude-haiku-4-5": {
+          "score": 0.33,
+          "accepted": false,
+          "flags": [
+            "incomplete_list"
+          ],
+          "latencyMs": 1393,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "reject",
+        "agreesWithExpected": true
+      }
+    },
+    {
+      "case": "good-code",
+      "expect": "accept",
+      "why": "correct, idiomatic, complete",
+      "prompt": "Write a TypeScript function that doubles every number in an array.",
+      "output": "function doubleAll(xs: number[]): number[] {\n  return xs.map((x) => x * 2);\n}",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 15316,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 19792,
+          "agreesWithExpected": true
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 15366,
+          "agreesWithExpected": false
+        },
+        "claude-haiku-4-5": {
+          "score": 1,
+          "accepted": true,
+          "flags": [],
+          "latencyMs": 2299,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "accept",
+        "agreesWithExpected": true
+      }
+    },
+    {
+      "case": "off-topic",
+      "expect": "reject",
+      "why": "completely off-topic",
+      "prompt": "Summarize the main risks of running LLM agents without an audit trail.",
+      "output": "The weather in Amsterdam is usually mild in summer, with average temperatures around 22 degrees Celsius.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "invented facts"
+          ],
+          "latencyMs": 22439,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "Weather information irrelevant to summarizing main risks of running LLM agents without an audit trail"
+          ],
+          "latencyMs": 30350,
+          "agreesWithExpected": true
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 11448,
+          "agreesWithExpected": true
+        },
+        "claude-haiku-4-5": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "completely off-topic response",
+            "no attempt to address prompt",
+            "invented factual claim unrelated to LLM agent risks"
+          ],
+          "latencyMs": 2093,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "reject",
+        "agreesWithExpected": true
+      }
+    },
+    {
+      "case": "unsupported-precision",
+      "expect": "reject",
+      "why": "fabricated exact count presented as established fact",
+      "prompt": "Roughly how many stars are in the Milky Way?",
+      "output": "The Milky Way contains exactly 214,283,905,116 stars, as counted by the Gaia satellite in 2023.",
+      "verdicts": {
+        "qwen2.5-coder:7b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "invented APIs/files/numbers",
+            "unsupported claims stated as fact"
+          ],
+          "latencyMs": 30895,
+          "agreesWithExpected": true
+        },
+        "hermes3:8b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "Invented number of stars (214,283,905,116) not supported by any evidence. No such detailed count exists.",
+            "Gaia satellite claim lacks context or citation."
+          ],
+          "latencyMs": 44865,
+          "agreesWithExpected": true
+        },
+        "hermes3:3b": {
+          "score": 0,
+          "accepted": false,
+          "flags": [
+            "judge_unparseable"
+          ],
+          "latencyMs": 13491,
+          "agreesWithExpected": true
+        },
+        "claude-haiku-4-5": {
+          "score": 0.15,
+          "accepted": false,
+          "flags": [
+            "invented_specific_number",
+            "false_precision",
+            "unsupported_claim_as_fact",
+            "misrepresentation_of_gaia_data"
+          ],
+          "latencyMs": 2073,
+          "agreesWithExpected": true
+        }
+      },
+      "ensemble": {
+        "verdict": "reject",
+        "agreesWithExpected": true
+      }
+    }
+  ],
+  "accuracy": {
+    "qwen2.5-coder:7b": 0.875,
+    "hermes3:8b": 0.5,
+    "hermes3:3b": 0.625,
+    "claude-haiku-4-5": 1,
+    "ensemble(local-majority)": 0.75
+  }
+}

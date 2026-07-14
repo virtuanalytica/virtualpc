@@ -77,7 +77,7 @@ const DEFAULT_MODELS: Record<ModelTier, string> = {
 
 const ESCALATION_ORDER: ModelTier[] = ['light', 'standard', 'coder'];
 
-const JUDGE_SYSTEM = `You are a strict output judge. Evaluate the ASSISTANT OUTPUT against the ORIGINAL PROMPT.
+export const JUDGE_SYSTEM = `You are a strict output judge. Evaluate the ASSISTANT OUTPUT against the ORIGINAL PROMPT.
 Score dimensions: factual grounding (no invented facts), completeness, instruction-following.
 Respond with ONLY a JSON object, no other text:
 {"score": <0.0-1.0>, "hallucination_flags": ["<short flag>", ...], "reasoning": "<one sentence>"}

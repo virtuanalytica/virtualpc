@@ -90,6 +90,47 @@ def appendix_outputs(bench: dict) -> str:
     return "\n".join(parts)
 
 
+def latest_judge_test() -> dict | None:
+    files = sorted(glob.glob(os.path.join(ROOT, "reports", "claudeclaw-judge-test-*.json")))
+    if not files:
+        return None
+    with open(files[-1]) as f:
+        return json.load(f)
+
+
+def appendix_judge(jt: dict) -> str:
+    parts = ["\n\n## Appendix C — Judge-ensemble calibration test {.appendix}\n"]
+    parts.append(
+        f"Generated: {jt['generatedAt']} · accept threshold: {jt['acceptThreshold']}.\n"
+        "Each judge received fixed prompt/output pairs with a **known** expected "
+        "verdict; accuracy = agreement with that expectation. The ensemble row is "
+        "a 2-of-3 majority vote over the local judges.\n"
+    )
+    parts.append("\n### Accuracy\n")
+    parts.append("| Judge | Accuracy |")
+    parts.append("|---|---|")
+    for j, a in jt["accuracy"].items():
+        parts.append(f"| {j} | {a * 100:.0f}% |")
+    parts.append("\n### Per-case verdicts\n")
+    parts.append("| Case | Expected | " + " | ".join(jt["cases"][0]["verdicts"].keys()) + " | ensemble |")
+    parts.append("|---|---|" + "---|" * (len(jt["cases"][0]["verdicts"]) + 1))
+    for c in jt["cases"]:
+        cells = []
+        for j, v in c["verdicts"].items():
+            if "error" in v:
+                cells.append("ERR")
+            else:
+                mark = "✓" if v["agreesWithExpected"] else "✗"
+                cells.append(f"{'accept' if v['accepted'] else 'reject'} ({v['score']:.2f}) {mark}")
+        ens = c["ensemble"]
+        cells.append(f"{ens['verdict']} {'✓' if ens['agreesWithExpected'] else '✗'}")
+        parts.append(f"| {c['case']} | {c['expect']} | " + " | ".join(cells) + " |")
+    parts.append("\n### Case definitions\n")
+    for c in jt["cases"]:
+        parts.append(f"- **{c['case']}** (expect *{c['expect']}*): {c['why']}")
+    return "\n".join(parts)
+
+
 def appendix_audit() -> str:
     day = date.today().isoformat()
     audit_file = os.path.join(ROOT, "data", "claudeclaw", f"audit-{day}.jsonl")
@@ -125,6 +166,9 @@ def main() -> None:
     else:
         md = md.replace("<!-- BENCHMARK_RESULTS -->", "_Benchmark pending._")
         print("WARN: no benchmark JSON found", file=sys.stderr)
+    jt = latest_judge_test()
+    if jt:
+        md += appendix_judge(jt)
     md += appendix_audit()
 
     html_body = markdown.markdown(

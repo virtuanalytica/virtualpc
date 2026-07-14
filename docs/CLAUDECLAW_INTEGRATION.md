@@ -112,6 +112,34 @@ Full outputs: `reports/claudeclaw-benchmark-<date>.json`.
 
 <!-- BENCHMARK_RESULTS -->
 
+## 4b. Judge-ensemble calibration (standard LLM tests on the judges themselves)
+
+Script: `scripts/claudeclaw-judge-test.ts`. Eight fixed prompt/output pairs
+with known expected verdicts (correct answers, wrong facts, invented APIs,
+honest uncertainty, incomplete instruction-following, off-topic output,
+fabricated precision) were fed to each judge; accuracy = agreement with the
+expected verdict. Full outputs in Appendix C.
+
+| Judge | Accuracy | Verdict |
+|---|---|---|
+| claude-haiku-4-5 (cloud ref) | **100%** | perfect judge, 1.5–2s latency |
+| qwen2.5-coder:7b | **88%** | best local judge — confirms the CPU-profile choice |
+| hermes3:3b | 63% | too light: emits broken JSON, fail-closed rescues it |
+| hermes3:8b | 50% | **too credulous as judge** — accepted wrong facts and an invented API at score 1.0 |
+| 2-of-3 local majority ensemble | 75% | *worse than qwen alone* — weak judges drag the vote down |
+
+Lessons applied:
+
+1. **Judge quality ≠ worker quality.** hermes3:8b generates well (§4) but
+   judges poorly; the judge role needs critical capability, not fluency.
+2. **A strong single judge beats a majority of mixed judges.** The local
+   default stays a single strong judge (qwen on CPU, deepseek-r1 on GPU).
+3. **Cheapest meaningful upgrade:** claude-haiku-4-5 as judge (100%,
+   ~2s, low cost) while workers stay local — one config line via
+   `ClaudeClawCoreConfig.models.judge` once a cloud budget is allocated.
+4. **Fail-closed earns its keep again:** hermes3:3b's malformed JSON never
+   produced a false accept — every parse failure became a reject + flag.
+
 ## 5. How to use from virtualpc code
 
 ```ts
