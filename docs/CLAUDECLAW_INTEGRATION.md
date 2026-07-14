@@ -17,7 +17,7 @@ has three layers:
 
 | Layer | Location | What it does |
 |---|---|---|
-| **ClaudeClaw installation** | `CLAUDECLAW_HOME` (EDS2) | Full upstream system: `npm install` (580 pkgs) + `tsc` build (1448 JS files) + `.env` profile routing non-Claude model IDs to local Ollama (`OPENAI_BASE_URL=http://localhost:11434/v1`). Headless CLI mode — the Telegram bot is not booted until a bot token exists. |
+| **ClaudeClaw installation** | `CLAUDECLAW_HOME` (EDS2) | Full upstream system: `npm install` (580 pkgs) + `tsc` build (1448 JS files). Non-secret runtime flags (model routing to local Ollama via `OPENAI_BASE_URL=http://localhost:11434/v1`) live in `.env`; **secrets are injected via Infisical** (see §1b) — never stored in `.env`. Headless CLI mode — the Telegram bot is not booted until a bot token exists in Infisical. |
 | **Dominant core** | `src/integrations/claudeclaw/claudeclaw-core.ts` | virtualpc-native implementation of ClaudeClaw's core quality pattern: **generate → judge → escalate → audit**. Reuses virtualpc's existing `OllamaClient`. |
 | **Process bridge** | `src/integrations/claudeclaw/claudeclaw-bridge.ts` | Health-checks the installation and spawns ClaudeClaw's headless CLIs (`ab-test`, `auto-research`) from virtualpc without importing upstream code. |
 
@@ -26,6 +26,45 @@ audit trail, model tiering, escalation) natively, and its *heavy machinery*
 (AutoResearch, A/B harness, 230-model catalog) via the process bridge. This
 keeps the two codebases independently upgradeable — a new ClaudeClaw drop
 into `CLAUDECLAW_HOME` requires no virtualpc changes.
+
+## 1b. Secret management: Infisical replaces the `.env` methodology
+
+The plain-`.env` secret approach from the initial integration is
+**superseded**. Upstream ClaudeClaw wraps every npm entrypoint in
+`scripts/infisical-wrap.mjs`, which injects secrets from Infisical at
+process start — secrets never live on disk in `.env` and never appear in
+child-process argv.
+
+How the wrapper works:
+
+- **Per-secret precision (`--secrets=<csv>`)** — each npm script declares
+  the *exact* secret names it needs (e.g. `start` requests
+  `TELEGRAM_BOT_TOKEN,DB_ENCRYPTION_KEY,…`); the wrapper fetches only
+  those over Infisical's HTTPS API and injects them as env vars. Sets
+  `CLAUDECLAW_PARTIAL_ENV=1` so `src/config.ts` skips full-env validation.
+  True least-privilege at the secret level.
+- **`--no-secrets`** — for CLIs that need no secrets at all (several
+  orchestration scripts). No Infisical read happens.
+- **Unattended auth: Universal Auth** — the wrapper exchanges
+  `INFISICAL_UNIVERSAL_AUTH_CLIENT_ID` / `_SECRET` (or an OS credential
+  store entry) at `/api/v1/auth/universal-auth/login`; no interactive
+  `infisical login` session, no client secret in shell history.
+- **Three tier projects** — secrets are partitioned into Infisical
+  projects whose UUIDs come from operator-set env vars:
+  `INFISICAL_PROJECT_DATA_APIS` (market-data keys),
+  `INFISICAL_PROJECT_INFRA` (DB passwords, tokens, `TELEGRAM_BOT_TOKEN`),
+  `INFISICAL_PROJECT_LLM` (`OMNIROUTE_API_KEY`, model-provider keys).
+
+What stays in `.env`: only **non-secret** runtime flags — model defaults
+(`DEFAULT_MODEL=hermes3:8b`), routing (`OPENAI_BASE_URL`,
+`ROUTE_OMNIROUTE_AS_ANTHROPIC=false`), timeouts. The local `.env` at
+`CLAUDECLAW_HOME` contains no secret values.
+
+**Local activation status:** the wrapper is present and wired into every
+npm script, but this box has no Infisical endpoint configured yet. To
+activate: set the three `INFISICAL_PROJECT_*` UUIDs + the Universal Auth
+client pair as user-level env vars (values from the Infisical web UI),
+then any `npm run <script>` picks them up — no code changes.
 
 ## 2. The dominant core (anti-hallucination loop)
 
@@ -170,10 +209,12 @@ await runCli('ab-test', ['--agent=coder', '--models=hermes3:8b,qwen2.5-coder:7b'
 
 1. **Telegram bot token** — the interactive bot layer needs a BotFather
    token. Manual, ~2 min: in Telegram message `@BotFather` → `/newbot` →
-   pick a name/username → paste the token into
-   `CLAUDECLAW_HOME/.env` as `TELEGRAM_BOT_TOKEN=`, and your numeric chat id
-   (from `@userinfobot`) as `ALLOWED_CHAT_ID=`. Then `npm run dev` in
-   `CLAUDECLAW_HOME` boots the full bot + dashboard (`localhost:3141/v2`).
+   pick a name/username. Store the token as `TELEGRAM_BOT_TOKEN` in the
+   Infisical **infra** tier project (not in `.env` — see §1b); the numeric
+   chat id (from `@userinfobot`) is non-secret and goes in `.env` as
+   `ALLOWED_CHAT_ID=`. Then `npm run dev` in `CLAUDECLAW_HOME` boots the
+   full bot + dashboard (`localhost:3141/v2`) with the token injected by
+   the Infisical wrapper. Prerequisite: the Infisical activation in §1b.
 2. **GPU** — reboot restores the 2×3090; Ollama service is already pinned
    to GPU 1 with models on EDS2. No config change needed.
 3. **Paid-model upgrade path** — swap tier models in `ClaudeClawCoreConfig`
