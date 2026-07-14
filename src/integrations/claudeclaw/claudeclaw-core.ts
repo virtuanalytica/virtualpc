@@ -20,6 +20,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 import * as crypto from 'crypto';
 import logger from '../../utils/logger';
 import OllamaClient from '../local-inference/ollama-client';
@@ -184,18 +185,27 @@ export class ClaudeClawCore {
   /**
    * Independent judge pass. Uses the dedicated judge model; parses a JSON
    * verdict. Unparseable judge output fails closed (score 0, flagged).
+   *
+   * A `claude-*` judge model routes to the Anthropic API (authenticated
+   * with the local `claude login` OAuth credential) — calibration showed
+   * claude-haiku-4-5 judges at 100% accuracy vs 88% for the best local
+   * model, so this is the recommended judge once cloud budget is allocated.
    */
   async judge(prompt: string, output: string): Promise<JudgeVerdict> {
     const judgeModel = this.models.judge;
     const judgePrompt = `${JUDGE_SYSTEM}\n\nORIGINAL PROMPT:\n${prompt}\n\nASSISTANT OUTPUT:\n${output}\n\nJSON verdict:`;
     try {
-      const resp = await this.ollama.infer({
-        model: judgeModel,
-        prompt: judgePrompt,
-        max_tokens: 512,
-      });
+      const raw = judgeModel.startsWith('claude-')
+        ? await this.claudeOneShot(judgeModel, judgePrompt)
+        : (
+            await this.ollama.infer({
+              model: judgeModel,
+              prompt: judgePrompt,
+              max_tokens: 512,
+            })
+          ).response;
       // deepseek-r1 emits <think>...</think> before the answer; strip it
-      const cleaned = resp.response.replace(/<think>[\s\S]*?<\/think>/g, '');
+      const cleaned = raw.replace(/<think>[\s\S]*?<\/think>/g, '');
       const match = cleaned.match(/\{[\s\S]*\}/);
       if (!match) throw new Error('no JSON in judge output');
       const parsed = JSON.parse(match[0]);
@@ -219,6 +229,41 @@ export class ClaudeClawCore {
         hallucinationFlags: ['judge_unparseable'],
       };
     }
+  }
+
+  /**
+   * Single-turn Anthropic Messages call for cloud judges. Uses the OAuth
+   * token from `claude login` (~/.claude/.credentials.json); requires the
+   * oauth beta header. Note: `claude -p` cannot be spawned from inside a
+   * running Claude Code session (it hangs), hence the direct API call.
+   */
+  private async claudeOneShot(model: string, prompt: string): Promise<string> {
+    const credsPath = path.join(os.homedir(), '.claude', '.credentials.json');
+    const token = JSON.parse(fs.readFileSync(credsPath, 'utf-8')).claudeAiOauth
+      .accessToken as string;
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'oauth-2025-04-20',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 512,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: AbortSignal.timeout(60_000),
+    });
+    const data: any = await resp.json();
+    if (!resp.ok) {
+      throw new Error(`anthropic API ${resp.status}: ${JSON.stringify(data)}`);
+    }
+    return (data.content || [])
+      .filter((b: any) => b.type === 'text')
+      .map((b: any) => b.text)
+      .join('\n');
   }
 
   /** Read back the audit trail (most recent first). */

@@ -134,9 +134,12 @@ Lessons applied:
    judges poorly; the judge role needs critical capability, not fluency.
 2. **A strong single judge beats a majority of mixed judges.** The local
    default stays a single strong judge (qwen on CPU, deepseek-r1 on GPU).
-3. **Cheapest meaningful upgrade:** claude-haiku-4-5 as judge (100%,
-   ~2s, low cost) while workers stay local — one config line via
-   `ClaudeClawCoreConfig.models.judge` once a cloud budget is allocated.
+3. **Cheapest meaningful upgrade — implemented:** the core now routes any
+   `claude-*` judge model to the Anthropic API (OAuth via `claude login`),
+   so `models: { judge: 'claude-haiku-4-5-20251001' }` is literally one
+   config line. Smoke-tested: accepts a known-good pair, rejects a
+   known-bad pair with an `incorrect_fact` flag
+   (`scripts/claudeclaw-judge-smoke.ts`). Workers stay local.
 4. **Fail-closed earns its keep again:** hermes3:3b's malformed JSON never
    produced a false accept — every parse failure became a reject + flag.
 
