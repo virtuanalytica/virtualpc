@@ -16,6 +16,19 @@ if ss -tlnH "sport = :$PORT" 2>/dev/null | grep -q ":$PORT"; then
   exit 0
 fi
 
+# self-heal: vendored three.js is gitignored (derivable). Regenerate if missing
+# so a fresh checkout's demo works without the CDN.
+if [ ! -f "$ROOT/public/vendor/three/three.module.js" ]; then
+  echo "vendoring three.js locally (one-time)…"
+  if [ ! -f "$ROOT/node_modules/three/build/three.module.js" ]; then
+    (cd "$ROOT" && npm install three@0.160.0 --no-audit --no-fund >/dev/null 2>&1)
+  fi
+  mkdir -p "$ROOT/public/vendor/three"
+  cp "$ROOT/node_modules/three/build/three.module.js" "$ROOT/public/vendor/three/three.module.js"
+  cp -r "$ROOT/node_modules/three/examples/jsm" "$ROOT/public/vendor/three/addons"
+  echo "  ✓ vendored into public/vendor/three"
+fi
+
 cd "$ROOT/public" || { echo "no public/ dir"; exit 1; }
 nohup python3 -m http.server "$PORT" --bind 127.0.0.1 > /tmp/molgang_demo_server.log 2>&1 &
 echo $! > "$PIDFILE"

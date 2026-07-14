@@ -67,3 +67,4 @@ credentials.json
 
 # Tesseract language models (auto-downloaded on first use, 5-22 MB each)
 *.traineddata
+public/vendor/
