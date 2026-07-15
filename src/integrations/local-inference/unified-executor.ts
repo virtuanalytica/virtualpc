@@ -10,6 +10,7 @@
 
 import logger from '../../utils/logger';
 import OllamaClient from './ollama-client';
+import { getGovernor, ThroughputGovernor } from './throughput-governor';
 import { secretOrEnv } from '../../security/secretsBootstrap';
 
 export interface ExecutionConfig {
@@ -38,6 +39,7 @@ export interface ExecutionResult {
 
 export class UnifiedExecutor {
   private ollamaClient: OllamaClient;
+  private governor: ThroughputGovernor;
   private config: ExecutionConfig;
   private executionStats: Map<string, {
     success: number;
@@ -56,8 +58,9 @@ export class UnifiedExecutor {
     ['luna', ['qwen-14b', 'deepseek-r1-8b', 'claude-sonnet']] // Tech Artist: reasoning models
   ]);
 
-  constructor(ollama: OllamaClient) {
+  constructor(ollama: OllamaClient, governor: ThroughputGovernor = getGovernor()) {
     this.ollamaClient = ollama;
+    this.governor = governor;
     this.config = {
       preferLocal: true, // Always try local first to save costs
       fallbackToClaude: true, // Fall back to Claude if local fails/timeouts
@@ -79,6 +82,11 @@ export class UnifiedExecutor {
   ): Promise<ExecutionResult> {
     const config = { ...this.config, ...options };
     const models = this.agentModels.get(agent) || ['qwen-27b', 'claude-opus'];
+
+    // Roster gate: agents deselected in the inference settings don't run.
+    if (!this.governor.isAgentActive(agent)) {
+      throw new Error(`Agent '${agent}' is deactivated in inference settings (activeAgents)`);
+    }
 
     logger.debug(`Executing for ${agent}: ${task.substring(0, 50)}...`);
 
@@ -136,18 +144,35 @@ export class UnifiedExecutor {
   ): Promise<ExecutionResult> {
     const startTime = Date.now();
 
+    // Throughput admission: keep every concurrent stream ≥ the t/s floor.
+    // 'cloud' aborts the local attempt so the caller falls through to Claude;
+    // 'downgrade' swaps in a smaller model; 'queue'/'run' wait for a slot.
+    const decision = this.governor.decide(model);
+    if (decision.action === 'cloud') {
+      throw new Error(`throughput-governor routed to cloud: ${decision.reason}`);
+    }
+    const runModel = decision.model;
+    if (decision.action === 'downgrade') {
+      logger.info(`throughput-governor: ${model} → ${runModel} (${decision.reason})`);
+    }
+
+    const slot = await this.governor.acquireSlot(this.config.timeoutMs * 2);
     try {
       const response = await this.ollamaClient.infer({
-        model,
+        model: runModel,
         prompt: `You are ${agent}. Task: ${task}`,
         temperature: 0.7
       });
+
+      if (response.tokens_per_sec > 0) {
+        this.governor.recordMeasurement(runModel, response.tokens_per_sec, slot.concurrent);
+      }
 
       const latency = Date.now() - startTime;
 
       return {
         response: response.response,
-        model,
+        model: runModel,
         provider: 'local',
         latency_ms: latency,
         cost: 0, // Local models are free
@@ -157,6 +182,8 @@ export class UnifiedExecutor {
     } catch (error: any) {
       logger.error(`Local inference failed: ${error.message}`);
       throw error;
+    } finally {
+      slot.release();
     }
   }
 

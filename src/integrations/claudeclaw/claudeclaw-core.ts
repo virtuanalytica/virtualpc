@@ -23,7 +23,8 @@ import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'crypto';
 import logger from '../../utils/logger';
-import OllamaClient from '../local-inference/ollama-client';
+import OllamaClient, { InferenceRequest, InferenceResponse } from '../local-inference/ollama-client';
+import { getGovernor } from '../local-inference/throughput-governor';
 
 export type ModelTier = 'light' | 'standard' | 'coder' | 'judge';
 
@@ -86,16 +87,15 @@ Flag as hallucination: invented APIs/files/numbers, unsupported claims stated as
 
 export class ClaudeClawCore {
   private ollama: OllamaClient;
+  private ollamaTimeoutMs: number;
   private models: Record<ModelTier, string>;
   private auditDir: string;
   private acceptThreshold: number;
   private escalateOnReject: boolean;
 
   constructor(config: ClaudeClawCoreConfig = {}) {
-    this.ollama = new OllamaClient(
-      config.ollamaBaseUrl,
-      config.ollamaTimeoutMs ?? 360_000
-    );
+    this.ollamaTimeoutMs = config.ollamaTimeoutMs ?? 360_000;
+    this.ollama = new OllamaClient(config.ollamaBaseUrl, this.ollamaTimeoutMs);
     this.models = { ...DEFAULT_MODELS, ...(config.models || {}) };
     this.auditDir =
       config.auditDir || path.join(process.cwd(), 'data', 'claudeclaw');
@@ -110,6 +110,27 @@ export class ClaudeClawCore {
 
   async health(): Promise<boolean> {
     return this.ollama.checkHealth();
+  }
+
+  /**
+   * Ollama inference through the shared throughput governor: every local
+   * consumer draws from one stream budget so concurrent agents can't
+   * starve each other below the configured tokens/sec floor. Model choice
+   * stays with the tier ladder; the governor only meters concurrency and
+   * learns measured t/s.
+   */
+  private async gatedInfer(req: InferenceRequest): Promise<InferenceResponse> {
+    const governor = getGovernor();
+    const slot = await governor.acquireSlot(this.ollamaTimeoutMs * 2);
+    try {
+      const resp = await this.ollama.infer(req);
+      if (resp.tokens_per_sec > 0) {
+        governor.recordMeasurement(req.model, resp.tokens_per_sec, slot.concurrent);
+      }
+      return resp;
+    } finally {
+      slot.release();
+    }
   }
 
   /**
@@ -131,7 +152,7 @@ export class ClaudeClawCore {
       const prompt = req.system
         ? `${req.system}\n\n${req.prompt}`
         : req.prompt;
-      const resp = await this.ollama.infer({
+      const resp = await this.gatedInfer({
         model,
         prompt,
         max_tokens: req.maxTokens ?? 1024,
@@ -198,7 +219,7 @@ export class ClaudeClawCore {
       const raw = judgeModel.startsWith('claude-')
         ? await this.claudeOneShot(judgeModel, judgePrompt)
         : (
-            await this.ollama.infer({
+            await this.gatedInfer({
               model: judgeModel,
               prompt: judgePrompt,
               max_tokens: 512,

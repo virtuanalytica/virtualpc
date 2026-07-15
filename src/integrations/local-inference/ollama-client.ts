@@ -34,6 +34,8 @@ export interface InferenceResponse {
     total_tokens: number;
   };
   latency_ms: number;
+  /** Measured generation speed (eval_count/eval_duration), 0 if unknown. */
+  tokens_per_sec: number;
 }
 
 export class OllamaClient {
@@ -224,16 +226,22 @@ export class OllamaClient {
         stats.totalLatency += latency;
       }
 
+      // Ollama reports eval_duration in nanoseconds.
+      const evalCount = data?.eval_count || 0;
+      const evalDurationNs = data?.eval_duration || 0;
+      const tokensPerSec = evalDurationNs > 0 ? evalCount / (evalDurationNs / 1e9) : 0;
+
       return {
         response: data?.response || '',
         model: request.model,
         done: true,
         usage: {
           prompt_tokens: data?.prompt_eval_count || 0,
-          completion_tokens: data?.eval_count || 0,
-          total_tokens: (data?.prompt_eval_count || 0) + (data?.eval_count || 0)
+          completion_tokens: evalCount,
+          total_tokens: (data?.prompt_eval_count || 0) + evalCount
         },
-        latency_ms: latency
+        latency_ms: latency,
+        tokens_per_sec: Math.round(tokensPerSec * 10) / 10
       };
     } catch (error: any) {
       const latency = Date.now() - startTime;
@@ -259,7 +267,8 @@ export class OllamaClient {
           response: '',
           model,
           done: false,
-          latency_ms: 0
+          latency_ms: 0,
+          tokens_per_sec: 0
         });
       }
     }

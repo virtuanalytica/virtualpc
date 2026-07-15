@@ -44,6 +44,7 @@ import setupSpecialistRoutes from './auth/specialist-routes';
 import { AuditRetentionScheduler } from './auth/audit-retention';
 import { LoginAnomalyMonitor } from './security/loginAnomalyMonitor';
 import { setupOpenApiRoutes } from './api/openapi';
+import registerInferenceRoutes from './integrations/local-inference/inference-routes';
 import GitHubSync from './automation/github-sync';
 import setupGitHubRoutes from './automation/github-routes';
 import { SecurityDashboard } from './security/securityDashboard';
@@ -1007,6 +1008,11 @@ app.get('/api/management/daily-overview', (_req, res) => {
     }),
   });
 });
+
+// Inference throughput settings + dynamic compute plan (options UI backend):
+// select active agents (≥5 for diversity), bias the dynamic compute estimate
+// lighter/heavier, and inspect the live t/s admission state.
+registerInferenceRoutes(app);
 
 // Auto-update status — what the last scripts/auto-update.sh tick observed.
 // Returns { status, message, local_sha, remote_sha, checked_at } or
