@@ -47,10 +47,23 @@ function runBootHook() {
 /** Probe now, update state, fire the boot hook on a down→up transition. */
 export function check(): GpuState {
   const prev = state.available;
+  const prevGpuCount = state.gpuCount;
   state = evaluateProbe(probe());
   lastChecked = new Date().toISOString();
   history.unshift({ ts: lastChecked, available: state.available, reason: state.reason });
   if (history.length > 50) history.pop();
+
+  // Replan throughput governor if GPU state or count changed
+  if (prev !== state.available || prevGpuCount !== state.gpuCount) {
+    try {
+      const { getGovernor } = require('../integrations/local-inference/throughput-governor');
+      const newPlan = getGovernor().refreshProbe();
+      logger.info(`[gpu] replan triggered: ${newPlan.reason}`);
+    } catch (e: any) {
+      logger.warn(`[gpu] governor replan failed: ${e.message}`);
+    }
+  }
+
   if (!prev && state.available) {
     logger.info(`[gpu] transition DOWN→UP (${state.reason}) — booting LM Studio`);
     runBootHook();
