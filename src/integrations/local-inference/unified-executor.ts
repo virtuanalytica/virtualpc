@@ -164,8 +164,12 @@ export class UnifiedExecutor {
         temperature: 0.7
       });
 
-      if (response.tokens_per_sec > 0) {
-        this.governor.recordMeasurement(runModel, response.tokens_per_sec, slot.concurrent);
+      const completionTokens = response.usage?.completion_tokens || 0;
+      const tps = completionTokens > 0 && response.latency_ms > 0
+        ? (completionTokens * 1000) / response.latency_ms
+        : 0;
+      if (tps > 0) {
+        this.governor.recordMeasurement(runModel, tps, slot.concurrent);
       }
 
       const latency = Date.now() - startTime;

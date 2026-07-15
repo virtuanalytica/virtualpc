@@ -95,17 +95,13 @@ export class ClaudeClawCore {
 
   constructor(config: ClaudeClawCoreConfig = {}) {
     this.ollamaTimeoutMs = config.ollamaTimeoutMs ?? 360_000;
-    this.ollama = new OllamaClient(config.ollamaBaseUrl, this.ollamaTimeoutMs);
+    this.ollama = new OllamaClient(config.ollamaBaseUrl);
     this.models = { ...DEFAULT_MODELS, ...(config.models || {}) };
     this.auditDir =
       config.auditDir || path.join(process.cwd(), 'data', 'claudeclaw');
     this.acceptThreshold = config.acceptThreshold ?? 0.6;
     this.escalateOnReject = config.escalateOnReject ?? true;
     fs.mkdirSync(this.auditDir, { recursive: true });
-    // Tier models are managed here, not in OllamaClient's hardcoded list
-    for (const tag of Object.values(this.models)) {
-      this.ollama.registerModel({ name: tag });
-    }
   }
 
   async health(): Promise<boolean> {
@@ -124,8 +120,12 @@ export class ClaudeClawCore {
     const slot = await governor.acquireSlot(this.ollamaTimeoutMs * 2);
     try {
       const resp = await this.ollama.infer(req);
-      if (resp.tokens_per_sec > 0) {
-        governor.recordMeasurement(req.model, resp.tokens_per_sec, slot.concurrent);
+      const completionTokens = resp.usage?.completion_tokens || 0;
+      const tps = completionTokens > 0 && resp.latency_ms > 0
+        ? (completionTokens * 1000) / resp.latency_ms
+        : 0;
+      if (tps > 0) {
+        governor.recordMeasurement(req.model, tps, slot.concurrent);
       }
       return resp;
     } finally {
