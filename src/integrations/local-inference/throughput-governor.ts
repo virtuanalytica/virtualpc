@@ -362,6 +362,7 @@ export function decideAdmission(
 // ─── Stateful governor (singleton) ──────────────────────────────────────
 
 const SETTINGS_FILE = path.join(process.cwd(), 'data', 'inference-settings.json');
+const CALIBRATION_FILE = path.join(process.cwd(), 'data', 'inference-calibration.json');
 const EMA_ALPHA = 0.3;
 
 export class ThroughputGovernor {
@@ -373,11 +374,14 @@ export class ThroughputGovernor {
   private activeStreams = 0;
   private waiters: Array<() => void> = [];
   private settingsFile: string;
+  private calibrationFile: string;
 
-  constructor(probe?: HostProbe, settingsFile: string = SETTINGS_FILE) {
+  constructor(probe?: HostProbe, settingsFile: string = SETTINGS_FILE, calibrationFile: string = CALIBRATION_FILE) {
     this.settingsFile = settingsFile;
+    this.calibrationFile = calibrationFile;
     this.probe = probe ?? probeHost();
     this.settings = this.loadSettings();
+    this.calibration = this.loadCalibration();
     this.plan = this.replan();
     logger.info(`✓ Throughput governor: ${this.plan.reason}`);
   }
@@ -389,6 +393,25 @@ export class ThroughputGovernor {
       return { ...DEFAULT_SETTINGS, ...raw };
     } catch {
       return { ...DEFAULT_SETTINGS };
+    }
+  }
+
+  private loadCalibration(): Map<string, number> {
+    try {
+      const raw = JSON.parse(fs.readFileSync(this.calibrationFile, 'utf8'));
+      return new Map(Object.entries(raw as Record<string, number>));
+    } catch {
+      return new Map();
+    }
+  }
+
+  private saveCalibration(): void {
+    try {
+      const obj = Object.fromEntries(this.calibration);
+      fs.mkdirSync(path.dirname(this.calibrationFile), { recursive: true });
+      fs.writeFileSync(this.calibrationFile, JSON.stringify(obj, null, 2));
+    } catch (e: any) {
+      logger.warn(`throughput-governor: could not persist calibration: ${e.message}`);
     }
   }
 
@@ -474,6 +497,7 @@ export class ThroughputGovernor {
       );
       this.plan = this.replan();
     }
+    this.saveCalibration();
   }
 
   getCalibration(): Record<string, number> {
