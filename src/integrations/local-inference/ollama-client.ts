@@ -5,6 +5,7 @@
  * Supports: Qwen, DeepSeek, Phi, Llama, Mistral
  */
 
+import * as os from 'os';
 import logger from '../../utils/logger';
 
 export interface OllamaModelConfig {
@@ -22,6 +23,7 @@ export interface InferenceRequest {
   max_tokens?: number;
   temperature?: number;
   stream?: boolean;
+  keepAlive?: string; // Ollama model keep-alive timeout (e.g., '2m', '30m')
 }
 
 export interface InferenceResponse {
@@ -50,6 +52,12 @@ export class OllamaClient {
     this.timeout = 120000; // 2 minutes for long inference
     this.initializeModels();
     this.checkHealth();
+  }
+
+  /** Compute optimal thread count: ~50% CPU usage without oversubscription. */
+  private getOptimalThreadCount(): number {
+    const cores = os.cpus().length;
+    return Math.max(4, Math.min(Math.floor(cores / 2), 16));
   }
 
   /**
@@ -175,11 +183,12 @@ export class OllamaClient {
           model: config.variant,
           prompt: request.prompt,
           stream: false,
+          ...(request.keepAlive && { keep_alive: request.keepAlive }),
           options: {
             num_predict: request.max_tokens || config.max_tokens,
             temperature: request.temperature ?? config.temperature,
             num_gpu: config.gpu_layers, // Layers to GPU
-            num_thread: 16, // CPU threads
+            num_thread: this.getOptimalThreadCount(), // Dynamic ~50% CPU
             repeat_penalty: 1.1,
             top_k: 40,
             top_p: 0.9

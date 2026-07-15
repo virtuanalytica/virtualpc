@@ -1,0 +1,7 @@
+{
+  "usageMode": "balanced",
+  "customFactor": 1,
+  "minTokensPerSec": 5,
+  "activeAgents": [],
+  "maxConcurrentOverride": null
+}
