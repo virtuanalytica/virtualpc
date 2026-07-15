@@ -654,6 +654,11 @@
                     <div class="nav-icon">⚙️</div>
                     <div>Tasks</div>
                 </div>
+                <div class="nav-item" onclick="window.open('/inference-settings.html','_blank')" style="position:relative;cursor:pointer;">
+                    <div class="nav-icon">🧠</div>
+                    <div>Inference</div>
+                    <span id="inference-status-chip" class="inference-chip" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;padding:2px 6px;border-radius:999px;background:var(--info);color:#fff;">—</span>
+                </div>
                 <div class="nav-item" data-page="system">
                     <div class="nav-icon">🔧</div>
                     <div>System Status</div>
@@ -2515,14 +2520,32 @@
             } catch (e) { console.log('Guardrails ack error:', e.message); }
         }
 
+        async function updateInferenceStatus() {
+            try {
+                const r = await fetch('/api/inference/compute-plan');
+                const j = await r.json();
+                if (!j.success) return;
+                const plan = j.data.plan;
+                const chip = document.getElementById('inference-status-chip');
+                if (chip) {
+                    chip.textContent = `${plan.tier} · ${plan.maxConcurrentStreams} streams`;
+                }
+            } catch (e) {
+                const chip = document.getElementById('inference-status-chip');
+                if (chip) chip.textContent = '⚠️ offline';
+            }
+        }
+
         // Update metrics immediately and every 5 seconds (15s on lightweight hosts)
         loadTeamOverview();
         updateMetrics();
         fetchGuardrailsStatus();
+        updateInferenceStatus();
         setInterval(() => {
             updateMetrics();
             loadTeamOverview();
             fetchGuardrailsStatus();
+            updateInferenceStatus();
         }, statsPollMs);
     </script>
 </body>
