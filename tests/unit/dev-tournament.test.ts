@@ -14,9 +14,9 @@ describe('org wiring', () => {
     const prefixes = DEV_LEGS.map(l => l.branchPrefix);
     expect(new Set(prefixes).size).toBe(3);
   });
-  it('puts the reviewer on Codex/GPT-5.5 xhigh and the PO on Claude Opus max', () => {
-    expect(REVIEWER.provider).toBe('codex');
-    expect(REVIEWER.model).toBe('gpt-5.5');
+  it('puts the reviewer on Claude Opus xhigh and the PO on Claude Opus max', () => {
+    expect(REVIEWER.provider).toBe('anthropic');
+    expect(REVIEWER.model).toBe('claude-opus-4-8');
     expect(REVIEWER.effort).toBe('xhigh');
     expect(COORDINATOR.model).toBe('claude-opus-4-8');
     expect(COORDINATOR.effort).toBe('max');
