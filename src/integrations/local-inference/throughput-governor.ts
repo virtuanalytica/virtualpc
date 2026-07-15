@@ -48,6 +48,18 @@ export function classifyTier(probe: HostProbe): HostTier {
   return 'light-desktop';
 }
 
+/** Model defaults by host tier (for ClaudeClaw and agent routing). */
+export function tierDefaultModels(tier: HostTier): Record<string, string> {
+  switch (tier) {
+    case 'light-desktop':
+      return { light: 'hermes3:3b', standard: 'hermes3:3b', coder: 'qwen2.5-coder:3b', judge: 'deepseek-r1:8b' };
+    case 'cpu-workstation':
+      return { light: 'hermes3:3b', standard: 'hermes3:8b', coder: 'qwen2.5-coder:7b', judge: 'deepseek-r1:8b' };
+    default: // gpu-workstation
+      return { light: 'hermes3:3b', standard: 'hermes3:8b', coder: 'qwen2.5-coder:32b', judge: 'deepseek-r1:8b' };
+  }
+}
+
 /** Effective memory bandwidth prior (GB/s) — dominates local-inference t/s. */
 const TIER_BANDWIDTH_GBPS: Record<HostTier, number> = {
   'gpu-workstation': 900, // RTX 3090 class
