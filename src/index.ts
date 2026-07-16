@@ -115,6 +115,7 @@ import { registerPlanRoutes } from './plan-review';
 import { registerDataQualityRoutes } from './data-quality';
 import { registerFinanceRoutes } from './finance';
 import { registerGpuRoutes, getGpuAvailable } from './gpu';
+import { registerInferenceRoutes } from './integrations/local-inference/inference-routes';
 import { registerQueryRoutes } from './query-builder';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
@@ -244,6 +245,8 @@ registerFundamentalRoutes(app);
 // GPU daemon — availability detection (3h), dynamic no-GPU model fallback, and
 // LM Studio auto-boot when a GPU returns.
 registerGpuRoutes(app);
+// Inference throughput governor — hardware-adaptive concurrency control + calibration.
+registerInferenceRoutes(app);
 // Query builder — saved, parameterised, versioned queries over the knowledge surfaces.
 registerQueryRoutes(app);
 // Spectroscopy — ingest + peak detection for real spectra (Engel QChem payload).
