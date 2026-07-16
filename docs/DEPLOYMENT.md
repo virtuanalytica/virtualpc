@@ -376,6 +376,27 @@ Before running agents full-time:
 
 ---
 
+## Agent Notes Vault
+
+Lightweight brainstorming vault for agents to jot down ephemeral findings, decisions, risks.
+
+- **Storage**: `data/agent-notes/` (plain markdown files, wikilinks [[note]])
+- **Daily notes**: `data/agent-notes/daily/:agentId/YYYY-MM-DD.md`
+- **API endpoints**:
+  - `GET /api/agent-notes` — list all notes
+  - `GET /api/agent-notes/:path` — read a note
+  - `POST /api/agent-notes/:path` — create/update note (body: {content, agentId?})
+  - `GET /api/agent-notes/:path/backlinks` — wikilinks pointing to this note
+  - `POST /api/agent-notes/daily/:agentId` — append to today's daily note (body: {content})
+
+Notes are **NOT** the formal Live Wiki (`data/wiki.json`, which is for documentation).
+Agent Notes are quick, informal, and agent-specific.
+
+**Path safety**: Path traversal (../, ..\, leading slashes) is automatically sanitized.
+Illegal characters are stripped. Nodes cannot write outside the vault.
+
+---
+
 **VirtualPC is ready for autonomous agent operation** 🎉
 
 Let the team work. I'm here to help with issues.
