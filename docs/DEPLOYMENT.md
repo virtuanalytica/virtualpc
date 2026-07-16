@@ -374,6 +374,26 @@ Before running agents full-time:
 - **Neo4j Console**: http://localhost:7474
 - **API Docs**: http://localhost:3100/api/docs
 
+## Hive Mind Persistence
+
+Shared agent memory logs are stored in `$STATE_DIR/hive-mind.jsonl` (default: `.state/hive-mind.jsonl`).
+
+- **Entry types**: agent activity (deploy, design, test, etc.) with metadata
+- **Inter-agent tasks**: async task handoffs with status tracking (pending → completed/failed)
+- **API endpoints**:
+  - `GET /api/hive-mind/recent` — latest entries (limit 50 default)
+  - `GET /api/hive-mind/agent/:agentId` — entries for specific agent
+  - `POST /api/hive-mind/log` — log new entry (agentId, actionType, summary, metadata)
+  - `GET /api/hive-mind/inter-agent-tasks` — list tasks (filter by status/agent)
+  - `POST /api/hive-mind/inter-agent-tasks/:id/complete` — mark task done
+
+Hive Mind grows unbounded; rotate old entries via:
+```bash
+find .state -name "hive-mind.jsonl*" -mtime +30 -delete  # Remove >30 days old
+```
+
+No additional env vars needed (uses `STATE_DIR`).
+
 ---
 
 **VirtualPC is ready for autonomous agent operation** 🎉

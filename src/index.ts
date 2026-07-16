@@ -57,6 +57,7 @@ import { OtsService, registerOtsRoutes } from './integrations/chain/opentimestam
 import { ModelRouter } from './orchestration/model-router';
 import { registerSkills } from './skills/register';
 import setupOpenClawRoutes from './openclaw/openclaw-api';
+import setupHiveMindRoutes from './orchestration/hive-mind-api';
 import * as path from 'path';
 import { MetricsDashboard } from './api/metrics-dashboard';
 import { TaskScheduler } from './agent/task-scheduler';
@@ -4345,8 +4346,12 @@ function setupRoutes(app: express.Express, components: any) {
   // OpenClaw command execution routes (no approval required)
   setupOpenClawRoutes(app);
 
+  // Hive Mind shared memory routes
+  setupHiveMindRoutes(app);
+
   logger.info('✓ Routes configured');
   logger.info('✓ OpenClaw autonomous command execution enabled');
+  logger.info('✓ Hive Mind shared memory enabled');
 }
 
 /**
