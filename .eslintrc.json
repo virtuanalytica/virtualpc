@@ -4,6 +4,9 @@
     "es2021": true,
     "jest": true
   },
+  "globals": {
+    "NodeJS": "readonly"
+  },
   "extends": [
     "eslint:recommended"
   ],
@@ -19,6 +22,9 @@
   "rules": {
     "no-console": "warn",
     "no-unused-vars": "off",
+    "no-empty": "warn",
+    "no-useless-escape": "warn",
+    "no-undef": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
