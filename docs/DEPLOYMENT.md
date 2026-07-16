@@ -366,6 +366,37 @@ Before running agents full-time:
 
 ---
 
+## Single-Instance Lock
+
+VirtualPC uses a PID-file lock (`.virtualpc.pid`) to prevent multiple instances from
+running concurrently and corrupting shared state files.
+
+- **PID File**: `.virtualpc.pid` (contains process ID of running instance)
+- **Automatic on startup**: If lock cannot be acquired, server exits with error
+- **Manual recovery**: If server crashed and PID file is stale:
+  ```bash
+  rm .virtualpc.pid
+  npm start
+  ```
+
+The lock is automatically released on graceful shutdown. Stale PIDs are detected
+and cleaned automatically (process-singleton checks if PID still exists).
+
+## Message Queue & Classifier
+
+Bot utility functions for per-key task serialization and message complexity classification:
+
+- **Message Queue** (`GET /api/openclaw/queue/:key`): Per-agent command serialization
+  - Prevents race conditions on dual-terminal execution
+  - FIFO ordering guaranteed per agent
+- **Message Classifier**: Complexity heuristic for routing (simple vs. complex queries)
+  - Keywords: "explain", "analyze", "design", "debug", "investigate", etc.
+  - Heuristic: messages with >20 words or complex keywords → complex
+
+Used internally; no API endpoints needed for these utilities.
+
+---
+
 ## 📞 Support
 
 - **System Status**: `./scripts/health-check.sh`
