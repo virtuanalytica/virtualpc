@@ -172,8 +172,11 @@ describe('ThroughputGovernor (stateful)', () => {
   const tmpSettings = () =>
     path.join(os.tmpdir(), `inference-settings-test-${Date.now()}-${Math.random()}.json`);
 
+  const tmpCalibration = () =>
+    path.join(os.tmpdir(), `inference-calibration-test-${Date.now()}-${Math.random()}.json`);
+
   it('enforces the min-5 roster on updateSettings', () => {
-    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings());
+    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings(), tmpCalibration());
     expect(() =>
       g.updateSettings({ activeAgents: ['Fill', 'Kai'] }, ['Fill', 'Kai', 'Zip', 'Mira', 'Luna'])
     ).toThrow(/at least 5/);
@@ -182,7 +185,7 @@ describe('ThroughputGovernor (stateful)', () => {
   });
 
   it('applies a valid roster and gates agents', () => {
-    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings());
+    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings(), tmpCalibration());
     const known = ['Fill', 'Kai', 'Zip', 'Mira', 'Luna', 'Atlas'];
     g.updateSettings({ activeAgents: ['Fill', 'Kai', 'Zip', 'Mira', 'Luna'] }, known);
     expect(g.isAgentActive('Fill')).toBe(true);
@@ -190,14 +193,14 @@ describe('ThroughputGovernor (stateful)', () => {
   });
 
   it('replans when the usage mode changes', () => {
-    const g = new ThroughputGovernor(CPU_WORKSTATION, tmpSettings());
+    const g = new ThroughputGovernor(CPU_WORKSTATION, tmpSettings(), tmpCalibration());
     const before = g.getPlan().maxConcurrentStreams;
     g.updateSettings({ usageMode: 'light' }, []);
     expect(g.getPlan().maxConcurrentStreams).toBeLessThan(before);
   });
 
   it('learns solo t/s from measurements (EMA calibration)', () => {
-    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings());
+    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings(), tmpCalibration());
     g.recordMeasurement('hermes3:8b', 12, 1);
     expect(g.soloTpsOf('hermes3:8b')).toBeCloseTo(12, 0);
     // a second, slower sample moves the EMA down but not all the way
@@ -207,7 +210,7 @@ describe('ThroughputGovernor (stateful)', () => {
   });
 
   it('serializes streams beyond capacity and admits FIFO on release', async () => {
-    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings()); // capacity 1
+    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings(), tmpCalibration()); // capacity 1
     const first = await g.acquireSlot(1000);
     expect(g.getActiveStreams()).toBe(1);
 
@@ -229,7 +232,7 @@ describe('ThroughputGovernor (stateful)', () => {
   });
 
   it('times out a waiter that never gets a slot', async () => {
-    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings());
+    const g = new ThroughputGovernor(LIGHT_DESKTOP, tmpSettings(), tmpCalibration());
     const held = await g.acquireSlot(1000);
     await expect(g.acquireSlot(50)).rejects.toThrow(/timed out/);
     held.release();
