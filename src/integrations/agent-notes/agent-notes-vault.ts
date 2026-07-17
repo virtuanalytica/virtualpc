@@ -21,8 +21,13 @@ import logger from '../../utils/logger';
  * - Allows alphanumeric, hyphen, underscore, dot
  */
 function sanitizePath(component: string): string {
-  // Remove traversal patterns
-  let safe = component.replace(/\.\.\//g, '').replace(/\.\.\\/g, '');
+  // Remove traversal patterns (iteratively to avoid incomplete multi-character sanitization)
+  let safe = component;
+  let previous: string;
+  do {
+    previous = safe;
+    safe = safe.replace(/\.\.\//g, '').replace(/\.\.\\/g, '');
+  } while (safe !== previous);
 
   // Remove leading slashes
   safe = safe.replace(/^[\/\\]+/, '');
