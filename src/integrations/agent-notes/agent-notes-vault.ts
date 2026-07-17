@@ -17,25 +17,38 @@ import logger from '../../utils/logger';
 
 /**
  * Sanitize a path component to prevent traversal attacks.
- * - Removes ../, ..\, leading slashes
- * - Allows alphanumeric, hyphen, underscore, dot
+ * - Rejects absolute paths and traversal segments
+ * - Allows alphanumeric, hyphen, underscore, dot in each segment
  */
 function sanitizePath(component: string): string {
-  // Remove traversal patterns (iteratively to avoid incomplete multi-character sanitization)
-  let safe = component;
-  let previous: string;
-  do {
-    previous = safe;
-    safe = safe.replace(/\.\.\//g, '').replace(/\.\.\\/g, '');
-  } while (safe !== previous);
+  // Normalize separators and trim
+  const normalizedInput = component.replace(/\\/g, '/').trim();
 
-  // Remove leading slashes
-  safe = safe.replace(/^[\/\\]+/, '');
+  // Reject absolute paths (POSIX and Windows drive letter forms)
+  if (!normalizedInput || normalizedInput.startsWith('/') || /^[a-zA-Z]:\//.test(normalizedInput)) {
+    throw new Error('Invalid note path after sanitization');
+  }
 
-  // Remove anything that's not alphanumeric, hyphen, underscore, dot, slash
-  safe = safe.replace(/[^a-zA-Z0-9\/_.-]/g, '');
+  // Normalize dot segments using POSIX semantics
+  const normalizedPath = path.posix.normalize(normalizedInput);
 
-  if (!safe || safe.length === 0) {
+  // Validate each segment to block traversal and unsafe characters
+  const segments = normalizedPath.split('/');
+  const safeSegments = segments.map((segment) => {
+    if (!segment || segment === '.' || segment === '..') {
+      throw new Error('Invalid note path after sanitization');
+    }
+
+    const safeSegment = segment.replace(/[^a-zA-Z0-9_.-]/g, '');
+    if (!safeSegment) {
+      throw new Error('Invalid note path after sanitization');
+    }
+
+    return safeSegment;
+  });
+
+  const safe = safeSegments.join('/');
+  if (!safe) {
     throw new Error('Invalid note path after sanitization');
   }
 
