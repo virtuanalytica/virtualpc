@@ -17,7 +17,7 @@ echo "== Stale reference check =="
 
 # febuz old org: virtualpc repo should point to knitweb everywhere that matters.
 FEBUZ_HITS=$(grep -Rin --include='*.ts' --include='*.js' --include='*.sh' --include='*.py' --include='*.html' --include='*.md' --include='*.yml' --include='*.yaml' --include='*.css' \
-  'github.com/febuz\|febuz/virtualpc' src scripts public README.md docs .github .env.example 2>/dev/null || true)
+  'github.com/febuz\|virtuanalytica/virtualpc' src scripts public README.md docs .github .env.example 2>/dev/null || true)
 # Exclude this script, allow molgang legacy repos and the roblox user search.
 FEBUZ_HITS=$(echo "$FEBUZ_HITS" | grep -v 'validate-repo.sh:\|febuz/molgang-\|roblox.com/search/users?keyword=febuz\|FEBUZ.md' || true)
 if [ -n "$FEBUZ_HITS" ]; then
