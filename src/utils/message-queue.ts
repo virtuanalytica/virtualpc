@@ -47,10 +47,9 @@ export class MessageQueue {
   private async processQueue(key: string): Promise<void> {
     this.processing.set(key, true);
 
-    while (true) {
-      const queue = this.queues.get(key);
-      if (!queue || queue.length === 0) break;
-
+    // Re-read the queue each iteration: tasks may enqueue new work while
+    // one is awaited, and the map entry can be replaced concurrently.
+    for (let queue = this.queues.get(key); queue && queue.length > 0; queue = this.queues.get(key)) {
       const item = queue.shift()!;
 
       try {

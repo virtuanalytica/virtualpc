@@ -65,7 +65,7 @@ jobs:
           tar czf virtualpc-deployment-${{ github.sha }}.tar.gz deploy-artifact/
 
       - name: Upload deployment artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: deployment-package
           path: virtualpc-deployment-${{ github.sha }}.tar.gz
