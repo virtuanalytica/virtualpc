@@ -86,3 +86,4 @@ __pycache__/
 .ai/tasks/*/index.json
 .ai/deliberation/**/*.json
 .ai/deliberation/**/*.md
+data/codex-game-dev/workspaces/
