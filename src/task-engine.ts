@@ -1240,7 +1240,7 @@ export function getAgentInProgressDetail(agent: string) {
 
 const agentCommands: { [agent: string]: string[] } = {
   Fill: [
-    '$ gh issue list --label critical --repo knitweb/virtualpc',
+    '$ gh issue list --label critical --repo virtuanalytica/virtualpc',
     '$ review-sprint --sprint 2 --format summary',
     '$ okr-tracker --quarter Q3 --status',
     '$ budget-forecast --period Q3 --output table',

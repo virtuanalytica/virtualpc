@@ -56,7 +56,7 @@ niets hiervan is ooit *gerenderd*. Dit is dé openstaande "werkt het echt"-vraag
 ## 🔐 VIRTUALPC — PR-review & operationeel (menselijk oordeel)
 
 ### FB-V1 — Review + merge PR #18 (security/stability)
-- **Wat:** `gh pr view 18 --repo knitweb/virtualpc`. 6 codebase-gegronde fixes (o.a.
+- **Wat:** `gh pr view 18 --repo virtuanalytica/virtualpc`. 6 codebase-gegronde fixes (o.a.
   de 196 MB `task-state.json` workLog-cap, credential-encryptie #31,
   path-traversal guard). Alles `tsc` clean, 2 unit-test suites.
 - **Waarom mens:** mergen naar een live repo is jouw beslissing.

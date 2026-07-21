@@ -81,7 +81,7 @@ curl http://localhost:11434/api/tags
 ## 3. Install VirtualPC
 
 ```bash
-git clone https://github.com/knitweb/virtualpc.git ~/virtualpc
+git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc
 cd ~/virtualpc
 cp .env.example .env
 ```

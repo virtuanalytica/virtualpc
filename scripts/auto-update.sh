@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Auto-update virtualpc from github.com/knitweb/virtualpc.
+# Auto-update virtualpc from github.com/virtuanalytica/virtualpc.
 #
 # Run by systemd timer (deploy/systemd/virtualpc-auto-update.timer). Safe to
 # run on demand: bails when there's nothing new, or when the working tree

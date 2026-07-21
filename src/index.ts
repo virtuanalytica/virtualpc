@@ -422,14 +422,14 @@ app.post('/api/backlog/items', (req, res) => {
 });
 
 // ============================================================================
-// GitHub proxy for knitweb/virtualpc — read-only access to the knowledge dirs
+// GitHub proxy for virtuanalytica/virtualpc — read-only access to the knowledge dirs
 // (.backlog, .admin, .creative, .governance, .operations). The repo is private
 // so the dashboard's external <a href> links 404 for unauthenticated visitors.
 // This proxy uses the local `gh` CLI's keyring auth to fetch the file content,
 // so the dashboard can show it inline. Hardcoded allow-list of path prefixes
 // prevents using the proxy as a generic GitHub fetcher.
 // ============================================================================
-const GH_REPO = 'knitweb/virtualpc';
+const GH_REPO = 'virtuanalytica/virtualpc';
 const GH_ALLOWED_DIRS = ['.backlog', '.admin', '.creative', '.governance', '.operations'];
 
 // Map agent name → known doc paths in the repo. Used by the agent-detail panel.

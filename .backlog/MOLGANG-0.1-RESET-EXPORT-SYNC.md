@@ -17,7 +17,7 @@
 - `GET /api/export/backlog?format=csv`
 - `GET /api/export/backlog?format=markdown`
 - Export includes current game stats, visible backlog, last 1000 work-log entries and token summary.
-- GitHub `Knitweb/virtualpc` master synchronized with local source.
+- GitHub `virtuanalytica/virtualpc` master synchronized with local source.
 - Hive Mind, bot utility and Agent Notes Vault features merged from GitHub.
 - Broken upstream orchestrator/OpenClaw compatibility restored so TypeScript builds.
 

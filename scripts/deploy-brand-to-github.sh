@@ -58,7 +58,7 @@ for account in "${BRANDS[@]}"; do
 
 Brand website for the **$(echo "$brand" | sed 's/.*/\u&/')** line of the VirtualPC fabric.
 
-- Brain / machine: https://github.com/knitweb/virtualpc
+- Brain / machine: https://github.com/virtuanalytica/virtualpc
 - Brand hub: https://knitweb.github.io/virtualpc/brands.html
 EOF
 

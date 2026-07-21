@@ -425,7 +425,7 @@ def add_scene(
 
 T = {
     "nl": {
-        "repo": "github.com/knitweb/virtualpc",
+        "repo": "github.com/virtuanalytica/virtualpc",
         "install": {
             "video_title": "VirtualPC installeren",
             "subtitle": "Installatiehandleiding",
@@ -449,7 +449,7 @@ T = {
                 ("text", "Optioneel: LM Studio op 127.0.0.1:1234"),
             ],
             "clone_lines": [
-                ("muted", "$ git clone https://github.com/knitweb/virtualpc.git ~/virtualpc"),
+                ("muted", "$ git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc"),
                 ("text", "Cloning into '/Users/develuse/virtualpc'..."),
                 ("text", "remote: Enumerating objects: 1247, done."),
                 ("text", "Resolving deltas: 100% (812/812), done."),
@@ -680,7 +680,7 @@ T = {
         },
     },
     "en": {
-        "repo": "github.com/knitweb/virtualpc",
+        "repo": "github.com/virtuanalytica/virtualpc",
         "install": {
             "video_title": "Installing VirtualPC",
             "subtitle": "Installation guide",
@@ -704,7 +704,7 @@ T = {
                 ("text", "Optional: LM Studio on 127.0.0.1:1234"),
             ],
             "clone_lines": [
-                ("muted", "$ git clone https://github.com/knitweb/virtualpc.git ~/virtualpc"),
+                ("muted", "$ git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc"),
                 ("text", "Cloning into '/Users/develuse/virtualpc'..."),
                 ("text", "remote: Enumerating objects: 1247, done."),
                 ("text", "Resolving deltas: 100% (812/812), done."),
@@ -935,7 +935,7 @@ T = {
         },
     },
     "yue": {
-        "repo": "github.com/knitweb/virtualpc",
+        "repo": "github.com/virtuanalytica/virtualpc",
         "install": {
             "video_title": "安裝 VirtualPC",
             "subtitle": "安裝教學",
@@ -959,7 +959,7 @@ T = {
                 ("text", "選擇性：LM Studio 於 127.0.0.1:1234"),
             ],
             "clone_lines": [
-                ("muted", "$ git clone https://github.com/knitweb/virtualpc.git ~/virtualpc"),
+                ("muted", "$ git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc"),
                 ("text", "複製到 '/Users/develuse/virtualpc'..."),
                 ("text", "remote: 正在列舉物件..."),
                 ("text", "解析差異：100% (812/812)，完成"),
@@ -1190,7 +1190,7 @@ T = {
         },
     },
     "ru": {
-        "repo": "github.com/knitweb/virtualpc",
+        "repo": "github.com/virtuanalytica/virtualpc",
         "install": {
             "video_title": "Установка VirtualPC",
             "subtitle": "Руководство по установке",
@@ -1214,7 +1214,7 @@ T = {
                 ("text", "Опционально: LM Studio на 127.0.0.1:1234"),
             ],
             "clone_lines": [
-                ("muted", "$ git clone https://github.com/knitweb/virtualpc.git ~/virtualpc"),
+                ("muted", "$ git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc"),
                 ("text", "Клонирование в '/Users/develuse/virtualpc'..."),
                 ("text", "remote: Перечисление объектов: 1247, готово."),
                 ("text", "Разрешение дельт: 100% (812/812), готово."),
