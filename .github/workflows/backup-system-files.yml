@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Create backup archive
       run: |
@@ -22,15 +22,14 @@ jobs:
         mkdir -p backup-archive
 
         # Backup all system files
-        tar -czf backup-archive/system-files-$(date +%Y%m%d-%H%M%S).tar.gz \
+        # tar excludes are positional: they must precede the paths they filter
+        tar --exclude=node_modules --exclude=dist --exclude=.git \
+          -czf backup-archive/system-files-$(date +%Y%m%d-%H%M%S).tar.gz \
           .admin/ \
           .governance/ \
           .creative/ \
           .operations/ \
-          .backlog/ \
-          --exclude=node_modules \
-          --exclude=dist \
-          --exclude=.git
+          .backlog/
 
         echo "✓ Backup created"
         ls -lh backup-archive/
