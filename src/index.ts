@@ -271,6 +271,10 @@ app.use((req, res, next) => {
   }
   next();
 });
+// The primary VirtualPC experience is the multi-agent dashboard. Keep the
+// product landing page available as /index.html, but never let static
+// index.html shadow the dashboard at the service root.
+app.get('/', serveSPAFile);
 app.use(express.static('dist/public'));
 app.use(express.static('public'));
 
@@ -1876,12 +1880,15 @@ app.get('/api/metrics', (req, res) => {
   const pending = allItems.filter((i: any) => i.status === 'pending').length;
   const errored = allItems.filter((i: any) => i.status === 'error').length;
   const total = allItems.length;
-  const activeAgents = new Set(
-    allItems
-      .filter((i: any) => i.status === 'in_progress' || i.status === 'in-progress')
-      .map((i: any) => i.assigned_to)
-      .filter(Boolean),
-  ).size;
+  const hasActivityEvidence = taskEngine.hasRealActivityEvidence();
+  const activeAgents = hasActivityEvidence
+    ? new Set(
+        allItems
+          .filter((i: any) => i.status === 'in_progress' || i.status === 'in-progress')
+          .map((i: any) => i.assigned_to)
+          .filter(Boolean),
+      ).size
+    : 0;
 
   const tokenReport = tokenTracker.getAgentSummary();
   const tokenSummary = tokenReport.combined;
@@ -1951,6 +1958,7 @@ app.get('/api/metrics', (req, res) => {
     },
     taskEngine: {
       autonomousTicks: process.env.VIRTUALPC_AUTONOMOUS_TICKS === '1',
+      activityEvidence: hasActivityEvidence,
       metricsSource: 'task-engine work-log and canonical task store',
     }
   };
@@ -3507,12 +3515,13 @@ function setupRoutes(app: express.Express, components: any) {
         { name: 'Mira', role: 'Creative Director', costRate: 0.04 },
         { name: 'Luna', role: 'Tech Artist', costRate: 0.05 },
       ];
+      const hasActivityEvidence = taskEngine.hasRealActivityEvidence();
       const agents = agentMeta.map(a => {
         const prog = taskEngine.getAgentProgress(a.name);
         return {
           name: a.name,
           role: a.role,
-          status: prog.inProgress > 0 ? 'working' : 'idle',
+          status: hasActivityEvidence && prog.inProgress > 0 ? 'working' : 'idle',
           currentTask: prog.currentTask || 'Waiting...',
           tasksCompleted: prog.completed,
           costUsed: +(prog.completed * a.costRate).toFixed(2),

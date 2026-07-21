@@ -428,13 +428,34 @@ function loadState(): boolean {
   }
 }
 
+function clearUnbackedActivity(): boolean {
+  if (AUTONOMOUS_TICKS) return false;
+  const persistedLog = (globalThis as any).__virtualpcPersistedWorkLog as WorkLogEntry[] | undefined;
+  if (persistedLog?.length) return false;
+
+  let changed = false;
+  for (const task of tasks) {
+    if (task.status !== 'in-progress') continue;
+    task.status = 'pending';
+    task.progress = 0;
+    task.started_at = undefined;
+    for (const subtask of task.subtasks) subtask.done = false;
+    changed = true;
+  }
+  return changed;
+}
+
 function seedInitialTasks() {
   const agents = AGENT_NAMES;
   for (const agent of agents) {
-    // 2 in-progress + 2 pending per agent
+    // 2 in-progress + 2 pending per agent — but fabricated "in-progress"
+    // states are only truthful when the autonomous tick simulation will
+    // actually work them. Without ticks, seed everything as untouched
+    // pending work so the API never claims agents are busy without any
+    // work-log/artifact evidence.
     for (let i = 0; i < 4; i++) {
       const task = generateTask(agent);
-      if (i < 2) {
+      if (AUTONOMOUS_TICKS && i < 2) {
         task.status = 'in-progress';
         task.started_at = new Date(Date.now() - Math.random() * 3600000).toISOString();
         // Give first tasks some initial progress
@@ -464,6 +485,8 @@ if (NEW_RESET) {
   dirty = true;
   logger.info('task-engine: fresh 0.1 baseline requested; historical state ignored');
 } else if (loadState()) {
+  // A persisted reset with no work log must not resurrect synthetic activity.
+  if (clearUnbackedActivity()) dirty = true;
   const currentAgents = AGENT_NAMES;
   for (const agent of currentAgents) {
     const agentTasks = tasks.filter(t => t.assigned_to === agent && (t.status === 'in-progress' || t.status === 'pending'));
@@ -473,7 +496,7 @@ if (NEW_RESET) {
       const currentIP = agentTasks.filter(t => t.status === 'in-progress').length;
       for (let i = 0; i < gap; i++) {
         const task = generateTask(agent);
-        if (currentIP + i < 2) {
+        if (AUTONOMOUS_TICKS && currentIP + i < 2) {
           task.status = 'in-progress';
           task.started_at = new Date().toISOString();
         }
@@ -973,6 +996,13 @@ export function getWorkLog(agent?: string, limit?: number): WorkLogEntry[] {
   let entries = agent ? workLog.filter(e => e.agent === agent) : workLog;
   if (limit) entries = entries.slice(-limit);
   return entries;
+}
+
+// Reset-baseline truth contract: agents may only be reported active/busy when
+// there is real evidence of work — the autonomous tick simulation is enabled,
+// or real work-log/artifact events exist. Task counts stay untouched.
+export function hasRealActivityEvidence(): boolean {
+  return AUTONOMOUS_TICKS || workLog.length > 0 || artifacts.length > 0;
 }
 
 export function getWorkSummary() {
