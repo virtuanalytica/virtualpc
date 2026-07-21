@@ -32,8 +32,8 @@ BRANDS = {
             ("Notion / Obsidian sync", "Cloud or proprietary sync", "Vendor lock-in", "No DID identity", "Centralised"),
             ("Loom", "Local-first P2P patch", "You own the data", "Yarn = DID", "Decentralised"),
         ],
-        "cta_primary": ("Read the brand strategy", "https://github.com/knitweb/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
-        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/knitweb/virtualpc")],
+        "cta_primary": ("Read the brand strategy", "https://github.com/virtuanalytica/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
+        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/virtuanalytica/virtualpc")],
     },
     "fiber": {
         "name": "Fiber",
@@ -55,8 +55,8 @@ BRANDS = {
             ("Neo4j / RDF store", "Single server or managed cloud", "Schema migrations", "No offline merge", "Centralised"),
             ("Fiber", "Embedded in every loom", "Schema-less CRDT patches", "Offline-first merge", "Decentralised"),
         ],
-        "cta_primary": ("Read the brand strategy", "https://github.com/knitweb/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
-        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/knitweb/virtualpc")],
+        "cta_primary": ("Read the brand strategy", "https://github.com/virtuanalytica/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
+        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/virtuanalytica/virtualpc")],
     },
     "plexus": {
         "name": "Plexus",
@@ -78,8 +78,8 @@ BRANDS = {
             ("Static archive / PDF", "Read-only snapshot", "No provenance", "No signed history", "Dead data"),
             ("Plexus", "Living, queryable fabric", "Triple provenance", "Cryptographic audit trail", "Evolving data"),
         ],
-        "cta_primary": ("Read the brand strategy", "https://github.com/knitweb/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
-        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/knitweb/virtualpc")],
+        "cta_primary": ("Read the brand strategy", "https://github.com/virtuanalytica/virtualpc/blob/main/docs/BRAND-STRATEGY.md"),
+        "cta_secondary": [("All brands", "brands.html"), ("GitHub repo", "https://github.com/virtuanalytica/virtualpc")],
     },
 }
 
@@ -333,7 +333,7 @@ def brand_page(key: str, data: dict) -> str:
     <h2>Part of one fabric</h2>
     <p class="section-sub">Loom, KnitNet, Fiber and Plexus are not four products. They are four lenses on the same Textus-type database — the brain lives in the GitHub repo.</p>
     <div class="cta-row" style="justify-content:flex-start;">
-      <a class="btn btn-primary" href="https://github.com/knitweb/virtualpc">Open the machine on GitHub</a>
+      <a class="btn btn-primary" href="https://github.com/virtuanalytica/virtualpc">Open the machine on GitHub</a>
       <a class="btn btn-secondary" href="brands.html">Explore all brands</a>
       <a class="btn btn-secondary" href="knitnet.html">KnitNet →</a>
     </div>
@@ -341,7 +341,7 @@ def brand_page(key: str, data: dict) -> str:
 </section>
 
 <footer>
-  <p>{data['name']} is a brand line of VirtualPC · <a href="brands.html">All brands</a> · <a href="https://github.com/knitweb/virtualpc">GitHub</a></p>
+  <p>{data['name']} is a brand line of VirtualPC · <a href="brands.html">All brands</a> · <a href="https://github.com/virtuanalytica/virtualpc">GitHub</a></p>
 </footer>
 
 </body>
@@ -448,7 +448,7 @@ def hub_page() -> str:
   <h1>Loom · KnitNet · Fiber · Plexus</h1>
   <p>Four brands that lead to the same Textus-type database. The brain lives in the GitHub repository; each website is a view of the same machine.</p>
   <div class="cta-row">
-    <a class="btn btn-primary" href="https://github.com/knitweb/virtualpc">Open the machine</a>
+    <a class="btn btn-primary" href="https://github.com/virtuanalytica/virtualpc">Open the machine</a>
     <a class="btn btn-secondary" href="../docs/BRAND-STRATEGY.md">Read the strategy</a>
   </div>
 </section>
@@ -504,7 +504,7 @@ def hub_page() -> str:
 </section>
 
 <footer>
-  <p>VirtualPC brand fabric · <a href="index.html">Overview</a> · <a href="https://github.com/knitweb/virtualpc">GitHub</a></p>
+  <p>VirtualPC brand fabric · <a href="index.html">Overview</a> · <a href="https://github.com/virtuanalytica/virtualpc">GitHub</a></p>
 </footer>
 
 </body>

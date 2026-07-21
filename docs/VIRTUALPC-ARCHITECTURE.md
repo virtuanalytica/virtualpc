@@ -1,7 +1,7 @@
 # VirtualPC — Architecture
 
 **Status:** Production
-**Repo:** `github.com/knitweb/virtualpc`
+**Repo:** `github.com/virtuanalytica/virtualpc`
 **Last refresh:** 2026-05-04
 
 VirtualPC is a project-agnostic multi-agent orchestration backend. It is

@@ -52,7 +52,7 @@ runcmd:
   - apt-get install -y nodejs
 
   # 3. Clone repo as virtualpc user
-  - su - virtualpc -c "git clone https://github.com/knitweb/virtualpc.git /home/virtualpc/virtualpc"
+  - su - virtualpc -c "git clone https://github.com/virtuanalytica/virtualpc.git /home/virtualpc/virtualpc"
 
   # 4. Install VirtualPC
   - su - virtualpc -c "cd /home/virtualpc/virtualpc && cp .env.example .env"
