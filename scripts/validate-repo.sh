@@ -15,9 +15,9 @@ ok() { echo "  ✓ $1"; }
 
 echo "== Stale reference check =="
 
-# febuz old org: virtualpc repo should point to knitweb everywhere that matters.
+# Old homes (febuz, knitweb): the repo lives at virtuanalytica/virtualpc now.
 FEBUZ_HITS=$(grep -Rin --include='*.ts' --include='*.js' --include='*.sh' --include='*.py' --include='*.html' --include='*.md' --include='*.yml' --include='*.yaml' --include='*.css' \
-  'github.com/febuz\|febuz/virtualpc' src scripts public README.md docs .github .env.example 2>/dev/null || true)
+  'github.com/febuz\|knitweb/virtualpc' src scripts public README.md docs .github .env.example 2>/dev/null || true)
 # Exclude this script, allow molgang legacy repos and the roblox user search.
 FEBUZ_HITS=$(echo "$FEBUZ_HITS" | grep -v 'validate-repo.sh:\|febuz/molgang-\|roblox.com/search/users?keyword=febuz\|FEBUZ.md' || true)
 if [ -n "$FEBUZ_HITS" ]; then
@@ -26,14 +26,14 @@ else
   ok "no stale febuz/org references in active code/docs"
 fi
 
-# paperclip / virtuanalytica: should not appear in active code or user-facing docs.
+# paperclip: legacy brand name; should not appear in active code or user-facing docs.
 STALE_NAMES=$(grep -Rin --include='*.ts' --include='*.js' --include='*.sh' --include='*.py' --include='*.html' --include='*.md' --include='*.yml' --include='*.yaml' --include='*.css' \
-  'paperclip\|virtuanalytica' src scripts public README.md .env.example .github 2>/dev/null || true)
+  'paperclip' src scripts public README.md .env.example .github 2>/dev/null || true)
 STALE_NAMES=$(echo "$STALE_NAMES" | grep -v 'validate-repo.sh:' || true)
 if [ -n "$STALE_NAMES" ]; then
-  fail "remaining paperclip/virtuanalytica references in active files:\n$STALE_NAMES"
+  fail "remaining paperclip references in active files:\n$STALE_NAMES"
 else
-  ok "no paperclip/virtuanalytica references in active files"
+  ok "no paperclip references in active files"
 fi
 
 echo "== Shebang / loader check =="

@@ -57,7 +57,7 @@ jobs:
         cat backup-archive/MANIFEST.txt
 
     - name: Upload backup artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: system-backup-$(date +%Y%m%d)
         path: backup-archive/

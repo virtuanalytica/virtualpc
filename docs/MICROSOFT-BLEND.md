@@ -195,7 +195,7 @@ spec:
     spec:
       containers:
         - name: virtualpc
-          image: ghcr.io/knitweb/virtualpc:latest
+          image: ghcr.io/virtuanalytica/virtualpc:latest
           env:
             - name: LITELLM_URL
               value: "http://litellm:4000"
