@@ -3335,28 +3335,45 @@ function setupRoutes(app: express.Express, components: any) {
 
   app.post('/api/backlog/create', async (req, res) => {
     try {
-      const { title, description, priority, assigned_to, story_points, sprint } = req.body;
-      const id = `backlog-${Date.now()}`;
-      const item = {
-        id,
+      const { title, description, priority, assigned_to, assignee, sprint } = req.body;
+      if (!title || typeof title !== 'string') {
+        return res.status(422).json({ success: false, error: 'title is required' });
+      }
+      // The old handler only wrote a lightrag node, so "created" items never
+      // appeared in GET /api/backlog (which reads the task engine) and were
+      // silently lost. Create the real task; default triage owner is Fill.
+      const owner = assigned_to || assignee || 'Fill';
+      const task = taskEngine.addTask({
         title,
-        description,
-        priority: priority || 'medium',
-        assigned_to,
-        story_points: story_points || 0,
+        description: description || '',
+        priority,
+        assigned_to: owner,
         sprint: sprint || 'backlog',
-        status: 'new',
-        created_at: new Date().toISOString()
-      };
+      });
+      if (!task) {
+        return res.status(422).json({ success: false, error: `unknown agent: ${owner}` });
+      }
       await lightrag.addNode({
         type: 'Backlog',
         content: title,
         context: description,
-        affects: [assigned_to || 'unassigned']
+        affects: [owner]
       });
-      res.json({ success: true, item });
+      return res.json({
+        success: true,
+        item: {
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          assigned_to: task.assigned_to,
+          sprint: task.sprint,
+          status: task.status,
+          created_at: new Date().toISOString()
+        }
+      });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      return res.status(500).json({ success: false, error: error.message });
     }
   });
 
