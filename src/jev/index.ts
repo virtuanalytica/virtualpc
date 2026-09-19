@@ -8,6 +8,7 @@
  *   POST /api/jev/classify         → one classification over declared labels
  *   POST /api/jev/decide           → one heuristic yes/no with abstention
  *   POST /api/jev/workflow/run     → rule-based step executor with Jev gates
+ *   POST /api/jev/tasks/route      → Kafka-style task routing decision
  *
  * Safety posture (docs/JEV-ENGINE.md): Jev is a probability source, never an
  * unconditional oracle. Workflows are declared up front; the engine — not the
@@ -21,6 +22,7 @@ import { createJevClient, jevConfigFromEnv } from './config';
 import { classify } from './classify';
 import { decide } from './heuristics';
 import { WorkflowRunner, WorkflowStep } from './workflow';
+import { TaskRouter } from './router';
 
 export { HttpJevClient, JevDecisionClient } from './client';
 export * from './answers';
@@ -28,6 +30,7 @@ export * from './config';
 export * from './classify';
 export * from './heuristics';
 export * from './workflow';
+export * from './router';
 
 const questionSchema: z.ZodType<JevQuestion> = z.discriminatedUnion('type', [
   z.object({
@@ -103,6 +106,14 @@ const workflowSchema = z.object({
   dryRun: z.boolean().optional(),
 });
 
+const routeSchema = z.object({
+  task: z.object({
+    id: z.string().optional(),
+    payload: z.unknown(),
+    hint: z.string().optional(),
+  }),
+});
+
 export function registerJevRoutes(app: Express): void {
   app.get('/api/jev/status', (_req: Request, res: Response) => {
     const config = jevConfigFromEnv();
@@ -149,6 +160,45 @@ export function registerJevRoutes(app: Express): void {
     try {
       const result = await decide(client, parsed.data);
       res.json({ success: true, result });
+    } catch (error) {
+      res.status(502).json({ success: false, error: error instanceof Error ? error.message : String(error) });
+    }
+  });
+
+  /**
+   * Kafka-style task routing. The HTTP surface classifies and returns the
+   * routing DECISION (lane, confidence, audit) — it does not dispatch to
+   * inference backends; hosts register TaskHandlers in-process via TaskRouter.
+   */
+  app.post('/api/jev/tasks/route', async (req: Request, res: Response) => {
+    const parsed = routeSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ success: false, error: parsed.error.message });
+      return;
+    }
+    const client = createJevClient();
+    if (!client) {
+      res.status(503).json({ success: false, error: 'TYPESAFE_API_KEY is not configured' });
+      return;
+    }
+    try {
+      const router = new TaskRouter({ client, handlers: [] });
+      // handlers=[] → confident lanes report their lane; actual dispatch always
+      // escalates to the mixture shape with `votes: []` for remote callers.
+      const decision = await router.route(parsed.data.task);
+      res.json({
+        success: true,
+        result: {
+          taskId: decision.taskId,
+          category: decision.category,
+          confidence: decision.scoring.confidence,
+          probabilities: decision.scoring.probabilities,
+          abstained: decision.scoring.abstained,
+          dispatchedTo: decision.dispatchedTo,
+          mixture: decision.mixture,
+          audit: decision.audit,
+        },
+      });
     } catch (error) {
       res.status(502).json({ success: false, error: error instanceof Error ? error.message : String(error) });
     }

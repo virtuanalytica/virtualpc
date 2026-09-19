@@ -1,7 +1,7 @@
 import * as vm from 'node:vm';
-import * as crypto from 'node:crypto';
 import { JevDecisionClient, JevQuestion } from './client';
 import { answerConfidence, chosenLabel } from './answers';
+import { stateHash } from './audit';
 
 /**
  * Rule-based, step-by-step automation with Jev confidence gates.
@@ -110,11 +110,6 @@ export interface WorkflowRunnerOptions {
 
 const DEFAULT_MAX_STEPS = 100;
 const DEFAULT_CODE_TIMEOUT_MS = 1_000;
-
-function stateHash(state: unknown): string {
-  const json = JSON.stringify(state, (_, value) => (typeof value === 'function' ? undefined : value));
-  return crypto.createHash('sha256').update(json ?? '').digest('hex').slice(0, 16);
-}
 
 export class WorkflowRunner {
   private readonly tools: Record<string, ToolFn>;
