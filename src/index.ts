@@ -116,6 +116,7 @@ import * as corpus from './integrations/corpus';
 import { registerPlanRoutes } from './plan-review';
 import { registerDataQualityRoutes } from './data-quality';
 import { registerFinanceRoutes } from './finance';
+import { registerJevRoutes } from './jev';
 import { registerGpuRoutes, getGpuAvailable } from './gpu';
 import { registerInferenceRoutes } from './integrations/local-inference/inference-routes';
 import { registerQueryRoutes } from './query-builder';
@@ -242,6 +243,8 @@ registerPlanRoutes(app);
 registerDataQualityRoutes(app);
 // Finance — intangible-asset (immateriële activa) capitalization report + ROI.
 registerFinanceRoutes(app);
+// Jev engine — confidence-gated decisions, classification, gated workflows.
+registerJevRoutes(app);
 // Fundamentals, news, and filings storage with source + publication date.
 registerFundamentalRoutes(app);
 // GPU daemon — availability detection (3h), dynamic no-GPU model fallback, and
