@@ -366,6 +366,37 @@ Before running agents full-time:
 
 ---
 
+## Single-Instance Lock
+
+VirtualPC uses a PID-file lock (`.virtualpc.pid`) to prevent multiple instances from
+running concurrently and corrupting shared state files.
+
+- **PID File**: `.virtualpc.pid` (contains process ID of running instance)
+- **Automatic on startup**: If lock cannot be acquired, server exits with error
+- **Manual recovery**: If server crashed and PID file is stale:
+  ```bash
+  rm .virtualpc.pid
+  npm start
+  ```
+
+The lock is automatically released on graceful shutdown. Stale PIDs are detected
+and cleaned automatically (process-singleton checks if PID still exists).
+
+## Message Queue & Classifier
+
+Bot utility functions for per-key task serialization and message complexity classification:
+
+- **Message Queue** (`GET /api/openclaw/queue/:key`): Per-agent command serialization
+  - Prevents race conditions on dual-terminal execution
+  - FIFO ordering guaranteed per agent
+- **Message Classifier**: Complexity heuristic for routing (simple vs. complex queries)
+  - Keywords: "explain", "analyze", "design", "debug", "investigate", etc.
+  - Heuristic: messages with >20 words or complex keywords → complex
+
+Used internally; no API endpoints needed for these utilities.
+
+---
+
 ## 📞 Support
 
 - **System Status**: `./scripts/health-check.sh`
@@ -373,6 +404,47 @@ Before running agents full-time:
 - **Kafka Monitor**: `docker exec virtualpc-kafka kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list`
 - **Neo4j Console**: http://localhost:7474
 - **API Docs**: http://localhost:3100/api/docs
+
+## Hive Mind Persistence
+
+Shared agent memory logs are stored in `$STATE_DIR/hive-mind.jsonl` (default: `.state/hive-mind.jsonl`).
+
+- **Entry types**: agent activity (deploy, design, test, etc.) with metadata
+- **Inter-agent tasks**: async task handoffs with status tracking (pending → completed/failed)
+- **API endpoints**:
+  - `GET /api/hive-mind/recent` — latest entries (limit 50 default)
+  - `GET /api/hive-mind/agent/:agentId` — entries for specific agent
+  - `POST /api/hive-mind/log` — log new entry (agentId, actionType, summary, metadata)
+  - `GET /api/hive-mind/inter-agent-tasks` — list tasks (filter by status/agent)
+  - `POST /api/hive-mind/inter-agent-tasks/:id/complete` — mark task done
+
+Hive Mind grows unbounded; rotate old entries via:
+```bash
+find .state -name "hive-mind.jsonl*" -mtime +30 -delete  # Remove >30 days old
+```
+
+No additional env vars needed (uses `STATE_DIR`).
+
+---
+
+## Agent Notes Vault
+
+Lightweight brainstorming vault for agents to jot down ephemeral findings, decisions, risks.
+
+- **Storage**: `data/agent-notes/` (plain markdown files, wikilinks [[note]])
+- **Daily notes**: `data/agent-notes/daily/:agentId/YYYY-MM-DD.md`
+- **API endpoints**:
+  - `GET /api/agent-notes` — list all notes
+  - `GET /api/agent-notes/:path` — read a note
+  - `POST /api/agent-notes/:path` — create/update note (body: {content, agentId?})
+  - `GET /api/agent-notes/:path/backlinks` — wikilinks pointing to this note
+  - `POST /api/agent-notes/daily/:agentId` — append to today's daily note (body: {content})
+
+Notes are **NOT** the formal Live Wiki (`data/wiki.json`, which is for documentation).
+Agent Notes are quick, informal, and agent-specific.
+
+**Path safety**: Path traversal (../, ..\, leading slashes) is automatically sanitized.
+Illegal characters are stripped. Nodes cannot write outside the vault.
 
 ---
 

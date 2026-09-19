@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inference Settings — VirtualPC</title>
+<style>
+  :root {
+    --primary: #60a5fa; --secondary: #06b6d4;
+    --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+    --bg-dark: #0f172a; --bg-darker: #020617;
+    --text-primary: #e2e8f0; --text-secondary: #94a3b8;
+    --border: rgba(148, 163, 184, 0.2);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+    color: var(--text-primary); min-height: 100vh; padding: 24px 32px;
+  }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 1.6em; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .meta { color: var(--text-secondary); font-size: 0.9em; display: flex; gap: 16px; align-items: center; }
+  .meta a { color: var(--primary); text-decoration: none; }
+  h2 { font-size: 1.05em; margin-bottom: 12px; color: var(--text-primary); }
+  .panel {
+    background: rgba(15,23,42,0.7); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; margin-bottom: 20px;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 24px; }
+  .row .panel { flex: 1 1 340px; margin-bottom: 0; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 0.9em; }
+  .kv dt { color: var(--text-secondary); }
+  .kv dd { font-variant-numeric: tabular-nums; }
+  .big { font-size: 1.8em; font-weight: 700; color: var(--primary); }
+  .chip {
+    padding: 6px 14px; border-radius: 999px; font-size: 0.85em; cursor: pointer;
+    background: rgba(148,163,184,0.08); border: 1px solid var(--border); color: var(--text-secondary);
+    user-select: none; transition: all 0.15s; display: inline-block;
+  }
+  .chip:hover { color: var(--text-primary); border-color: var(--primary); }
+  .chip.active { background: rgba(96,165,250,0.18); color: var(--primary); border-color: var(--primary); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  input[type=range] { width: 100%; accent-color: var(--primary); }
+  input[type=number] {
+    background: var(--bg-darker); color: var(--text-primary); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 10px; width: 90px; font-size: 0.95em;
+  }
+  label.field { display: block; color: var(--text-secondary); font-size: 0.85em; margin: 12px 0 4px; }
+  .agents-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+  .agent {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--border); background: rgba(148,163,184,0.05); cursor: pointer;
+    transition: all 0.12s; font-size: 0.9em;
+  }
+  .agent input { accent-color: var(--success); width: 16px; height: 16px; }
+  .agent.checked { border-color: var(--success); background: rgba(34,197,94,0.08); }
+  .agent .role { color: var(--text-secondary); font-size: 0.8em; }
+  .hint { color: var(--text-secondary); font-size: 0.82em; margin-top: 8px; }
+  .hint.error { color: var(--danger); }
+  button.primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none;
+    color: #05203f; font-weight: 700; padding: 10px 22px; border-radius: 10px; cursor: pointer;
+    font-size: 0.95em; margin-top: 8px;
+  }
+  button.ghost {
+    background: transparent; border: 1px solid var(--border); color: var(--text-secondary);
+    padding: 9px 16px; border-radius: 10px; cursor: pointer; font-size: 0.9em; margin-left: 10px;
+  }
+  #status { margin-left: 14px; font-size: 0.88em; }
+  .ok { color: var(--success); } .err { color: var(--danger); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+  th, td { text-align: left; padding: 4px 10px 4px 0; }
+  th { color: var(--text-secondary); font-weight: 500; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>⚙️ Inference Settings</h1>
+  <div class="meta">
+    <a href="/dashboard.html">Dashboard</a>
+    <a href="/agents.html">Agents</a>
+    <a href="/vitals.html">Vitals</a>
+  </div>
+</header>
+
+<div class="row">
+  <div class="panel">
+    <h2>Dynamic compute estimate</h2>
+    <div class="big" id="planStreams">–</div>
+    <div class="hint">concurrent model streams admitted (≥ <span id="planFloor">–</span> tokens/sec each)</div>
+    <dl class="kv" style="margin-top:12px">
+      <dt>Host tier</dt><dd id="planTier">–</dd>
+      <dt>Probe</dt><dd id="planProbe">–</dd>
+      <dt>Base estimate</dt><dd id="planBase">–</dd>
+      <dt>Usage factor</dt><dd id="planFactor">–</dd>
+      <dt>Max model size</dt><dd id="planModelGB">–</dd>
+      <dt>Active / queued</dt><dd id="planLive">–</dd>
+    </dl>
+    <div class="hint" id="planReason"></div>
+    <h2 style="margin-top:16px">Measured tokens/sec (live calibration)</h2>
+    <table id="calibTable"><tr><th>model</th><th>solo t/s (EMA)</th></tr></table>
+    <button class="ghost" style="margin:12px 0 0" onclick="replan()">Re-probe host</button>
+  </div>
+
+  <div class="panel">
+    <h2>Compute usage bias</h2>
+    <div class="hint" style="margin:0 0 10px">The estimate above is computed dynamically from this
+      host's hardware and measured t/s. Bias it toward lighter (spare the machine) or heavier
+      (accept slower streams) use.</div>
+    <div class="chips" id="modeChips">
+      <span class="chip" data-mode="light">🌱 light ×0.5</span>
+      <span class="chip" data-mode="balanced">⚖️ balanced ×1.0</span>
+      <span class="chip" data-mode="heavy">🔥 heavy ×1.5</span>
+      <span class="chip" data-mode="custom">🎛 custom</span>
+    </div>
+    <div id="customRow" style="display:none">
+      <label class="field">Custom factor: <b id="customVal">1.0</b>×</label>
+      <input type="range" id="customFactor" min="0.25" max="2" step="0.05" value="1">
+    </div>
+    <label class="field">Tokens/sec floor per stream</label>
+    <input type="number" id="minTps" min="1" max="200" step="1">
+    <label class="field">Hard override of concurrent streams (empty = dynamic)</label>
+    <input type="number" id="maxOverride" min="1" max="8" step="1" placeholder="auto">
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Active agents <span class="hint" style="display:inline">— select at least <b id="minAgents">5</b> for diversity; “all active” keeps the full roster and lets them time-share the streams</span></h2>
+  <div class="chips">
+    <span class="chip" id="allChip">✅ all agents active</span>
+    <span class="chip" id="pickChip">🎯 custom selection</span>
+  </div>
+  <div class="agents-grid" id="agentsGrid"></div>
+  <div class="hint" id="rosterHint"></div>
+  <button class="primary" onclick="save()">Save settings</button>
+  <span id="status"></span>
+</div>
+
+<script>
+let state = { settings: null, agents: [], minAgents: 5, allActive: true };
+
+function $(id) { return document.getElementById(id); }
+
+async function load() {
+  const [s, p] = await Promise.all([
+    fetch('/api/inference/settings').then(r => r.json()),
+    fetch('/api/inference/compute-plan').then(r => r.json()),
+  ]);
+  state.settings = s.settings;
+  state.agents = s.agents;
+  state.minAgents = s.min_active_agents;
+  state.allActive = (s.settings.activeAgents || []).length === 0;
+  $('minAgents').textContent = state.minAgents;
+  renderPlan(p);
+  renderControls();
+  renderAgents();
+}
+
+function renderPlan(p) {
+  const plan = p.plan;
+  $('planStreams').textContent = plan.maxConcurrentStreams;
+  $('planFloor').textContent = plan.minTokensPerSec;
+  $('planTier').textContent = plan.tier;
+  $('planProbe').textContent = `${plan.probe.gpuCount} GPU · ${plan.probe.cpuCores} cores · ${plan.probe.totalRamGB} GB RAM`;
+  $('planBase').textContent = `${plan.baseStreams} stream(s)`;
+  $('planFactor').textContent = `×${plan.usageFactor}`;
+  $('planModelGB').textContent = `~${plan.maxModelGB.toFixed(0)} GB / stream`;
+  $('planLive').textContent = `${p.active_streams} active · ${p.queue_depth} queued`;
+  $('planReason').textContent = plan.reason;
+  const rows = Object.entries(p.calibration_tps || {}).filter(([m]) => m !== '__reference__');
+  const table = $('calibTable');
+  table.innerHTML = '<tr><th>model</th><th>solo t/s (EMA)</th></tr>' +
+    (rows.length
+      ? rows.map(([m, t]) => `<tr><td>${m}</td><td>${t}</td></tr>`).join('')
+      : '<tr><td colspan="2" class="hint">no completions measured yet — priors in use</td></tr>');
+}
+
+function renderControls() {
+  const s = state.settings;
+  document.querySelectorAll('#modeChips .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.mode === s.usageMode);
+    c.onclick = () => { s.usageMode = c.dataset.mode; renderControls(); };
+  });
+  $('customRow').style.display = s.usageMode === 'custom' ? 'block' : 'none';
+  $('customFactor').value = s.customFactor;
+  $('customVal').textContent = Number(s.customFactor).toFixed(2);
+  $('customFactor').oninput = e => {
+    s.customFactor = Number(e.target.value);
+    $('customVal').textContent = s.customFactor.toFixed(2);
+  };
+  $('minTps').value = s.minTokensPerSec;
+  $('maxOverride').value = s.maxConcurrentOverride ?? '';
+  $('allChip').classList.toggle('active', state.allActive);
+  $('pickChip').classList.toggle('active', !state.allActive);
+  $('allChip').onclick = () => { state.allActive = true; renderControls(); renderAgents(); };
+  $('pickChip').onclick = () => {
+    state.allActive = false;
+    // Seed a sensible default selection when switching to custom.
+    if ((state.settings.activeAgents || []).length === 0) {
+      state.settings.activeAgents = state.agents.slice(0, state.minAgents).map(a => a.name);
+    }
+    renderControls(); renderAgents();
+  };
+}
+
+function renderAgents() {
+  const grid = $('agentsGrid');
+  const selected = new Set((state.settings.activeAgents || []).map(a => a.toLowerCase()));
+  grid.innerHTML = state.agents.map(a => {
+    const checked = state.allActive || selected.has(a.name.toLowerCase());
+    return `<label class="agent ${checked ? 'checked' : ''}" style="${state.allActive ? 'opacity:.55;pointer-events:none' : ''}">
+      <input type="checkbox" data-name="${a.name}" ${checked ? 'checked' : ''}>
+      <span style="font-size:1.3em">${a.avatar}</span>
+      <span><b>${a.name}</b><br><span class="role">${a.role}</span></span>
+    </label>`;
+  }).join('');
+  grid.querySelectorAll('input').forEach(cb => cb.onchange = () => {
+    const names = Array.from(grid.querySelectorAll('input:checked')).map(c => c.dataset.name);
+    state.settings.activeAgents = names;
+    renderAgents();
+  });
+  const n = state.allActive ? state.agents.length : (state.settings.activeAgents || []).length;
+  const short = !state.allActive && n < state.minAgents;
+  $('rosterHint').textContent = `${n} agent(s) active` + (short ? ` — need at least ${state.minAgents}` : '');
+  $('rosterHint').className = 'hint' + (short ? ' error' : '');
+}
+
+async function save() {
+  const body = {
+    usageMode: state.settings.usageMode,
+    customFactor: state.settings.customFactor,
+    minTokensPerSec: Number($('minTps').value),
+    activeAgents: state.allActive ? [] : (state.settings.activeAgents || []),
+    maxConcurrentOverride: $('maxOverride').value === '' ? null : Number($('maxOverride').value),
+  };
+  const r = await fetch('/api/inference/settings', {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  const j = await r.json();
+  const st = $('status');
+  if (j.success) {
+    st.textContent = '✓ saved — plan updated';
+    st.className = 'ok';
+    renderPlan({ plan: j.plan, calibration_tps: {}, active_streams: 0, queue_depth: 0 });
+    load();
+  } else {
+    st.textContent = '✗ ' + j.error;
+    st.className = 'err';
+  }
+}
+
+async function replan() {
+  await fetch('/api/inference/replan', { method: 'POST' });
+  load();
+}
+
+load();
+setInterval(async () => {
+  try { renderPlan(await fetch('/api/inference/compute-plan').then(r => r.json())); } catch {}
+}, 10000);
+</script>
+</body>
+</html>

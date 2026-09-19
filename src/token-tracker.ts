@@ -285,6 +285,7 @@ export function getRecentEvents(agent?: string, limit: number = 20): any[] {
 }
 
 // Tick every 30 seconds to generate usage data
-setInterval(recordAgentTokens, 30000);
-// Generate some initial history
-for (let i = 0; i < 20; i++) recordAgentTokens();
+if (process.env.VIRTUALPC_SIMULATE_TOKENS === '1') {
+  setInterval(recordAgentTokens, 30000);
+  for (let i = 0; i < 20; i++) recordAgentTokens();
+}

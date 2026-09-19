@@ -347,6 +347,11 @@ const tasks: Task[] = [];
 // Survives server restarts, TypeScript rebuilds, and hook-triggered restarts.
 
 const STATE_PATH = path.join(STATE_DIR, 'task-state.json');
+const NEW_RESET = process.env.VIRTUALPC_NEW_RESET === '1';
+// Synthetic progress is useful only for an explicitly requested dashboard
+// simulation. It must not silently change the fresh 0.1 metrics. Real task
+// mutations through the public API remain available when this is disabled.
+const AUTONOMOUS_TICKS = process.env.VIRTUALPC_AUTONOMOUS_TICKS === '1';
 let dirty = false;
 
 interface PersistedState {
@@ -423,13 +428,34 @@ function loadState(): boolean {
   }
 }
 
+function clearUnbackedActivity(): boolean {
+  if (AUTONOMOUS_TICKS) return false;
+  const persistedLog = (globalThis as any).__virtualpcPersistedWorkLog as WorkLogEntry[] | undefined;
+  if (persistedLog?.length) return false;
+
+  let changed = false;
+  for (const task of tasks) {
+    if (task.status !== 'in-progress') continue;
+    task.status = 'pending';
+    task.progress = 0;
+    task.started_at = undefined;
+    for (const subtask of task.subtasks) subtask.done = false;
+    changed = true;
+  }
+  return changed;
+}
+
 function seedInitialTasks() {
   const agents = AGENT_NAMES;
   for (const agent of agents) {
-    // 2 in-progress + 2 pending per agent
+    // 2 in-progress + 2 pending per agent — but fabricated "in-progress"
+    // states are only truthful when the autonomous tick simulation will
+    // actually work them. Without ticks, seed everything as untouched
+    // pending work so the API never claims agents are busy without any
+    // work-log/artifact evidence.
     for (let i = 0; i < 4; i++) {
       const task = generateTask(agent);
-      if (i < 2) {
+      if (AUTONOMOUS_TICKS && i < 2) {
         task.status = 'in-progress';
         task.started_at = new Date(Date.now() - Math.random() * 3600000).toISOString();
         // Give first tasks some initial progress
@@ -447,7 +473,20 @@ function seedInitialTasks() {
 // Restore from disk if available; otherwise seed fresh.
 // If restored, also ensure every currently-active agent has at least 4 tasks
 // (covers the case where a new agent was added after the state file was saved).
-if (loadState()) {
+if (NEW_RESET) {
+  tasks.length = 0;
+  for (const agent of AGENT_NAMES) poolIndex[agent] = 0;
+  sprintCounter = 1;
+  taskIdCounter = 100;
+  (globalThis as any).__virtualpcPersistedWorkLog = [];
+  // Keep the fresh baseline useful for review: create untouched work items,
+  // but do not mark anything complete or advance them automatically.
+  seedInitialTasks();
+  dirty = true;
+  logger.info('task-engine: fresh 0.1 baseline requested; historical state ignored');
+} else if (loadState()) {
+  // A persisted reset with no work log must not resurrect synthetic activity.
+  if (clearUnbackedActivity()) dirty = true;
   const currentAgents = AGENT_NAMES;
   for (const agent of currentAgents) {
     const agentTasks = tasks.filter(t => t.assigned_to === agent && (t.status === 'in-progress' || t.status === 'pending'));
@@ -457,7 +496,7 @@ if (loadState()) {
       const currentIP = agentTasks.filter(t => t.status === 'in-progress').length;
       for (let i = 0; i < gap; i++) {
         const task = generateTask(agent);
-        if (currentIP + i < 2) {
+        if (AUTONOMOUS_TICKS && currentIP + i < 2) {
           task.status = 'in-progress';
           task.started_at = new Date().toISOString();
         }
@@ -959,6 +998,13 @@ export function getWorkLog(agent?: string, limit?: number): WorkLogEntry[] {
   return entries;
 }
 
+// Reset-baseline truth contract: agents may only be reported active/busy when
+// there is real evidence of work — the autonomous tick simulation is enabled,
+// or real work-log/artifact events exist. Task counts stay untouched.
+export function hasRealActivityEvidence(): boolean {
+  return AUTONOMOUS_TICKS || workLog.length > 0 || artifacts.length > 0;
+}
+
 export function getWorkSummary() {
   const agentSummaries: { [agent: string]: { totalMinutes: number; tasksCompleted: number; subtasksCompleted: number; lastActivity: string } } = {};
   for (const entry of workLog) {
@@ -1224,7 +1270,7 @@ export function getAgentInProgressDetail(agent: string) {
 
 const agentCommands: { [agent: string]: string[] } = {
   Fill: [
-    '$ gh issue list --label critical --repo knitweb/virtualpc',
+    '$ gh issue list --label critical --repo virtuanalytica/virtualpc',
     '$ review-sprint --sprint 2 --format summary',
     '$ okr-tracker --quarter Q3 --status',
     '$ budget-forecast --period Q3 --output table',
@@ -1549,9 +1595,15 @@ export function getAgentSocialFeed(agent: string, limit = 20) {
   };
 }
 
-// Tick every 10 seconds
-setInterval(tickEngine, 10000);
-tickEngine();
+// Tick every 10 seconds only for an explicitly requested simulation. The
+// default 0.1 demo is a stable baseline: seeded work remains visible but no
+// completion, work-log or milestone statistic is fabricated by a timer.
+if (AUTONOMOUS_TICKS) {
+  setInterval(tickEngine, 10000);
+  tickEngine();
+} else {
+  logger.info('task-engine: autonomous ticks disabled; waiting for real task mutations');
+}
 
 // Persist state every 5s (only writes if dirty). Was 30s — reduced after
 // the May-3 roadmap-delegation push was wiped by a systemd restart that

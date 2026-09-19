@@ -5,7 +5,7 @@
 # Prereqs: node 18+, docker, git. Optional: LM Studio (lms CLI) for local models.
 #
 # Usage:
-#   git clone https://github.com/knitweb/virtualpc.git ~/virtualpc
+#   git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc
 #   cd ~/virtualpc
 #   ./scripts/install.sh
 

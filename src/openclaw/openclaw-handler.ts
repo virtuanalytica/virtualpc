@@ -17,6 +17,7 @@ interface AgentCommand {
 export class OpenClawHandler {
   private commandQueue: AgentCommand[] = [];
   private executedCommands: AgentCommand[] = [];
+  private continuousExecution = false;
 
   /**
    * Queue command for execution (no approval required)
@@ -199,6 +200,17 @@ export class OpenClawHandler {
     this.commandQueue = [];
     this.executedCommands = [];
   }
+
+  getTerminalStatus() {
+    return { A: this.getTerminalInfo('A'), B: this.getTerminalInfo('B') };
+  }
+
+  getTerminalInfo(id: 'A' | 'B') {
+    return { id, status: 'available', queuedCommands: this.commandQueue.length, continuousExecution: this.continuousExecution };
+  }
+
+  setContinuousExecution(enabled: boolean): void { this.continuousExecution = enabled; }
+  isContinuousExecutionEnabled(): boolean { return this.continuousExecution; }
 }
 
 export default OpenClawHandler;

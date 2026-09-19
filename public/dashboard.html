@@ -654,6 +654,11 @@
                     <div class="nav-icon">⚙️</div>
                     <div>Tasks</div>
                 </div>
+                <div class="nav-item" onclick="window.open('/inference-settings.html','_blank')" style="position:relative;cursor:pointer;">
+                    <div class="nav-icon">🧠</div>
+                    <div>Inference</div>
+                    <span id="inference-status-chip" class="inference-chip" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10px;padding:2px 6px;border-radius:999px;background:var(--info);color:#fff;">—</span>
+                </div>
                 <div class="nav-item" data-page="system">
                     <div class="nav-icon">🔧</div>
                     <div>System Status</div>
@@ -877,7 +882,7 @@
                     <p style="color: var(--text-secondary); margin-bottom: 15px;">
                         View the live virtualpc repo on GitHub
                     </p>
-                    <a href="https://github.com/knitweb/virtualpc"
+                    <a href="https://github.com/virtuanalytica/virtualpc"
                        style="display: inline-block; padding: 10px 20px; background: var(--primary); color: white; border-radius: 6px; text-decoration: none; transition: all 0.3s;"
                        onmouseover="this.style.background='var(--secondary)'"
                        onmouseout="this.style.background='var(--primary)'">
@@ -1010,7 +1015,7 @@
                         <div class="stat-label">VirtualPC</div>
                         <div class="stat-value" style="font-size: 1.1em;">This platform</div>
                         <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                            <a href="https://github.com/knitweb/virtualpc" target="_blank" rel="noopener"
+                            <a href="https://github.com/virtuanalytica/virtualpc" target="_blank" rel="noopener"
                                style="padding: 7px 14px; background: var(--primary); color: white; border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">📦 GitHub repo</a>
                             <a href="/agents.html"
                                style="padding: 7px 14px; background: var(--secondary); color: white; border-radius: 6px; text-decoration: none; font-size: 0.85em; font-weight: 600;">👥 All Agents</a>
@@ -1226,7 +1231,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">GitHub Authority Docs <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— from <code>knitweb/virtualpc</code>, loaded live</span></div>
+                    <div class="card-title">GitHub Authority Docs <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— from <code>virtuanalytica/virtualpc</code>, loaded live</span></div>
                     <div id="ad-gh-docs-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">Loading…</div>
                     <pre id="ad-gh-docs-viewer" style="display:none; margin-top: 14px; white-space: pre-wrap; word-wrap: break-word; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.82em; line-height: 1.55; color: var(--text-primary); background: var(--bg-darker); border: 1px solid var(--border); border-radius: 8px; padding: 14px; max-height: 480px; overflow-y: auto;"></pre>
                 </div>
@@ -1802,7 +1807,7 @@
             e.preventDefault();
             const out = document.getElementById('proj-molgang-content');
             out.style.display = 'block';
-            out.textContent = 'Loading from github.com/knitweb/virtualpc/.backlog/high-priority.md …';
+            out.textContent = 'Loading from github.com/virtuanalytica/virtualpc/.backlog/high-priority.md …';
             try {
                 const r = await fetch('/api/github/virtualpc/file?path=.backlog/high-priority.md').then(r => r.json());
                 out.textContent = r.success ? r.content : ('Error: ' + (r.error || 'unknown'));
@@ -1950,7 +1955,7 @@
                 const j = await r.json();
                 const docs = (j && j.docs) || [];
                 if (!docs.length) {
-                    host.innerHTML = '<em style="color: var(--text-secondary);">No authority docs in <code>knitweb/virtualpc</code> yet for this agent.</em>';
+                    host.innerHTML = '<em style="color: var(--text-secondary);">No authority docs in <code>virtuanalytica/virtualpc</code> yet for this agent.</em>';
                     return;
                 }
                 host.innerHTML = docs.map(d => {
@@ -2217,7 +2222,7 @@
 
                     <div class="card">
                         <div class="card-title">📁 Backlog Files
-                            <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— from <code>knitweb/virtualpc</code> (private; loaded via authenticated proxy)</span>
+                            <span style="color: var(--text-secondary); font-weight: normal; font-size: 0.85em;">— from <code>virtuanalytica/virtualpc</code> (private; loaded via authenticated proxy)</span>
                         </div>
                         <p style="color: var(--text-secondary); margin-bottom: 10px;">Click any file to view it inline:</p>
                         <div id="backlog-files-buttons" style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2238,7 +2243,7 @@
             }
         }
 
-        // === Backlog Files: list knitweb/virtualpc/.backlog/ via authenticated proxy
+        // === Backlog Files: list virtuanalytica/virtualpc/.backlog/ via authenticated proxy
         async function populateBacklogFiles() {
             const host = document.getElementById('backlog-files-buttons');
             if (!host) return;
@@ -2262,7 +2267,7 @@
         async function loadBacklogFileInto(path, url, viewerId) {
             const viewer = document.getElementById(viewerId);
             viewer.style.display = 'block';
-            viewer.textContent = 'Loading ' + path + ' from github.com/knitweb/virtualpc …';
+            viewer.textContent = 'Loading ' + path + ' from github.com/virtuanalytica/virtualpc …';
             try {
                 const r = await fetch('/api/github/virtualpc/file?path=' + encodeURIComponent(path));
                 const j = await r.json();
@@ -2515,14 +2520,32 @@
             } catch (e) { console.log('Guardrails ack error:', e.message); }
         }
 
+        async function updateInferenceStatus() {
+            try {
+                const r = await fetch('/api/inference/compute-plan');
+                const j = await r.json();
+                if (!j.success) return;
+                const plan = j.data.plan;
+                const chip = document.getElementById('inference-status-chip');
+                if (chip) {
+                    chip.textContent = `${plan.tier} · ${plan.maxConcurrentStreams} streams`;
+                }
+            } catch (e) {
+                const chip = document.getElementById('inference-status-chip');
+                if (chip) chip.textContent = '⚠️ offline';
+            }
+        }
+
         // Update metrics immediately and every 5 seconds (15s on lightweight hosts)
         loadTeamOverview();
         updateMetrics();
         fetchGuardrailsStatus();
+        updateInferenceStatus();
         setInterval(() => {
             updateMetrics();
             loadTeamOverview();
             fetchGuardrailsStatus();
+            updateInferenceStatus();
         }, statsPollMs);
     </script>
 </body>

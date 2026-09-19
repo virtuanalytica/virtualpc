@@ -8,7 +8,7 @@
 
 - Each brand has its own narrative, search footprint and link graph.
 - A dedicated GitHub account keeps the brand identity clean (`https://<brand>.github.io`).
-- The main `knitweb/virtualpc` repository remains the canonical machine; the brand sites are lenses.
+- The main `virtuanalytica/virtualpc` repository remains the canonical machine; the brand sites are lenses.
 
 ---
 
@@ -99,7 +99,7 @@ Only changed files will be committed and pushed.
 
 Each brand site should link back to the others and to the brain:
 
-- **Brain / machine:** `https://github.com/knitweb/virtualpc`
+- **Brain / machine:** `https://github.com/virtuanalytica/virtualpc`
 - **Brand hub:** `https://febuz.github.io/virtualpc/brands.html` (or your custom domain)
 - **Sibling brands:** direct links to the other three GitHub Pages URLs
 

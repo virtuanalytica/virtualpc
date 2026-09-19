@@ -14,7 +14,7 @@ analysts, testers, artists, reviewers) coordinated behind one dashboard and one
 OpenAI-compatible gateway. It runs local models first, keeps every decision
 auditable, and asks for human approval before risky work ships.
 
-Repository: [github.com/knitweb/virtualpc](https://github.com/knitweb/virtualpc)
+Repository: [github.com/virtuanalytica/virtualpc](https://github.com/virtuanalytica/virtualpc)
 
 What's in the box:
 - **LiteLLM gateway** at `127.0.0.1:4000` (`deploy/docker-compose.litellm.yml`)
@@ -40,7 +40,7 @@ What's in the box:
 ## 🎯 Quick start (5 minutes)
 
 ```bash
-git clone https://github.com/knitweb/virtualpc.git ~/virtualpc
+git clone https://github.com/virtuanalytica/virtualpc.git ~/virtualpc
 cd ~/virtualpc
 ./scripts/install.sh
 ```

@@ -59,7 +59,7 @@ npm --version   # 10.x
 ## 3. Clone and install VirtualPC
 
 ```bash
-git clone https://github.com/knitweb/virtualpc.git /opt/virtualpc
+git clone https://github.com/virtuanalytica/virtualpc.git /opt/virtualpc
 cd /opt/virtualpc
 cp .env.example .env
 ```

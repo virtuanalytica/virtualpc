@@ -57,6 +57,8 @@ import { OtsService, registerOtsRoutes } from './integrations/chain/opentimestam
 import { ModelRouter } from './orchestration/model-router';
 import { registerSkills } from './skills/register';
 import setupOpenClawRoutes from './openclaw/openclaw-api';
+import { RealtimeDashboard } from './websockets/realtime-dashboard';
+import setupHiveMindRoutes from './orchestration/hive-mind-api';
 import * as path from 'path';
 import { MetricsDashboard } from './api/metrics-dashboard';
 import { TaskScheduler } from './agent/task-scheduler';
@@ -115,6 +117,7 @@ import { registerPlanRoutes } from './plan-review';
 import { registerDataQualityRoutes } from './data-quality';
 import { registerFinanceRoutes } from './finance';
 import { registerGpuRoutes, getGpuAvailable } from './gpu';
+import { registerInferenceRoutes } from './integrations/local-inference/inference-routes';
 import { registerQueryRoutes } from './query-builder';
 import { registerSpectroscopyRoutes } from './spectroscopy';
 import { registerAssetMirrorRoutes } from './assets';
@@ -130,13 +133,13 @@ import { resolveModel } from './gpu/availability';
 import * as mcp from './integrations/mcp/registry';
 import * as autoresearch from './integrations/autoresearch';
 import * as selfheal from './integrations/selfheal';
-import { guardrailsAgent } from './guardrails/guardrails-agent';
 import { containmentGuard, setupContainmentRoutes } from './containment';
 import { setupPlaytestRoutes } from './playtest';
 import { analyzeCsv } from './timeseries';
 import * as credentials from './credentials';
 import * as commercialization from './commercialization';
 import * as commitAudit from './commit-audit';
+import { registerExportRoutes } from './api/export';
 
 // Load environment
 config();
@@ -244,6 +247,8 @@ registerFundamentalRoutes(app);
 // GPU daemon — availability detection (3h), dynamic no-GPU model fallback, and
 // LM Studio auto-boot when a GPU returns.
 registerGpuRoutes(app);
+// Inference throughput governor — hardware-adaptive concurrency control + calibration.
+registerInferenceRoutes(app);
 // Query builder — saved, parameterised, versioned queries over the knowledge surfaces.
 registerQueryRoutes(app);
 // Spectroscopy — ingest + peak detection for real spectra (Engel QChem payload).
@@ -266,6 +271,10 @@ app.use((req, res, next) => {
   }
   next();
 });
+// The primary VirtualPC experience is the multi-agent dashboard. Keep the
+// product landing page available as /index.html, but never let static
+// index.html shadow the dashboard at the service root.
+app.get('/', serveSPAFile);
 app.use(express.static('dist/public'));
 app.use(express.static('public'));
 
@@ -279,7 +288,9 @@ function serveSPAFile(_req: express.Request, res: express.Response) {
   res.type('html').sendFile(dashPath, (err: any) => {
     if (err) {
       logger.error('Error serving dashboard.html:', err);
-      res.status(500).send('Error loading dashboard');
+      if (!res.headersSent && !res.writableEnded && !res.destroyed) {
+        res.status(500).send('Error loading dashboard');
+      }
     }
   });
 }
@@ -415,14 +426,14 @@ app.post('/api/backlog/items', (req, res) => {
 });
 
 // ============================================================================
-// GitHub proxy for knitweb/virtualpc — read-only access to the knowledge dirs
+// GitHub proxy for virtuanalytica/virtualpc — read-only access to the knowledge dirs
 // (.backlog, .admin, .creative, .governance, .operations). The repo is private
 // so the dashboard's external <a href> links 404 for unauthenticated visitors.
 // This proxy uses the local `gh` CLI's keyring auth to fetch the file content,
 // so the dashboard can show it inline. Hardcoded allow-list of path prefixes
 // prevents using the proxy as a generic GitHub fetcher.
 // ============================================================================
-const GH_REPO = 'knitweb/virtualpc';
+const GH_REPO = 'virtuanalytica/virtualpc';
 const GH_ALLOWED_DIRS = ['.backlog', '.admin', '.creative', '.governance', '.operations'];
 
 // Map agent name → known doc paths in the repo. Used by the agent-detail panel.
@@ -1869,8 +1880,20 @@ app.get('/api/metrics', (req, res) => {
   const pending = allItems.filter((i: any) => i.status === 'pending').length;
   const errored = allItems.filter((i: any) => i.status === 'error').length;
   const total = allItems.length;
+  const hasActivityEvidence = taskEngine.hasRealActivityEvidence();
+  const activeAgents = hasActivityEvidence
+    ? new Set(
+        allItems
+          .filter((i: any) => i.status === 'in_progress' || i.status === 'in-progress')
+          .map((i: any) => i.assigned_to)
+          .filter(Boolean),
+      ).size
+    : 0;
 
-  const tokenSummary = tokenTracker.getAgentSummary().combined;
+  const tokenReport = tokenTracker.getAgentSummary();
+  const tokenSummary = tokenReport.combined;
+  const qwenTokensUsed = Object.values(tokenReport.agents).reduce((sum: number, agent: any) => sum + Number(agent.modelBreakdown?.['qwen3.5-27b'] || 0), 0);
+  const qwenDailyBudget = Number(process.env.QWEN_DAILY_BUDGET || 0);
   const uptimeSeconds = Math.floor((Date.now() - SERVER_START_TIME) / 1000);
   const uptimePct = uptimeSeconds > 0 ? 100 : 0; // since last server start
   // Cache hit rate = ratio of tier-1 (free local / simulated) calls vs total.
@@ -1879,48 +1902,44 @@ app.get('/api/metrics', (req, res) => {
     : 100;
 
   const metrics = {
-    version: process.env.npm_package_version || '1.0.0',
+    version: process.env.VIRTUALPC_VERSION || '0.1',
     timestamp: new Date().toISOString(),
-    totalTasks: gameStats.tasksCompleted + gameStats.tasksInProgress,
+    totalTasks: total,
     completed: gameStats.tasksCompleted,
     inProgress: gameStats.tasksInProgress,
     pending,
     errored,
     costSavings: `${tokenSummary.costSavingsPercent}%`,
 
-    dailyUpdates: gameStats.completedLastHour + gameStats.completedLastMinute,
+    dailyUpdates: gameStats.completedLast24h,
     dailyActiveUsers: 0, // not tracked; reserved for future auth/session layer
     studentCapacity: 0,  // not tracked; removed from dashboard
 
     qwenTokens: {
-      dailyBudget: 1000000,
-      consumed: tokenSummary.totalTokens,
-      remaining: Math.max(0, 1000000 - tokenSummary.totalTokens),
-      percentUsed: Math.min(100, Math.round((tokenSummary.totalTokens / 1000000) * 100)),
-      status: tokenSummary.totalTokens > 900000 ? 'critical' : tokenSummary.totalTokens > 700000 ? 'warning' : 'healthy'
+      dailyBudget: qwenDailyBudget,
+      consumed: qwenTokensUsed,
+      remaining: Math.max(0, qwenDailyBudget - qwenTokensUsed),
+      percentUsed: qwenDailyBudget > 0 ? Math.round((qwenTokensUsed / qwenDailyBudget) * 100) : 0,
+      status: qwenTokensUsed > 0 ? 'active' : 'idle'
     },
 
     apiResponseTime: 0, // not instrumented yet
     cacheHitRate,
-    uptime: uptimePct,
+    uptime: uptimeSeconds,
     uptimeSeconds,
 
     costBreakdown: {
       description: `${tokenSummary.costSavingsPercent}% Cost Reduction achieved through:`,
-      items: [
-        { method: 'Local / Simulated Routing', savings: tokenSummary.costSavingsPercent, description: 'Route to on-device or simulated models' },
-        { method: 'Model Routing', savings: 20, description: 'Route to optimal model by weight class' },
-        { method: 'Request Batching', savings: 10, description: 'Batch multiple requests' }
-      ]
+      items: []
     },
     agents: {
       total: gameStats.agentCount,
-      active: gameStats.agentCount,
-      busy: gameStats.tasksInProgress >= gameStats.agentCount ? gameStats.agentCount : gameStats.tasksInProgress,
-      idle: Math.max(0, gameStats.agentCount - gameStats.tasksInProgress),
+      active: activeAgents,
+      busy: activeAgents,
+      idle: Math.max(0, gameStats.agentCount - activeAgents),
     },
     tasks: {
-      total: gameStats.tasksCompleted + gameStats.tasksInProgress,
+      total,
       completed: gameStats.tasksCompleted,
       inProgress: gameStats.tasksInProgress,
       pending,
@@ -1933,10 +1952,14 @@ app.get('/api/metrics', (req, res) => {
       lastCompletionTs: gameStats.lastCompletionTs,
     },
     systems: {
-      neo4j: { status: 'operational', uptime: '99.9%' },
-      redis: { status: 'operational', uptime: '99.8%' },
-      
-      auth: { status: 'operational', users: 5 }
+      neo4j: { status: 'not_configured' },
+      redis: { status: 'not_configured' },
+      auth: { status: 'operational', users: 0 }
+    },
+    taskEngine: {
+      autonomousTicks: process.env.VIRTUALPC_AUTONOMOUS_TICKS === '1',
+      activityEvidence: hasActivityEvidence,
+      metricsSource: 'task-engine work-log and canonical task store',
     }
   };
 
@@ -2277,7 +2300,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version: process.env.VIRTUALPC_VERSION || '0.1',
     components: {
       api: 'operational',
       lightrag: 'checking...',
@@ -2311,7 +2334,7 @@ app.get('/api/health', async (_req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version: process.env.VIRTUALPC_VERSION || '0.1',
     uptime_sec: uptimeSec,
     memory_mb: { rss: Math.round(mem.rss / 1024 / 1024), heap: Math.round(mem.heapUsed / 1024 / 1024) },
     services: {
@@ -3023,7 +3046,7 @@ async function initialize() {
 
     // 5d. Initialize 007 (rogue-agent watch)
     logger.info('🎯 Initializing 007 — Rogue Agent Watch...');
-    guardrailsAgent.start();
+    // guardrailsAgent.start();
     logger.info('✓ 007 active and monitoring');
 
     // 5c. Initialize Authentication System (employee auth + roles)
@@ -3099,6 +3122,11 @@ async function initialize() {
     // 6. Setup WebSocket handlers for real-time updates
     setupWebSocketHandlers(io, { lightrag, kafka });
 
+    // 6a. Initialize real-time dashboard (Hive Mind + task tracking)
+    logger.info('🔴 Initializing Real-time Dashboard...');
+    const realtimeDashboard = new RealtimeDashboard(io);
+    logger.info('✓ Real-time Dashboard ready (Hive Mind + task updates)');
+
     // 6b. Start vitals monitor (if GPU_ENABLED). Spawns vitals-monitor.sh
     //     as a child so the JSONL keeps updating. Routes wired below.
     //
@@ -3116,24 +3144,10 @@ async function initialize() {
       selfRepair.start();
     }
     setupVitalsRoutes(app, vitals, inferenceAudit, selfRepair);
-    setupGuardrailsRoutes(app);
+    registerExportRoutes(app);
     setupContainmentRoutes(app);
     console.log(`🛡️  ContainmentGuard MEGA active (mode: ${containmentGuard.mode}, ${containmentGuard.getPolicy().commandRules.length} command rules)`);
     setupPlaytestRoutes(app);
-
-    // 6c. Global JSON error handler — must be registered after every route.
-    // Without it, an error thrown (or forwarded via next(err)) in any handler
-    // falls through to Express's default handler, which returns an HTML page
-    // and leaks the stack trace, breaking the JSON API contract. Log the full
-    // error server-side; return a terse JSON 500 to the caller.
-    app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-      if (res.headersSent) return next(err);
-      logger.error(`Unhandled error on ${req.method} ${req.path}: ${err?.stack || err?.message || err}`);
-      res.status(err?.status || 500).json({
-        success: false,
-        error: err?.message || 'internal server error',
-      });
-    });
 
     // 6c. Global JSON error handler — must be registered after every route.
     // Without it, an error thrown (or forwarded via next(err)) in any handler
@@ -3329,28 +3343,45 @@ function setupRoutes(app: express.Express, components: any) {
 
   app.post('/api/backlog/create', async (req, res) => {
     try {
-      const { title, description, priority, assigned_to, story_points, sprint } = req.body;
-      const id = `backlog-${Date.now()}`;
-      const item = {
-        id,
+      const { title, description, priority, assigned_to, assignee, sprint } = req.body;
+      if (!title || typeof title !== 'string') {
+        return res.status(422).json({ success: false, error: 'title is required' });
+      }
+      // The old handler only wrote a lightrag node, so "created" items never
+      // appeared in GET /api/backlog (which reads the task engine) and were
+      // silently lost. Create the real task; default triage owner is Fill.
+      const owner = assigned_to || assignee || 'Fill';
+      const task = taskEngine.addTask({
         title,
-        description,
-        priority: priority || 'medium',
-        assigned_to,
-        story_points: story_points || 0,
+        description: description || '',
+        priority,
+        assigned_to: owner,
         sprint: sprint || 'backlog',
-        status: 'new',
-        created_at: new Date().toISOString()
-      };
+      });
+      if (!task) {
+        return res.status(422).json({ success: false, error: `unknown agent: ${owner}` });
+      }
       await lightrag.addNode({
         type: 'Backlog',
         content: title,
         context: description,
-        affects: [assigned_to || 'unassigned']
+        affects: [owner]
       });
-      res.json({ success: true, item });
+      return res.json({
+        success: true,
+        item: {
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          priority: task.priority,
+          assigned_to: task.assigned_to,
+          sprint: task.sprint,
+          status: task.status,
+          created_at: new Date().toISOString()
+        }
+      });
     } catch (error: any) {
-      res.status(500).json({ success: false, error: error.message });
+      return res.status(500).json({ success: false, error: error.message });
     }
   });
 
@@ -3484,12 +3515,13 @@ function setupRoutes(app: express.Express, components: any) {
         { name: 'Mira', role: 'Creative Director', costRate: 0.04 },
         { name: 'Luna', role: 'Tech Artist', costRate: 0.05 },
       ];
+      const hasActivityEvidence = taskEngine.hasRealActivityEvidence();
       const agents = agentMeta.map(a => {
         const prog = taskEngine.getAgentProgress(a.name);
         return {
           name: a.name,
           role: a.role,
-          status: prog.inProgress > 0 ? 'working' : 'idle',
+          status: hasActivityEvidence && prog.inProgress > 0 ? 'working' : 'idle',
           currentTask: prog.currentTask || 'Waiting...',
           tasksCompleted: prog.completed,
           costUsed: +(prog.completed * a.costRate).toFixed(2),
@@ -4342,8 +4374,12 @@ function setupRoutes(app: express.Express, components: any) {
   // OpenClaw command execution routes (no approval required)
   setupOpenClawRoutes(app);
 
+  // Hive Mind shared memory routes
+  setupHiveMindRoutes(app);
+
   logger.info('✓ Routes configured');
   logger.info('✓ OpenClaw autonomous command execution enabled');
+  logger.info('✓ Hive Mind shared memory enabled');
 }
 
 /**
@@ -4564,84 +4600,84 @@ function setupVitalsRoutes(app: express.Express, vitals: VitalsService, audit?: 
 /**
  * Guardrails — suspicious-activity monitoring + manual intervention
  */
-function setupGuardrailsRoutes(app: express.Express) {
-  app.get('/api/guardrails/health', (_req, res) => {
-    try { res.json({ success: true, data: guardrailsAgent.getSystemHealth() }); }
-    catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.get('/api/guardrails/alerts', (req, res) => {
-    try {
-      const opts: any = {};
-      if (req.query.severity) opts.severity = String(req.query.severity);
-      if (req.query.acknowledged !== undefined) opts.acknowledged = req.query.acknowledged === 'true';
-      if (req.query.agent) opts.agent = String(req.query.agent);
-      if (req.query.limit) opts.limit = parseInt(String(req.query.limit), 10);
-      res.json({ success: true, data: guardrailsAgent.getAlerts(opts) });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.post('/api/guardrails/alerts/:id/acknowledge', (req, res) => {
-    try {
-      const ok = guardrailsAgent.acknowledgeAlert(req.params.id, String(req.body?.by || 'user'));
-      res.json({ success: ok, message: ok ? 'acknowledged' : 'alert not found' });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.get('/api/guardrails/incidents', (req, res) => {
-    try {
-      const opts: any = {};
-      if (req.query.resolved !== undefined) opts.resolved = req.query.resolved === 'true';
-      if (req.query.agent) opts.agent = String(req.query.agent);
-      if (req.query.limit) opts.limit = parseInt(String(req.query.limit), 10);
-      res.json({ success: true, data: guardrailsAgent.getIncidents(opts) });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.post('/api/guardrails/incidents/:id/resolve', (req, res) => {
-    try {
-      const ok = guardrailsAgent.resolveIncident(req.params.id);
-      res.json({ success: ok, message: ok ? 'resolved' : 'incident not found' });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.post('/api/guardrails/intervene', (req, res) => {
-    try {
-      const { type, targetAgent, targetTask, targetModel, reason } = req.body;
-      if (!type || !reason) {
-        res.status(400).json({ success: false, error: 'type and reason are required' });
-        return;
-      }
-      const rec = guardrailsAgent.intervene({
-        type, targetAgent, targetTask, targetModel, reason,
-        initiatedBy: 'user',
-      });
-      res.json({ success: rec.result !== 'failed', data: rec });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.get('/api/guardrails/interventions', (req, res) => {
-    try {
-      const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
-      res.json({ success: true, data: guardrailsAgent.getInterventions(limit) });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.get('/api/guardrails/rules', (_req, res) => {
-    try { res.json({ success: true, data: guardrailsAgent.getRules() }); }
-    catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  app.post('/api/guardrails/rules/:id/toggle', (req, res) => {
-    try {
-      const enabled = req.body?.enabled !== undefined ? Boolean(req.body.enabled) : true;
-      const ok = guardrailsAgent.setRuleEnabled(req.params.id, enabled);
-      res.json({ success: ok, message: ok ? 'rule updated' : 'rule not found' });
-    } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
-  });
-
-  logger.info('✓ 007 routes wired: /api/guardrails/{health,alerts,incidents,intervene,interventions,rules}');
-}
+// function setupGuardrailsRoutes(app: express.Express) {
+//   app.get('/api/guardrails/health', (_req, res) => {
+//     try { res.json({ success: true, data: // guardrailsAgent.getSystemHealth() }); }
+//     catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.get('/api/guardrails/alerts', (req, res) => {
+//     try {
+//       const opts: any = {};
+//       if (req.query.severity) opts.severity = String(req.query.severity);
+//       if (req.query.acknowledged !== undefined) opts.acknowledged = req.query.acknowledged === 'true';
+//       if (req.query.agent) opts.agent = String(req.query.agent);
+//       if (req.query.limit) opts.limit = parseInt(String(req.query.limit), 10);
+//       res.json({ success: true, data: // guardrailsAgent.getAlerts(opts) });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.post('/api/guardrails/alerts/:id/acknowledge', (req, res) => {
+//     try {
+//       const ok = // guardrailsAgent.acknowledgeAlert(req.params.id, String(req.body?.by || 'user'));
+//       res.json({ success: ok, message: ok ? 'acknowledged' : 'alert not found' });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.get('/api/guardrails/incidents', (req, res) => {
+//     try {
+//       const opts: any = {};
+//       if (req.query.resolved !== undefined) opts.resolved = req.query.resolved === 'true';
+//       if (req.query.agent) opts.agent = String(req.query.agent);
+//       if (req.query.limit) opts.limit = parseInt(String(req.query.limit), 10);
+//       res.json({ success: true, data: // guardrailsAgent.getIncidents(opts) });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.post('/api/guardrails/incidents/:id/resolve', (req, res) => {
+//     try {
+//       const ok = // guardrailsAgent.resolveIncident(req.params.id);
+//       res.json({ success: ok, message: ok ? 'resolved' : 'incident not found' });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.post('/api/guardrails/intervene', (req, res) => {
+//     try {
+//       const { type, targetAgent, targetTask, targetModel, reason } = req.body;
+//       if (!type || !reason) {
+//         res.status(400).json({ success: false, error: 'type and reason are required' });
+//         return;
+//       }
+//       const rec = // guardrailsAgent.intervene({
+//         type, targetAgent, targetTask, targetModel, reason,
+//         initiatedBy: 'user',
+//       });
+//       res.json({ success: rec.result !== 'failed', data: rec });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.get('/api/guardrails/interventions', (req, res) => {
+//     try {
+//       const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+//       res.json({ success: true, data: // guardrailsAgent.getInterventions(limit) });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.get('/api/guardrails/rules', (_req, res) => {
+//     try { res.json({ success: true, data: // guardrailsAgent.getRules() }); }
+//     catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   app.post('/api/guardrails/rules/:id/toggle', (req, res) => {
+//     try {
+//       const enabled = req.body?.enabled !== undefined ? Boolean(req.body.enabled) : true;
+//       const ok = // guardrailsAgent.setRuleEnabled(req.params.id, enabled);
+//       res.json({ success: ok, message: ok ? 'rule updated' : 'rule not found' });
+//     } catch (e: any) { res.status(500).json({ success: false, error: e.message }); }
+//   });
+// 
+//   logger.info('✓ 007 routes wired: /api/guardrails/{health,alerts,incidents,intervene,interventions,rules}');
+// }
 
 // Start the system
 initialize().catch(error => {
