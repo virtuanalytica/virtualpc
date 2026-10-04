@@ -85,7 +85,11 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
+          # Diff-scan (base..HEAD) only works on pull_request; on a push of the
+          # default branch itself HEAD == base and TruffleHog aborts with
+          # "BASE and HEAD commits are the same" (exit 1). Empty base = full
+          # repository scan, valid for both events.
+          base: ${{ github.event_name == 'pull_request' && github.event.repository.default_branch || '' }}
           head: HEAD
 
   license-check:
