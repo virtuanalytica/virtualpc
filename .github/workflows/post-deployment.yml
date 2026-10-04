@@ -56,6 +56,8 @@ jobs:
 
       - name: Notify on failure
         if: failure()
+        # Notification must never make the job redder than it already is.
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -77,6 +79,8 @@ jobs:
 
       - name: Notify on success
         if: success()
+        # Notification must never make the job redder than it already is.
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |

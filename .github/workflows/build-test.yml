@@ -47,7 +47,7 @@ jobs:
         run: npm run test:integration --if-present
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage/coverage-final.json
           flags: unittests
@@ -59,10 +59,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -92,4 +92,4 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
       - name: Dependency check
-        run: npm audit --audit-level=moderate 2>/dev/null || echo "Audit issues found"
+        run: npm audit --audit-level=high || echo "::warning::npm audit vond high/critical kwetsbaarheden"
